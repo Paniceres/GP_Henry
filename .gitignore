@@ -1,5 +1,11 @@
-<<<<<<< HEAD
+# Working on
 extras/
-=======
-/extras
->>>>>>> origin/dev-Jc
+
+# datasets
+/datasets/processed/google/metadatos-sitios/bussiness_google.json.gz
+/datasets/processed/google/metadatos-sitios/meta-datos-google.gz
+/datasets/processed/yelp/Reviews/
+/datasets/raw/
+
+# Python
+__pycache__/
