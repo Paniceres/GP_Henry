@@ -1,1 +1,7 @@
-/datasets
+
+# datasets
+/datasets/processed/google/metadatos-sitios/meta-datos-google.gz
+/datasets/processed/yelp/Reviews
+
+# Python
+__pycache__/
