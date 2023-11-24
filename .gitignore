@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Working on
 extras/
 
@@ -10,3 +11,10 @@ extras/
 # Python
 __pycache__/
 
+=======
+<<<<<<< HEAD
+extras/
+=======
+/extras
+>>>>>>> origin/dev-Jc
+>>>>>>> bd3736f42ddf4394f824b7f0bae8492768ad2c5e
