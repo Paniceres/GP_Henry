@@ -1,6 +1,7 @@
 # datasets
 datasets/extras/
 extras/
+.vscode/
 
 # Python
 __pycache__/
