@@ -1,2 +1,16 @@
+<<<<<<< HEAD
 extras/
 .vscode/
+=======
+# Working on
+extras/
+
+# datasets
+/datasets/processed/google/metadatos-sitios/bussiness_google.json.gz
+/datasets/processed/google/metadatos-sitios/meta-datos-google.gz
+/datasets/processed/yelp/Reviews/
+
+
+# Python
+__pycache__/
+>>>>>>> origin/test
