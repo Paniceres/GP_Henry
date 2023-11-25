@@ -1,9 +1,6 @@
-<<<<<<< HEAD
-extras/
-.vscode/
-=======
 # Working on
 extras/
+.vscode/
 
 # datasets
 /datasets/processed/google/metadatos-sitios/bussiness_google.json.gz
