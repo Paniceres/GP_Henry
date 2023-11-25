@@ -1,12 +1,8 @@
-# Working on
-extras/
-etl-eda/jupyters prueba
-
 # datasets
-/datasets/processed/google/metadatos-sitios/meta-datos-google.gz
-/datasets/processed/yelp/Reviews/
-/datasets/raw/
+datasets/extras/
+extras/
+.vscode/
+etl-eda/jupyters prueba/
 
 # Python
 __pycache__/
-
