@@ -3,5 +3,9 @@ datasets/extras/
 extras/
 .vscode/
 
+# virtual env
+.env/
+.venv/
+
 # Python
 __pycache__/
