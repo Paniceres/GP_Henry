@@ -2,7 +2,6 @@
 datasets/extras/
 extras/
 .vscode/
-etl-eda/jupyters prueba/
 
 # Python
 __pycache__/
