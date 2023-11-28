@@ -12,7 +12,7 @@ nltk.download('vader_lexicon')
 ## Cargo las variables de entorno
 load_dotenv('../.env') # Cargo ela archivo donde esta la variable de entorno.
 api_key_yelp =  os.getenv("API_KEY_YELP") # Cargo la variable de entorno
-
+mysql_key = os.getenv("KEY_MYSQL")
 ##################  MYSQL   ##################
 def mysql_get_connection():
     """
@@ -25,7 +25,7 @@ def mysql_get_connection():
     try:
         return mysql.connect(host = 'servidorgrupo.cpfbmucjyznh.us-east-2.rds.amazonaws.com',
                          user = 'admin',
-                         password = '1533542415',
+                         password = 'mysql_key',
                          database='QUANTYLE_ANALITICS')
     except mysql.Error as e:
         print(f"Error al conectar a la base de datos: {e}")
