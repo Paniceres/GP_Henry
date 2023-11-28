@@ -122,13 +122,13 @@ def extract_businesses():
 
 def state_normalize(state):
     if state == 'CA':
-        return 'California'
+        return '1'
     elif state == 'FL':
-        return 'Florida'
+        return '0'
     elif state == 'NJ':
-        return 'New Jersey'
+        return '3'
     elif state == 'IL':
-        return 'Illinois'
+        return '2'
 
 # Funcion realiza el ETL y deja los datos de locales en su formato listo para subirlo.
 def transform_business(yelp_bussines):
@@ -142,10 +142,10 @@ def transform_business(yelp_bussines):
     'coordinates.longitude':'longitude',
     'categories':'categories',
     'rating':'stars',
-    'location.state':'state',
+    'location.state':'state_id',
     
     },inplace=True)
-    columnas = ['business_id', 'name', 'latitude','longitude','categories','stars','state']
+    columnas = ['business_id', 'name', 'latitude','longitude','categories','stars','state_id']
     yelp_bussines = yelp_bussines[columnas]
     return yelp_bussines
     
