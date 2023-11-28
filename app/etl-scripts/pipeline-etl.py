@@ -79,11 +79,20 @@ def extract_businesses():
     return yelp_bussines
 
 
+def state_normalize(state):
+    if state == 'CA':
+        return 'California'
+    elif state == 'FL':
+        return 'Florida'
+    elif state == 'NJ':
+        return 'New Jersey'
+    elif state == 'IL':
+        return 'Illinois'
 
 # Funcion realiza el ETL y deja los datos de locales en su formato listo para subirlo.
 def transform_business(yelp_bussines):
     yelp_bussines['categories'] = yelp_bussines['categories'].apply(lambda x: [item['title'] for item in x] if isinstance(x, list) else [])
-    
+    yelp_bussines['location.state'] = yelp_bussines['location.state'].appy(state_normalize)
 
     yelp_bussines.rename(columns={
     'id':'business_id',
@@ -108,7 +117,7 @@ def get_categories(df):
         local_id = row['business_id']
         categories = row['categories']
         for category in categories:
-            categories_data.append({'business_id': local_id, 'categoria': category})
+            categories_data.append({'business_id': local_id, 'categories': category})
 
     # Crear un nuevo DataFrame para la tabla de categorías
     categorias_new_data = pd.DataFrame(categories_data)
@@ -134,6 +143,12 @@ def yelp_ER():
     categories_origen = get_table('categories') # Cargo la tabla de categorias de la base de datos.    
     
     categorias_new_data = get_categories(yelp_new_data) # Funcion que recibe el DF con las categorias como listas, y devuelve otro con bunisess_id y el nombre de cada categoria.
+    
+    
+    #Agrego la categoria Restaurants a cada local
+    df = categorias_new_data.drop_duplicates(subset='business_id').drop(columns='categories')
+    df['categories'] = 'Restaurants'
+    categorias_new_data = pd.concat([categorias_new_data,df])
     
     categorias_new = categorias_new_data[~(categorias_new_data['categoria'].isin(categories_origen['name']))] # Selecciono las categorias que no estan en la DB
     categories = categorias_new.drop_duplicates(subset='categoria')['categoria'].values.tolist() # Elimino las categorias duplicadas y las convierto en lista de listas.
@@ -275,6 +290,9 @@ def yelp_review_ER():
     reviews_yelp_origen = get_table('review_yelp')
     review_new_data = review_new_data[((pd.to_datetime(reviews_yelp_origen['date']).max())<review_new_data['date']) & (~review_new_data['review_id'].isin(reviews_yelp_origen['review_id']))]
 
-#review_yelp :Columns: [review_id, user_id, bussiness_id, sentiment, date]
+    # Falta ingestar las review de usuarios, luego volver a llamar a la tabla review_yelp, y sacar para cada usuarios las stars  
+    # la cantida de reviews y la primer fecha como contribuidor.
 
-#user_yelp:Columns: [user_id, name, creation, review_count, useful, fans, stars]
+    #review_yelp :Columns: [review_id, user_id, bussiness_id, sentiment, date]
+
+    #user_yelp:Columns: [user_id, name, creation, review_count, useful, fans, stars]
