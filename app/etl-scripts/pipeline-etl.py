@@ -5,9 +5,9 @@ from dotenv import load_dotenv
 from nltk.sentiment import SentimentIntensityAnalyzer
 import nltk
 import sys
-sys.path.append('../datasets/api')
-import s3
+
 import pymysql as mysql
+nltk.download('vader_lexicon')
 
 ## Cargo las variables de entorno
 load_dotenv('../.env') # Cargo ela archivo donde esta la variable de entorno.
@@ -15,12 +15,34 @@ api_key_yelp =  os.getenv("API_KEY_YELP") # Cargo la variable de entorno
 
 ##################  MYSQL   ##################
 def mysql_get_connection():
-    return mysql.connect(host = 'servidorgrupo.cpfbmucjyznh.us-east-2.rds.amazonaws.com',
+    """
+    Esta funcion se conecta a la base de datos establecida en amazon, y coenca la base de datos QUANTYLE_ANALITICS
+
+    Returns:
+        conexion:Retorna un objeto conexion, para realizar peticiones a la base de datos.
+    """
+    
+    try:
+        return mysql.connect(host = 'servidorgrupo.cpfbmucjyznh.us-east-2.rds.amazonaws.com',
                          user = 'admin',
                          password = '1533542415',
                          database='QUANTYLE_ANALITICS')
+    except mysql.Error as e:
+        print(f"Error al conectar a la base de datos: {e}")
+        raise  # Re-levanta la excepción para que el código que llama pueda manejarla si es necesario
+    
 
 def get_table(table_name):
+    """
+    Esta funcion aplica la funcion mysql_get_connection, y devuelve una tabla de la base de datos en formato dataframe de pandas.
+    
+
+    Args:
+        table_name (string): Nombre de la tabla requerida en la base de datos.
+
+    Returns:
+        pd.DataFrame: Data Frame de la tabla table_name.
+    """
     conexion = mysql_get_connection()
     cursor = conexion.cursor()
     consulta = f"SELECT * FROM {table_name}"
@@ -41,6 +63,16 @@ def get_table(table_name):
 
 # Funcion que consulta la API de yelp para obtener los locales por estado.    
 def business(state):
+    """Esta funcion realiza una consulta a la API de yelp para obtener los restaurantes por  estado.
+
+    Args:
+        state (string): Codigo de estado (Texas=TX) del estado requerido. 
+
+    Returns:
+        pd.DataFrame: Data frame de la información de un restaurant en concreto.
+    """
+    
+    
     url = f'https://api.yelp.com/v3/businesses/search'
 
     params = {
@@ -70,6 +102,14 @@ def business(state):
         
 # Funcion que carga desde la API hasta  50 datos de cada estado.        
 def extract_businesses():
+    
+    """ Esta funcion aplica la funcion business para 4 estados seleccionados.
+
+    Returns:
+        pd.DataFrame: Concatenacion de los restaurantes de los 4 estados.
+    """
+    
+    
     url = f'https://api.yelp.com/v3/businesses/search'
 
     yelp_bussines = pd.DataFrame()
@@ -80,17 +120,33 @@ def extract_businesses():
 
 
 def state_normalize(state):
+    
+    """ Esta función para un codigo de estado retorna el id.
+    Args:
+     state(string): Codigo del estado.
+
+    Returns:
+        int: Id del estado.
+    """
     if state == 'CA':
-        return '1'
+        return 1
     elif state == 'FL':
-        return '0'
+        return 0
     elif state == 'NJ':
-        return '3'
+        return 3
     elif state == 'IL':
-        return '2'
+        return 2
 
 # Funcion realiza el ETL y deja los datos de locales en su formato listo para subirlo.
 def transform_business(yelp_bussines):
+    
+    """Esta función realiza trasnformaciones sobre los restaurantes a partir del dataset tomando de la API.
+
+    Args:
+        yelp_bussines(pd.DataFrame): Data Frame de la API.
+    Returns:
+        pd.DataFrame: DataFrame restaurantes.
+    """
     yelp_bussines['categories'] = yelp_bussines['categories'].apply(lambda x: [item['title'] for item in x] if isinstance(x, list) else [])
     yelp_bussines['location.state'] = yelp_bussines['location.state'].appy(state_normalize)
 
@@ -111,6 +167,13 @@ def transform_business(yelp_bussines):
     
     
 def get_categories(df):
+    
+    """Esta funcion a partir de un dataframe de restaurantes retorna otro con las categorias y los business_id conectados. 
+
+    Returns:
+       pd.DataFrame: DataFrame de restaurantes.
+    """
+    
     #Convierto las categorias de cada fila que estan en listas, a una tabla de id_,categoria.
     categories_data = []
     for index, row in df.iterrows():
@@ -121,9 +184,21 @@ def get_categories(df):
 
     # Crear un nuevo DataFrame para la tabla de categorías
     categorias_new_data = pd.DataFrame(categories_data)
+    return categorias_new_data
     
 ##################  MYSQL   ##################
 def yelp_ER():
+    
+    """
+        Esta funcion realiza el proceso de ETL completo respecto de la API de yelp para los restaurantes en la base datos mysql.
+        Para esto aplica las funciones:
+            * extract_businesses
+            * transform_business
+            * get_table
+            * mysql_get_connection
+            * get_categories
+    
+    """
     
     extract_api = extract_businesses() # Extraigo los datos de la API referentes a los estados seleccionados y restaurantes
     yelp_new_data = transform_business(extract_api) # Realizo las trasnformaciones necesarias para que los datos esten limpios
@@ -185,15 +260,6 @@ def yelp_ER():
 ##################  MYSQL   ##################
     
 
- # Funcion que retira todos los locales de los ya existentes y sube los datos finales a s3.   
-def load_business(yelp_bussines,bucket_name,s3_path,local_path):
-    s3.download_file(bucket_name,s3_path,local_path)
-    df = pd.read_parquet(local_path)
-    yelp_bussines = yelp_bussines[~yelp_bussines['business_id'].isin(df['business_id'])]
-    yelp_bussines_final = pd.concat([yelp_bussines, df])
-    yelp_bussines_final.to_parquet('local_path',compression='gzip')
-    s3.upload_file(bucket_name,local_path,s3_path)
-    
     
 #------------------------------------------------------------------------      
 #----------------------------REVIEWS-------------------------------------    
@@ -202,6 +268,14 @@ def load_business(yelp_bussines,bucket_name,s3_path,local_path):
 
 # Funcion que apartir de la id de un local extrae las reviews
 def reviews_yelp_api(business_id):
+    
+    """ Esta funcion retorna para un business_id la información de reviews en un DataFrame.
+
+    Returns:
+        pd.DataFrame: Data Frame de reviews.
+    """
+    
+    
     url =f'https://api.yelp.com/v3/businesses/{business_id}/reviews?limit=50&sort_by=yelp_sort"'
 
     headers = {
@@ -222,6 +296,16 @@ def reviews_yelp_api(business_id):
         
 # Funcion que a partir de los locales ya existentes en DW extrae las reseñas.
 def extract_review_yelp():
+    
+    """ Esta funcion aplica la funcion reviews_yelp_api  para todos los business que estan en la base de datos aplicando get_table(yelp),
+    ademas lo hace 496 para tener en cuenta solo las peticione restantes,
+    Falta ver como modificar el business_id de input.
+
+    Returns:
+        pd.DataFrame: DataFrame de las revies.
+    """
+    
+    
     yelp = get_table('yelp') # Obtengo la tabla de restaurantes de la DB
     
     business_ids_distinct_list = yelp['business_id'].unique().tolist() # Selecciono solo los valores unicos de business_id
@@ -239,28 +323,42 @@ def extract_review_yelp():
 
 # Funcion que establece una ponderacion para el analisis de sentimiento
 def puntajeNLP(x):
-        if x > 1.5:
-            return 2 # Positivo
-        elif x >= 1:
-            return 0 # Neutro
-        else: 
-            return 1 # Negativo
+    
+    """Esta funcion raeliza un tipo de redondeo.
+
+    Returns:
+        float:
+    """
+    if x > 1.5:
+        return 2 # Positivo
+    elif x >= 1:
+        return 0 # Neutro
+    else: 
+        return 1 # Negativo
         
         
 # Funcion que realiza el ETL de reviews y los deja en el formato para subirlo.        
-def trasnform_reviews_yelp(reivews_business):
+def trasnform_reviews_yelp(reivews_yelp):
+    """Esta fncion realiza trasnformaciones necesarias sobre las reviews_yelp.
+
+    Args:
+        reivews_yelp (pd.DataFrame):DataFarme de las reviews de yelp cargado desde API.
+
+    Returns:
+        reivews_yelp: DataFrame trasnformado de reviews_yelp.
+    """
     sid = SentimentIntensityAnalyzer()
-    nltk.download('vader_lexicon')
-    analisis = reivews_business['text'].apply(lambda x: sid.polarity_scores(x)["compound"])
-    valorEstrellas = reivews_business['rating'] / 5 
+    
+    analisis = reivews_yelp['text'].apply(lambda x: sid.polarity_scores(x)["compound"])
+    valorEstrellas = reivews_yelp['rating'] / 5 
     analisis += valorEstrellas
     analisis = analisis.apply(lambda x: puntajeNLP(x))
-    reivews_business['text'] = analisis
-    reivews_business['sentiment'] = reivews_business['text'].astype('float')
+    reivews_yelp['text'] = analisis
+    reivews_yelp['sentiment'] = reivews_yelp['text'].astype('float')
 
 
 
-    reivews_business.rename(columns={
+    reivews_yelp.rename(columns={
     'id':'review_id',
     'user.id':'user_id',
     'business_id':'business_id',
@@ -270,21 +368,21 @@ def trasnform_reviews_yelp(reivews_business):
         },inplace=True)
 
     columns= ['review_id','user_id','business_id','sentiment','date','name']
-    reivews_business = reivews_business[columns]
-    return reivews_business
+    reivews_yelp = reivews_yelp[columns]
+    return reivews_yelp
 
 
-
-# Funcion que carga  los datos de reviews.
-def load_reviews_yelp(reivews_business,bucket_name,s3_path,local_path):
-    s3.download_file(bucket_name,s3_path,local_path)
-    df = pd.read_parquet(local_path)
-    yelp_bussines_final = reivews_business[((pd.to_datetime(df['date']).max())<reivews_business['date']) & (~reivews_business['review_id'].isin(df['review_id']))]
-    yelp_bussines_final = pd.concat([yelp_bussines_final, df])
-    s3.upload_file(bucket_name,local_path,s3_path)
-    
     
 def yelp_review_ER():
+    """
+        Esta funcion realiza el proceso de ETL completo respecto de la API de yelp para las reviews de restaurantes y las sube en la base datos mysql.
+        Para esto aplica las funciones:
+            * extract_businesses
+            * transform_business
+            * get_table
+            * mysql_get_connection
+    
+    """
     api_reviews = extract_review_yelp()
     review_new_data = trasnform_reviews_yelp(api_reviews)
     reviews_yelp_origen = get_table('review_yelp')
