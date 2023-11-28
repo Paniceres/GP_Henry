@@ -6,6 +6,6 @@ extras/
 # virtual env
 .env/
 .venv/
-
+.env
 # Python
 __pycache__/
