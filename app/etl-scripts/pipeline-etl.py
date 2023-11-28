@@ -364,10 +364,11 @@ def trasnform_reviews_yelp(reivews_yelp):
     'business_id':'business_id',
     'sentiment':'sentiment',
     'time_created':'date',
-    'user.name':'name'
+    'user.name':'name',
+    'rating':'stars'
         },inplace=True)
 
-    columns= ['review_id','user_id','business_id','sentiment','date','name']
+    columns= ['review_id','user_id','business_id','sentiment','date','name','stars']
     reivews_yelp = reivews_yelp[columns]
     return reivews_yelp
 
@@ -383,10 +384,21 @@ def yelp_review_ER():
             * mysql_get_connection
     
     """
-    api_reviews = extract_review_yelp()
-    review_new_data = trasnform_reviews_yelp(api_reviews)
-    reviews_yelp_origen = get_table('review_yelp')
+    api_reviews = extract_review_yelp() # extraigo las reviews de yelp de la API.
+    review_new_data = trasnform_reviews_yelp(api_reviews) # Hago las trasnformaciones sobre el dataframe.
+    reviews_yelp_origen = get_table('review_yelp') # Consulto la tabla de review_yelp de la base de datos mysql.
+    
+    #Filtro solo las reviews donde su columna date sea mayor a la maxima existente en la base de datos.
     review_new_data = review_new_data[((pd.to_datetime(reviews_yelp_origen['date']).max())<review_new_data['date']) & (~review_new_data['review_id'].isin(reviews_yelp_origen['review_id']))]
+    
+    users = review_new_data.groupby('user_id').agg({
+        'name':'first',
+        'date':'min',
+        'review_id':'count',
+        'stars':'mean'
+        
+    }).rename(columns={'date': 'creation','review_id':'review_count'})
+    
 
     # Falta ingestar las review de usuarios, luego volver a llamar a la tabla review_yelp, y sacar para cada usuarios las stars  
     # la cantida de reviews y la primer fecha como contribuidor.
@@ -394,3 +406,5 @@ def yelp_review_ER():
     #review_yelp :Columns: [review_id, user_id, bussiness_id, sentiment, date]
 
     #user_yelp:Columns: [user_id, name, creation, review_count, useful, fans, stars]
+    
+#reviews_API  = review_id', 'user_id','business_id','sentiment''date','name',stars
