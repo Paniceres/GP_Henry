@@ -2,7 +2,10 @@
 datasets/extras/
 extras/
 .vscode/
-etl-eda/jupyters prueba/
+
+# virtual env
+.env/
+.venv/
 
 # Python
 __pycache__/
