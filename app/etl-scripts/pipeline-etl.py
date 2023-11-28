@@ -5,8 +5,7 @@ from dotenv import load_dotenv
 from nltk.sentiment import SentimentIntensityAnalyzer
 import nltk
 import sys
-sys.path.append('../datasets/api')
-import s3
+
 import pymysql as mysql
 nltk.download('vader_lexicon')
 
@@ -121,17 +120,33 @@ def extract_businesses():
 
 
 def state_normalize(state):
+    
+    """ Esta función para un codigo de estado retorna el id.
+    Args:
+     state(string): Codigo del estado.
+
+    Returns:
+        int: Id del estado.
+    """
     if state == 'CA':
-        return '1'
+        return 1
     elif state == 'FL':
-        return '0'
+        return 0
     elif state == 'NJ':
-        return '3'
+        return 3
     elif state == 'IL':
-        return '2'
+        return 2
 
 # Funcion realiza el ETL y deja los datos de locales en su formato listo para subirlo.
 def transform_business(yelp_bussines):
+    
+    """Esta función realiza trasnformaciones sobre los restaurantes a partir del dataset tomando de la API.
+
+    Args:
+        yelp_bussines(pd.DataFrame): Data Frame de la API.
+    Returns:
+        pd.DataFrame: DataFrame restaurantes.
+    """
     yelp_bussines['categories'] = yelp_bussines['categories'].apply(lambda x: [item['title'] for item in x] if isinstance(x, list) else [])
     yelp_bussines['location.state'] = yelp_bussines['location.state'].appy(state_normalize)
 
