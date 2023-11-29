@@ -44,17 +44,22 @@ def get_table(table_name):
         pd.DataFrame: Data Frame de la tabla table_name.
     """
     conexion = mysql_get_connection()
-    cursor = conexion.cursor()
-    consulta = f"SELECT * FROM {table_name}"
-    cursor.execute(consulta)
-    # Obtiene los resultados de la consulta
-    resultados = cursor.fetchall()
-    # Obtiene los nombres de las columnas
-    columnas = [columna[0] for columna in cursor.description]
-    # Crea un DataFrame de Pandas con los resultados y los nombres de las columnas
-    df = pd.DataFrame(resultados, columns=columnas)
-    cursor.close()
-    conexion.close()
+    try:
+        # Iniciar conexión a MySQL
+        cursor = conexion.cursor()
+        consulta = f"SELECT * FROM {table_name}"
+        cursor.execute(consulta)
+        # Obtener los resultados de la consulta
+        resultados = cursor.fetchall()
+        # Obtener los nombres de las columnas
+        columnas = [columna[0] for columna in cursor.description]
+        # Crear un DataFrame de Pandas con los resultados y los nombres de las columnas
+        df = pd.DataFrame(resultados, columns=columnas)
+    except Exception as e:
+        print(f"Error: {e}")
+    finally:
+        # Cerrar la conexión a MySQL en cualquier caso
+        cursor.close()
     return df
 
 ##################  MYSQL   ##################
@@ -164,9 +169,9 @@ def transform_business(yelp_bussines):
         columnas = ['business_id', 'name', 'latitude','longitude','categories','stars','state_id']
         yelp_bussines = yelp_bussines[columnas]
         
-        yelp_bussines['latitude'] = round(yelp_bussines['latitude'],8)
-        yelp_bussines['longitude'] = round(yelp_bussines['longitude'],8)
-        yelp_bussines['stars'] = round(yelp_bussines['stars'],2)
+        yelp_bussines.loc[:, 'latitude'] = round(yelp_bussines['latitude'], 8)
+        yelp_bussines.loc[:, 'longitude'] = round(yelp_bussines['longitude'], 8)
+        yelp_bussines.loc[:, 'stars'] = round(yelp_bussines['stars'], 2)
         
         
         return yelp_bussines
@@ -219,26 +224,23 @@ def yelp_ER():
     cursor = conexion.cursor() 
     
     consulta = "INSERT INTO yelp  VALUES(%s,%s,%s,%s,%s,%s)" 
-    yelp_insert = yelp_new_data[['business_id','name','latitude','longitude','stars','state_id']].values.tolist()
-    cursor.executemany(consulta,yelp_insert ) # Inserto los nuevos locales, sin insertar las categorias
+    yelp_insert = yelp_new_data[['business_id','name','latitude','longitude','stars','state_id']].copy()
+    cursor.executemany(consulta,yelp_insert.values.tolist() ) # Inserto los nuevos locales, sin insertar las categorias
     
     conexion.commit()
     conexion.close()
     
     categories_origen = get_table('categories') # Cargo la tabla de categorias de la base de datos.    
     
-    categorias_new_data = get_categories(yelp_new_data) # Funcion que recibe el DF con las categorias como listas, y devuelve otro con bunisess_id y el nombre de cada categoria.
-    print(categorias_new_data.columns)
+    categorias_new_data = get_categories(yelp_new_data.copy())
+    print(categorias_new_data.shape[0])# Funcion que recibe el DF con las categorias como listas, y devuelve otro con bunisess_id y el nombre de cada categoria.
     #Agrego la categoria Restaurants a cada local
-    df = categorias_new_data.drop_duplicates(subset='business_id')
-    print(df.columns)
-    df = df['business_id']
+    df = categorias_new_data.drop_duplicates(subset='business_id').copy()
     df['categories'] = 'Restaurants'
     categorias_new_data = pd.concat([categorias_new_data,df])
     
     categorias_new = categorias_new_data[~(categorias_new_data['categories'].isin(categories_origen['name']))] # Selecciono las categorias que no estan en la DB
-    categories = categorias_new.drop_duplicates(subset='categories')['categories'].tolist() # Elimino las categorias duplicadas y las convierto en lista de listas.
-    
+    categories = categorias_new.drop_duplicates(subset='categories')['categories'].copy() # Elimino las categorias duplicadas y las convierto en lista de listas.
     conexion = mysql_get_connection() 
     cursor = conexion.cursor()
     
@@ -258,13 +260,22 @@ def yelp_ER():
     conexion = mysql_get_connection()
     
     # Como business id ya es unico simplemente agrego las filas a la tabla cateogires_yelp
-    categorias_yelp_new = categorias_yelp_new[['business_id','categories_id']]
-    cursor = conexion.cursor()
-    consulta = "INSERT INTO categories_yelp  VALUES(NULL,%s,%s)"
-    cursor.executemany(consulta, categorias_yelp_new.values.tolist())
-    conexion.commit()
-    conexion.close()
-
+    print(categorias_yelp_new)
+    try:
+        cursor = conexion.cursor()
+        consulta = "INSERT INTO categories_yelp  VALUES(%s,%s)"
+        cursor.executemany(consulta, categorias_yelp_new[['business_id','categories_id']].values.tolist())
+        conexion.commit()
+        conexion.close()
+    except Exception as e:
+        print(f"Error al ejecutar la consulta SQL: {e}")
+        # Aquí puedes agregar código adicional para manejar la excepción según tus necesidades.
+        # Por ejemplo, podrías hacer un rollback si es necesario.
+    finally:
+        # Este bloque se ejecutará siempre, asegurando que la conexión se cierre incluso en caso de excepción.
+        if conexion and conexion.open:
+            conexion.rollback()  # Hacer un rollback en caso de excepción antes de cerrar la conexión.
+            conexion.close()
 
 yelp_ER()
     
