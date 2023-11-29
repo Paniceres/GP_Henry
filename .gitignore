@@ -1,1 +1,12 @@
-Extras/
+# datasets
+datasets/extras/
+extras/
+.vscode/
+limites_estados/
+
+# virtual env
+.env/
+.venv/
+.env
+# Python
+__pycache__/
