@@ -277,7 +277,7 @@ def yelp_ER():
             conexion.rollback()  # Hacer un rollback en caso de excepción antes de cerrar la conexión.
             conexion.close()
 
-yelp_ER()
+#yelp_ER()
     
 ##################  MYSQL   ##################
     
@@ -310,7 +310,10 @@ def reviews_yelp_api(business_id):
     if response.status_code == 200:
         data = response.json()
         reviews_list = data.get('reviews', [])
-        return  pd.json_normalize(reviews_list)
+        df = pd.json_normalize(reviews_list)
+        print(f'carga realizada: {df.shape[0]} filas cargadas')
+        
+        return  df
 
     else:
         print(f'Error en la solicitud. Código de estado: {response.status_code}')
@@ -330,17 +333,24 @@ def extract_review_yelp():
     
     yelp = get_table('yelp') # Obtengo la tabla de restaurantes de la DB
     
-    business_ids_distinct_list = yelp['business_id'].unique().tolist() # Selecciono solo los valores unicos de business_id
+    business_ids_distinct_list = yelp['bussiness_id'].unique().tolist() # Selecciono solo los valores unicos de business_id
     reviews_business = pd.DataFrame()
     iter = 0
     for business_id in business_ids_distinct_list:
-        if iter <= 496:
+        if iter <= 5:
             iter += 1
             reviews = reviews_yelp_api(business_id)
-            reivews_business = pd.concat([reviews_business,reviews])
+            reviews['business_id'] = business_id
+            reviews_business = pd.concat([reviews,reviews_business])
+            
+            
+            
+            
         else :
+            
             return reviews_business
-    return reivews_business
+    
+    return reviews_business
 
 
 # Funcion que establece una ponderacion para el analisis de sentimiento
@@ -363,14 +373,14 @@ def puntajeNLP(x):
 def trasnform_reviews_yelp(reivews_yelp):
     """Esta fncion realiza trasnformaciones necesarias sobre las reviews_yelp.
 
-    Args:
+    Args: 
         reivews_yelp (pd.DataFrame):DataFarme de las reviews de yelp cargado desde API.
 
     Returns:
         reivews_yelp: DataFrame trasnformado de reviews_yelp.
     """
     sid = SentimentIntensityAnalyzer()
-    
+    print(f'C: {reivews_yelp.columns} columnas')
     analisis = reivews_yelp['text'].apply(lambda x: sid.polarity_scores(x)["compound"])
     valorEstrellas = reivews_yelp['rating'] / 5 
     analisis += valorEstrellas
@@ -389,8 +399,17 @@ def trasnform_reviews_yelp(reivews_yelp):
     'user.name':'name',
     'rating':'stars'
         },inplace=True)
+    
+    reivews_yelp['review_id'] = reivews_yelp['review_id'].astype(str)
+    reivews_yelp['user_id'] = reivews_yelp['user_id'].astype(str)
+    reivews_yelp['business_id'] = reivews_yelp['business_id'].astype('str')
+    reivews_yelp.loc[:,'stars'] = round(reivews_yelp['stars'],2)
+    reivews_yelp.loc[:,'sentiment'] = round(reivews_yelp['sentiment'],2)
+    reivews_yelp['date'] = pd.to_datetime(reivews_yelp['date']).dt.strftime('%Y-%m-%d %H:%M:%S')
+ 
 
-    columns= ['review_id','user_id','business_id','sentiment','date','name','stars']
+
+    columns= ['review_id','user_id','business_id','stars','sentiment','date','name',]
     reivews_yelp = reivews_yelp[columns]
     return reivews_yelp
 
@@ -408,10 +427,16 @@ def yelp_review_ER():
     """
     api_reviews = extract_review_yelp() # extraigo las reviews de yelp de la API.
     review_new_data = trasnform_reviews_yelp(api_reviews) # Hago las trasnformaciones sobre el dataframe.
-    reviews_yelp_origen = get_table('review_yelp') # Consulto la tabla de review_yelp de la base de datos mysql.
+    reviews_yelp_origen = get_table('reviews_yelp') # Consulto la tabla de review_yelp de la base de datos mysql.
     
     #Filtro solo las reviews donde su columna date sea mayor a la maxima existente en la base de datos.
-    review_new_data = review_new_data[((pd.to_datetime(reviews_yelp_origen['date']).max())<review_new_data['date']) & (~review_new_data['review_id'].isin(reviews_yelp_origen['review_id']))]
+    print(review_new_data.shape[0])
+    
+    """review_new_data = review_new_data[
+    (pd.to_datetime(reviews_yelp_origen['date']).max() < pd.to_datetime(review_new_data['date'])) &
+    (~review_new_data['review_id'].isin(reviews_yelp_origen['review_id']))
+    ]"""
+    print(review_new_data.shape[0])
     
     users = review_new_data.groupby('user_id').agg({
         'name':'first',
@@ -420,6 +445,24 @@ def yelp_review_ER():
         'stars':'mean'
         
     }).rename(columns={'date': 'creation','review_id':'review_count'})
+    
+    print("Datos a insertar:", review_new_data.drop(columns=['name']).columns)
+    try:
+        conexion= mysql_get_connection()
+        cursor = conexion.cursor()
+        consulta = "INSERT INTO reviews_yelp  VALUES(%s,%s,%s,%s,%s,%s)"
+        cursor.executemany(consulta,review_new_data.drop(columns=['name']).values.tolist() )
+        conexion.commit()
+        conexion.close()
+    except Exception as e:
+        print(f"Error al ejecutar la consulta SQL: {e}")
+        # Aquí puedes agregar código adicional para manejar la excepción según tus necesidades.
+        # Por ejemplo, podrías hacer un rollback si es necesario.
+    finally:
+        # Este bloque se ejecutará siempre, asegurando que la conexión se cierre incluso en caso de excepción.
+        if conexion and conexion.open:
+            conexion.rollback()  # Hacer un rollback en caso de excepción antes de cerrar la conexión.
+            conexion.close()
     
 
     # Falta ingestar las review de usuarios, luego volver a llamar a la tabla review_yelp, y sacar para cada usuarios las stars  
@@ -430,3 +473,6 @@ def yelp_review_ER():
     #user_yelp:Columns: [user_id, name, creation, review_count, useful, fans, stars]
     
 #reviews_API  = review_id', 'user_id','business_id','sentiment''date','name',stars
+
+
+yelp_review_ER()
