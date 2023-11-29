@@ -2,7 +2,6 @@
 datasets/extras/
 extras/
 .vscode/
-limites_estados/
 
 # virtual env
 .env/
