@@ -10,7 +10,7 @@ import pymysql as mysql
 nltk.download('vader_lexicon')
 
 ## Cargo las variables de entorno
-load_dotenv('../.env') # Cargo ela archivo donde esta la variable de entorno.
+load_dotenv('.env') # Cargo la archivo donde esta la variable de entorno.
 api_key_yelp =  os.getenv("API_KEY_YELP") # Cargo la variable de entorno
 mysql_key = os.getenv("KEY_MYSQL")
 ##################  MYSQL   ##################
@@ -23,10 +23,10 @@ def mysql_get_connection():
     """
     
     try:
-        return mysql.connect(host = 'servidorgrupo.cpfbmucjyznh.us-east-2.rds.amazonaws.com',
-                         user = 'admin',
-                         password = 'mysql_key',
-                         database='QUANTYLE_ANALITICS')
+        return mysql.connect(host = 'localhost',
+                         user = 'root',
+                         password = 'root',
+                         database='quantyle_analitics')
     except mysql.Error as e:
         print(f"Error al conectar a la base de datos: {e}")
         raise  # Re-levanta la excepción para que el código que llama pueda manejarla si es necesario
@@ -147,22 +147,31 @@ def transform_business(yelp_bussines):
     Returns:
         pd.DataFrame: DataFrame restaurantes.
     """
-    yelp_bussines['categories'] = yelp_bussines['categories'].apply(lambda x: [item['title'] for item in x] if isinstance(x, list) else [])
-    yelp_bussines['location.state'] = yelp_bussines['location.state'].appy(state_normalize)
+    if yelp_bussines is not None and 'categories' in yelp_bussines.columns:
+        yelp_bussines['categories'] = yelp_bussines['categories'].apply(lambda x: [item['title'] for item in x] if isinstance(x, list) else [])
+        yelp_bussines['location.state'] = yelp_bussines['location.state'].apply(state_normalize)
 
-    yelp_bussines.rename(columns={
-    'id':'business_id',
-    'name':'name',
-    'coordinates.latitude':'latitude',
-    'coordinates.longitude':'longitude',
-    'categories':'categories',
-    'rating':'stars',
-    'location.state':'state_id',
-    
-    },inplace=True)
-    columnas = ['business_id', 'name', 'latitude','longitude','categories','stars','state_id']
-    yelp_bussines = yelp_bussines[columnas]
-    return yelp_bussines
+        yelp_bussines.rename(columns={
+        'id':'business_id',
+        'name':'name',
+        'coordinates.latitude':'latitude',
+        'coordinates.longitude':'longitude',
+        'categories':'categories',
+        'rating':'stars',
+        'location.state':'state_id',
+        
+        },inplace=True)
+        columnas = ['business_id', 'name', 'latitude','longitude','categories','stars','state_id']
+        yelp_bussines = yelp_bussines[columnas]
+        
+        yelp_bussines['latitude'] = round(yelp_bussines['latitude'],8)
+        yelp_bussines['longitude'] = round(yelp_bussines['longitude'],8)
+        yelp_bussines['stars'] = round(yelp_bussines['stars'],2)
+        
+        
+        return yelp_bussines
+    else:
+        return 'No se cargaron nuevos datos.'
     
     
     
@@ -210,7 +219,8 @@ def yelp_ER():
     cursor = conexion.cursor() 
     
     consulta = "INSERT INTO yelp  VALUES(%s,%s,%s,%s,%s,%s)" 
-    cursor.executemany(consulta, yelp_new_data.drop(columns='categories').values.tolist()) # Inserto los nuevos locales, sin insertar las categorias
+    yelp_insert = yelp_new_data[['business_id','name','latitude','longitude','stars','state_id']].values.tolist()
+    cursor.executemany(consulta,yelp_insert ) # Inserto los nuevos locales, sin insertar las categorias
     
     conexion.commit()
     conexion.close()
@@ -218,15 +228,14 @@ def yelp_ER():
     categories_origen = get_table('categories') # Cargo la tabla de categorias de la base de datos.    
     
     categorias_new_data = get_categories(yelp_new_data) # Funcion que recibe el DF con las categorias como listas, y devuelve otro con bunisess_id y el nombre de cada categoria.
-    
-    
+    print(categorias_new_data.columns)
     #Agrego la categoria Restaurants a cada local
-    df = categorias_new_data.drop_duplicates(subset='business_id').drop(columns='categories')
+    df = categorias_new_data.drop_duplicates(subset='business_id')['business_id']
     df['categories'] = 'Restaurants'
     categorias_new_data = pd.concat([categorias_new_data,df])
     
-    categorias_new = categorias_new_data[~(categorias_new_data['categoria'].isin(categories_origen['name']))] # Selecciono las categorias que no estan en la DB
-    categories = categorias_new.drop_duplicates(subset='categoria')['categoria'].values.tolist() # Elimino las categorias duplicadas y las convierto en lista de listas.
+    categorias_new = categorias_new_data[~(categorias_new_data['categories'].isin(categories_origen['name']))] # Selecciono las categorias que no estan en la DB
+    categories = categorias_new.drop_duplicates(subset='categories')['categories'].tolist() # Elimino las categorias duplicadas y las convierto en lista de listas.
     
     conexion = mysql_get_connection() 
     cursor = conexion.cursor()
@@ -242,7 +251,7 @@ def yelp_ER():
     categories_acualizada = get_table('categories') # Cargo la tabla de categorias actualizada.
     
     #Hago un join entre la tabla business_id,categoria creada anteriormente con las categorias de la BD, y me quedo solo con business_id y categoria id
-    categorias_yelp_new =  pd.merge(categories_acualizada,categorias_new_data,left_on='name',right_on='categoria',how='inner')
+    categorias_yelp_new =  pd.merge(categories_acualizada,categorias_new_data,left_on='name',right_on='categories',how='inner')
     
     conexion = mysql_get_connection()
     
@@ -255,7 +264,7 @@ def yelp_ER():
     conexion.close()
 
 
-
+yelp_ER()
     
 ##################  MYSQL   ##################
     
