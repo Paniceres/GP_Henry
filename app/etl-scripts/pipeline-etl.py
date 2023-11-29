@@ -83,7 +83,7 @@ def business(state):
     params = {
         'location': state,
         'categories':','.join(['restaurant','Restaurant','restaurants','Restaurants']),
-        'limit':50
+        'limit':500
     }
 
     headers = {
@@ -216,14 +216,14 @@ def yelp_ER():
     
     extract_api = extract_businesses() # Extraigo los datos de la API referentes a los estados seleccionados y restaurantes
     yelp_new_data = transform_business(extract_api) # Realizo las trasnformaciones necesarias para que los datos esten limpios
-    yelp_origen = get_table('yelp') # Cargo de la base de datos la tabla de yelp en un dataframe
+    yelp_origen = get_table('business_yelp') # Cargo de la base de datos la tabla de yelp en un dataframe
     
-    yelp_new_data = yelp_new_data[~(yelp_new_data['business_id'].isin(yelp_origen['bussiness_id']))] #De los restaurantes extraidos tomo solo los que su id NO esta en la DB
+    yelp_new_data = yelp_new_data[~(yelp_new_data['business_id'].isin(yelp_origen['business_id']))] #De los restaurantes extraidos tomo solo los que su id NO esta en la DB
     
     conexion = mysql_get_connection() # Genero una conexion a mysql
     cursor = conexion.cursor() 
     
-    consulta = "INSERT INTO yelp  VALUES(%s,%s,%s,%s,%s,%s)" 
+    consulta = "INSERT INTO business_yelp  VALUES(%s,%s,%s,%s,%s,%s)" 
     yelp_insert = yelp_new_data[['business_id','name','latitude','longitude','stars','state_id']].copy()
     cursor.executemany(consulta,yelp_insert.values.tolist() ) # Inserto los nuevos locales, sin insertar las categorias
     
@@ -277,7 +277,7 @@ def yelp_ER():
             conexion.rollback()  # Hacer un rollback en caso de excepción antes de cerrar la conexión.
             conexion.close()
 
-#yelp_ER()
+
     
 ##################  MYSQL   ##################
     
@@ -298,7 +298,7 @@ def reviews_yelp_api(business_id):
     """
     
     
-    url =f'https://api.yelp.com/v3/businesses/{business_id}/reviews?limit=50&sort_by=yelp_sort"'
+    url =f'https://api.yelp.com/v3/businesses/{business_id}/reviews?limit=50&sort_by=newest'
 
     headers = {
         'Authorization': f'Bearer {api_key_yelp}',
@@ -331,12 +331,12 @@ def extract_review_yelp():
     """
     
     
-    yelp = get_table('yelp') # Obtengo la tabla de restaurantes de la DB
-    
-    business_ids_distinct_list = yelp['bussiness_id'].unique().tolist() # Selecciono solo los valores unicos de business_id
+    yelp = get_table('business_yelp ') # Obtengo la tabla de restaurantes de la DB
+    business_ids_distinct_list = yelp.dropna(subset='business_id')['business_id'].unique().tolist() # Selecciono solo los valores unicos de business_id
     reviews_business = pd.DataFrame()
     iter = 0
     for business_id in business_ids_distinct_list:
+        if business_id is None: continue
         if iter <= 5:
             iter += 1
             reviews = reviews_yelp_api(business_id)
@@ -427,16 +427,21 @@ def yelp_review_ER():
     """
     api_reviews = extract_review_yelp() # extraigo las reviews de yelp de la API.
     review_new_data = trasnform_reviews_yelp(api_reviews) # Hago las trasnformaciones sobre el dataframe.
-    reviews_yelp_origen = get_table('reviews_yelp') # Consulto la tabla de review_yelp de la base de datos mysql.
+    reviews_yelp_origen = get_table('reviews_yelp ') # Consulto la tabla de review_yelp de la base de datos mysql.
+    users_old = get_table('user_yelp ') # Consulto la tabla de users.
+    
     
     #Filtro solo las reviews donde su columna date sea mayor a la maxima existente en la base de datos.
     print(review_new_data.shape[0])
     
-    """review_new_data = review_new_data[
+    review_new_data = review_new_data[
     (pd.to_datetime(reviews_yelp_origen['date']).max() < pd.to_datetime(review_new_data['date'])) &
     (~review_new_data['review_id'].isin(reviews_yelp_origen['review_id']))
-    ]"""
-    print(review_new_data.shape[0])
+    ]
+    
+    
+    #### USERS ####  
+    
     
     users = review_new_data.groupby('user_id').agg({
         'name':'first',
@@ -444,7 +449,63 @@ def yelp_review_ER():
         'review_id':'count',
         'stars':'mean'
         
-    }).rename(columns={'date': 'creation','review_id':'review_count'})
+    }).reset_index().rename(columns={'date': 'creation','review_id':'review_count'})
+    
+    #### DATAFRAME CON LOS USUARIOS NUEVOS
+    new_users = users[~(users['user_id'].isin(users_old['user_id']))]
+    new_users['influence'] = 0
+    
+    
+     #### DATAFRAME CON LOS USUARIOS EXISTENTES
+    exist_user = users[(users['user_id'].isin(users_old['user_id']))] # Usuarios existentes
+    exist_user = pd.concat([exist_user, users[['user_id', 'name', 'creation', 'review_count', 'stars']]]) # Hago un merge de los usuarios de la BD y la llegada
+    # Para los nuevos usuarios encuentro la nueva review_count y stars
+    exist_user = exist_user.groupby('user_id').agg({
+        'name':'first',
+        'creation':'min',
+        'review_count':'count',
+        'stars':'mean'
+        
+    }).reset_index()
+    print('Usuario existente')
+    
+    if not exist_user.empty:
+        try:
+            conexion = mysql_get_connection()
+            cursor = conexion.cursor()
+            
+            consulta_new_user = (
+            'INSERT INTO user_yelp  VALUES(%s,%s,%s,%s,%s,%s)'
+                )
+
+            # Ejecutar la consulta con execumany.
+            cursor.executemany(consulta_new_user, new_users[['user_id', 'name','creation', 'review_count', 'influence','stars']].values.tolist())
+
+            # Consulta de actualización con placeholders.
+            consulta_old_user = (
+                "UPDATE user_yelp "
+                "SET name = %s, creation = %s, review_count = %s, stars = %s "
+                "WHERE user_id = %s"
+            )
+
+            # Ejecutar la consulta con execumany.
+            cursor.executemany(consulta_old_user, exist_user[['name', 'creation', 'review_count', 'stars', 'user_id']].values.tolist())
+
+            conexion.commit()
+        except Exception as e:
+            print(f"Error al ejecutar la consulta SQL: {e}")
+            # Maneja la excepción según tus necesidades.
+            # Puedes hacer un rollback si es necesario.
+        finally:
+            # Cierra la conexión en el bloque finally para asegurar que se cierre incluso en caso de excepción.
+            if conexion and conexion.open:
+                conexion.rollback()
+                conexion.close()
+            
+    print(review_new_data.shape[0])
+    
+    #### REVIEWS #####
+    
     
     print("Datos a insertar:", review_new_data.drop(columns=['name']).columns)
     try:
@@ -463,16 +524,9 @@ def yelp_review_ER():
         if conexion and conexion.open:
             conexion.rollback()  # Hacer un rollback en caso de excepción antes de cerrar la conexión.
             conexion.close()
-    
-
-    # Falta ingestar las review de usuarios, luego volver a llamar a la tabla review_yelp, y sacar para cada usuarios las stars  
-    # la cantida de reviews y la primer fecha como contribuidor.
-
-    #review_yelp :Columns: [review_id, user_id, bussiness_id, sentiment, date]
-
-    #user_yelp:Columns: [user_id, name, creation, review_count, useful, fans, stars]
-    
-#reviews_API  = review_id', 'user_id','business_id','sentiment''date','name',stars
+            
+            
 
 
+#yelp_ER()
 yelp_review_ER()
