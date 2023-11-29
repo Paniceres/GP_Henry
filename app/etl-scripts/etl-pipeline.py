@@ -1,128 +1,13 @@
 import pandas as pd
-import requests
-import os
 from dotenv import load_dotenv 
 from nltk.sentiment import SentimentIntensityAnalyzer
 import nltk
-import sys
 
-import pymysql as mysql
+
+from mysql_connection import * # Función para conectarme a la base de datos mysql
+from api_yelp import *  # Función para realizar consultas a la API
+
 nltk.download('vader_lexicon')
-
-## Cargo las variables de entorno
-load_dotenv('.env') # Cargo la archivo donde esta la variable de entorno.
-api_key_yelp =  os.getenv("API_KEY_YELP") # Cargo la variable de entorno
-mysql_key = os.getenv("KEY_MYSQL")
-##################  MYSQL   ##################
-def mysql_get_connection():
-    """
-    Esta funcion se conecta a la base de datos establecida en amazon, y coenca la base de datos QUANTYLE_ANALITICS
-
-    Returns:
-        conexion:Retorna un objeto conexion, para realizar peticiones a la base de datos.
-    """
-    
-    try:
-        return mysql.connect(host = 'localhost',
-                         user = 'root',
-                         password = 'root',
-                         database='quantyle_analitics')
-    except mysql.Error as e:
-        print(f"Error al conectar a la base de datos: {e}")
-        raise  # Re-levanta la excepción para que el código que llama pueda manejarla si es necesario
-    
-
-def get_table(table_name):
-    """
-    Esta funcion aplica la funcion mysql_get_connection, y devuelve una tabla de la base de datos en formato dataframe de pandas.
-    
-
-    Args:
-        table_name (string): Nombre de la tabla requerida en la base de datos.
-
-    Returns:
-        pd.DataFrame: Data Frame de la tabla table_name.
-    """
-    conexion = mysql_get_connection()
-    try:
-        # Iniciar conexión a MySQL
-        cursor = conexion.cursor()
-        consulta = f"SELECT * FROM {table_name}"
-        cursor.execute(consulta)
-        # Obtener los resultados de la consulta
-        resultados = cursor.fetchall()
-        # Obtener los nombres de las columnas
-        columnas = [columna[0] for columna in cursor.description]
-        # Crear un DataFrame de Pandas con los resultados y los nombres de las columnas
-        df = pd.DataFrame(resultados, columns=columnas)
-    except Exception as e:
-        print(f"Error: {e}")
-    finally:
-        # Cerrar la conexión a MySQL en cualquier caso
-        cursor.close()
-    return df
-
-##################  MYSQL   ##################
-
-    
-
-# Funcion que consulta la API de yelp para obtener los locales por estado.    
-def business(state):
-    """Esta funcion realiza una consulta a la API de yelp para obtener los restaurantes por  estado.
-
-    Args:
-        state (string): Codigo de estado (Texas=TX) del estado requerido. 
-
-    Returns:
-        pd.DataFrame: Data frame de la información de un restaurant en concreto.
-    """
-    
-    
-    url = f'https://api.yelp.com/v3/businesses/search'
-
-    params = {
-        'location': state,
-        'categories':','.join(['restaurant','Restaurant','restaurants','Restaurants']),
-        'limit':500
-    }
-
-    headers = {
-        'Authorization': f'Bearer {api_key_yelp}',
-        'accept': 'application/json'
-    }
-
-    response = requests.get(url, headers=headers,params=params)
-
-    if response.status_code == 200:
-        data = response.json()
-        # Convierte el JSON en un DataFrame de pandas
-        #df = pd.json_normalize(data)
-        businesses = pd.json_normalize(data['businesses'])
-        return businesses
-    else:
-        print(f'Error en la solicitud. Código de estado: {response.status_code}')
-        print(response.text)
-        
-        
-        
-# Funcion que carga desde la API hasta  50 datos de cada estado.        
-def extract_businesses():
-    
-    """ Esta funcion aplica la funcion business para 4 estados seleccionados.
-
-    Returns:
-        pd.DataFrame: Concatenacion de los restaurantes de los 4 estados.
-    """
-    
-    
-    url = f'https://api.yelp.com/v3/businesses/search'
-
-    yelp_bussines = pd.DataFrame()
-    for state in ['CA','FL','NJ','IL']:
-        businesses = business(state)
-        yelp_bussines = pd.concat([businesses,yelp_bussines])
-    return yelp_bussines
-
 
 def state_normalize(state):
     
@@ -220,7 +105,7 @@ def yelp_ER():
     
     yelp_new_data = yelp_new_data[~(yelp_new_data['business_id'].isin(yelp_origen['business_id']))] #De los restaurantes extraidos tomo solo los que su id NO esta en la DB
     
-    conexion = mysql_get_connection() # Genero una conexion a mysql
+    conexion = get_connection_mysql() # Genero una conexion a mysql
     cursor = conexion.cursor() 
     
     consulta = "INSERT INTO business_yelp  VALUES(%s,%s,%s,%s,%s,%s)" 
@@ -241,7 +126,7 @@ def yelp_ER():
     
     categorias_new = categorias_new_data[~(categorias_new_data['categories'].isin(categories_origen['name']))] # Selecciono las categorias que no estan en la DB
     categories = categorias_new.drop_duplicates(subset='categories')['categories'].copy() # Elimino las categorias duplicadas y las convierto en lista de listas.
-    conexion = mysql_get_connection() 
+    conexion = get_connection_mysql() 
     cursor = conexion.cursor()
     
     # Ingesto las nuevas categorias.
@@ -257,7 +142,7 @@ def yelp_ER():
     #Hago un join entre la tabla business_id,categoria creada anteriormente con las categorias de la BD, y me quedo solo con business_id y categoria id
     categorias_yelp_new =  pd.merge(categories_acualizada,categorias_new_data,left_on='name',right_on='categories',how='inner')
     
-    conexion = mysql_get_connection()
+    conexion = get_connection_mysql()
     
     # Como business id ya es unico simplemente agrego las filas a la tabla cateogires_yelp
     print(categorias_yelp_new)
@@ -288,69 +173,7 @@ def yelp_ER():
 #------------------------------------------------------------------------     
 
 
-# Funcion que apartir de la id de un local extrae las reviews
-def reviews_yelp_api(business_id):
-    
-    """ Esta funcion retorna para un business_id la información de reviews en un DataFrame.
 
-    Returns:
-        pd.DataFrame: Data Frame de reviews.
-    """
-    
-    
-    url =f'https://api.yelp.com/v3/businesses/{business_id}/reviews?limit=50&sort_by=newest'
-
-    headers = {
-        'Authorization': f'Bearer {api_key_yelp}',
-        'accept': 'application/json'
-    }
-
-    response = requests.get(url, headers=headers)
-
-    if response.status_code == 200:
-        data = response.json()
-        reviews_list = data.get('reviews', [])
-        df = pd.json_normalize(reviews_list)
-        print(f'carga realizada: {df.shape[0]} filas cargadas')
-        
-        return  df
-
-    else:
-        print(f'Error en la solicitud. Código de estado: {response.status_code}')
-        
-        
-# Funcion que a partir de los locales ya existentes en DW extrae las reseñas.
-def extract_review_yelp():
-    
-    """ Esta funcion aplica la funcion reviews_yelp_api  para todos los business que estan en la base de datos aplicando get_table(yelp),
-    ademas lo hace 496 para tener en cuenta solo las peticione restantes,
-    Falta ver como modificar el business_id de input.
-
-    Returns:
-        pd.DataFrame: DataFrame de las revies.
-    """
-    
-    
-    yelp = get_table('business_yelp ') # Obtengo la tabla de restaurantes de la DB
-    business_ids_distinct_list = yelp.dropna(subset='business_id')['business_id'].unique().tolist() # Selecciono solo los valores unicos de business_id
-    reviews_business = pd.DataFrame()
-    iter = 0
-    for business_id in business_ids_distinct_list:
-        if business_id is None: continue
-        if iter <= 5:
-            iter += 1
-            reviews = reviews_yelp_api(business_id)
-            reviews['business_id'] = business_id
-            reviews_business = pd.concat([reviews,reviews_business])
-            
-            
-            
-            
-        else :
-            
-            return reviews_business
-    
-    return reviews_business
 
 
 # Funcion que establece una ponderacion para el analisis de sentimiento
@@ -425,7 +248,7 @@ def yelp_review_ER():
             * mysql_get_connection
     
     """
-    api_reviews = extract_review_yelp() # extraigo las reviews de yelp de la API.
+    api_reviews = get_reviewsYelp_API() # extraigo las reviews de yelp de la API.
     review_new_data = trasnform_reviews_yelp(api_reviews) # Hago las trasnformaciones sobre el dataframe.
     reviews_yelp_origen = get_table('reviews_yelp ') # Consulto la tabla de review_yelp de la base de datos mysql.
     users_old = get_table('user_yelp ') # Consulto la tabla de users.
@@ -471,7 +294,7 @@ def yelp_review_ER():
     
     if not exist_user.empty:
         try:
-            conexion = mysql_get_connection()
+            conexion = get_connection_mysql()
             cursor = conexion.cursor()
             
             consulta_new_user = (
@@ -509,7 +332,7 @@ def yelp_review_ER():
     
     print("Datos a insertar:", review_new_data.drop(columns=['name']).columns)
     try:
-        conexion= mysql_get_connection()
+        conexion= get_connection_mysql()
         cursor = conexion.cursor()
         consulta = "INSERT INTO reviews_yelp  VALUES(%s,%s,%s,%s,%s,%s)"
         cursor.executemany(consulta,review_new_data.drop(columns=['name']).values.tolist() )
