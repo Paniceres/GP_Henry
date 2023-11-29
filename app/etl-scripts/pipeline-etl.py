@@ -230,7 +230,9 @@ def yelp_ER():
     categorias_new_data = get_categories(yelp_new_data) # Funcion que recibe el DF con las categorias como listas, y devuelve otro con bunisess_id y el nombre de cada categoria.
     print(categorias_new_data.columns)
     #Agrego la categoria Restaurants a cada local
-    df = categorias_new_data.drop_duplicates(subset='business_id')['business_id']
+    df = categorias_new_data.drop_duplicates(subset='business_id')
+    print(df.columns)
+    df = df['business_id']
     df['categories'] = 'Restaurants'
     categorias_new_data = pd.concat([categorias_new_data,df])
     
