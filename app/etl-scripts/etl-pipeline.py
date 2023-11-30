@@ -83,9 +83,11 @@ def get_categories(df):
 
     # Crear un nuevo DataFrame para la tabla de categorías
     categorias_new_data = pd.DataFrame(categories_data)
+    # Normalizo a minusculas las categorias
+    categorias_new_data['categories'] = categorias_new_data['categories'].apply(lambda x: x.lower()) 
     return categorias_new_data
     
-##################  MYSQL   ##################
+
 def yelp_ER():
     
     """
@@ -121,9 +123,15 @@ def yelp_ER():
         categorias_new_data = get_categories(yelp_new_data.copy())
         print(categorias_new_data.shape[0])# Funcion que recibe el DF con las categorias como listas, y devuelve otro con bunisess_id y el nombre de cada categoria.
         #Agrego la categoria Restaurants a cada local
-        df = categorias_new_data.drop_duplicates(subset='business_id').copy()
-        df['categories'] = 'Restaurants'
-        categorias_new_data = pd.concat([categorias_new_data,df])
+        
+        df_restaurant = categorias_new_data.drop_duplicates(subset='business_id').copy()
+        df_restaurants = categorias_new_data.drop_duplicates(subset='business_id').copy()
+        
+        df_restaurant['categories'] = 'restaurants'
+        df_restaurants['categories'] = 'restaurants'
+        categorias_new_data = pd.concat([categorias_new_data,df_restaurant])
+        categorias_new_data = pd.concat([categorias_new_data,df_restaurants])
+        
         
         categorias_new = categorias_new_data[~(categorias_new_data['categories'].isin(categories_origen['name']))] # Selecciono las categorias que no estan en la DB
         categories = categorias_new.drop_duplicates(subset='categories')['categories'].copy() # Elimino las categorias duplicadas y las convierto en lista de listas.
@@ -166,8 +174,7 @@ def yelp_ER():
         return 'No habian restaurantes para ingestar'
 
 
-    
-##################  MYSQL   ##################
+
     
 
     
