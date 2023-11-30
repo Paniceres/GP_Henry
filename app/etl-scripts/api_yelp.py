@@ -26,7 +26,7 @@ def get_business_API(state):
     params = {
         'location': state,
         'categories':','.join(['restaurant','Restaurant','restaurants','Restaurants']),
-        'limit':500
+        'limit':50
     }
 
     headers = {
@@ -113,7 +113,8 @@ def get_reviewsYelp_API():
     
     
     yelp = get_table('business_yelp') # Obtengo la tabla de restaurantes de la DB
-    business_ids_distinct_list = random.shuffle(yelp.dropna(subset='business_id')['business_id'].unique().tolist())# Selecciono solo los valores unicos de business_id
+    business_ids_distinct_list = yelp.dropna(subset='business_id')['business_id'].unique().tolist()# Selecciono solo los valores unicos de business_id
+    random.shuffle(business_ids_distinct_list)
     reviews_business = pd.DataFrame()
     iter = 0
     for business_id in business_ids_distinct_list:

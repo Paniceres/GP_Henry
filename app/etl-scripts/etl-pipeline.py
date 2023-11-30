@@ -104,63 +104,66 @@ def yelp_ER():
     yelp_origen = get_table('business_yelp') # Cargo de la base de datos la tabla de yelp en un dataframe
     
     yelp_new_data = yelp_new_data[~(yelp_new_data['business_id'].isin(yelp_origen['business_id']))] #De los restaurantes extraidos tomo solo los que su id NO esta en la DB
-    
-    conexion = get_connection_mysql() # Genero una conexion a mysql
-    cursor = conexion.cursor() 
-    
-    consulta = "INSERT INTO business_yelp  VALUES(%s,%s,%s,%s,%s,%s)" 
-    yelp_insert = yelp_new_data[['business_id','name','latitude','longitude','stars','state_id']].copy()
-    cursor.executemany(consulta,yelp_insert.values.tolist() ) # Inserto los nuevos locales, sin insertar las categorias
-    
-    conexion.commit()
-    conexion.close()
-    
-    categories_origen = get_table('categories') # Cargo la tabla de categorias de la base de datos.    
-    
-    categorias_new_data = get_categories(yelp_new_data.copy())
-    print(categorias_new_data.shape[0])# Funcion que recibe el DF con las categorias como listas, y devuelve otro con bunisess_id y el nombre de cada categoria.
-    #Agrego la categoria Restaurants a cada local
-    df = categorias_new_data.drop_duplicates(subset='business_id').copy()
-    df['categories'] = 'Restaurants'
-    categorias_new_data = pd.concat([categorias_new_data,df])
-    
-    categorias_new = categorias_new_data[~(categorias_new_data['categories'].isin(categories_origen['name']))] # Selecciono las categorias que no estan en la DB
-    categories = categorias_new.drop_duplicates(subset='categories')['categories'].copy() # Elimino las categorias duplicadas y las convierto en lista de listas.
-    conexion = get_connection_mysql() 
-    cursor = conexion.cursor()
-    
-    # Ingesto las nuevas categorias.
-    consulta = "INSERT INTO categories  VALUES(NULL,%s)"
-    cursor.executemany(consulta, categories.values.tolist())
-    
-    conexion.commit()
-    conexion.close()
-    
-    
-    categories_acualizada = get_table('categories') # Cargo la tabla de categorias actualizada.
-    
-    #Hago un join entre la tabla business_id,categoria creada anteriormente con las categorias de la BD, y me quedo solo con business_id y categoria id
-    categorias_yelp_new =  pd.merge(categories_acualizada,categorias_new_data,left_on='name',right_on='categories',how='inner')
-    
-    conexion = get_connection_mysql()
-    
-    # Como business id ya es unico simplemente agrego las filas a la tabla cateogires_yelp
-    print(categorias_yelp_new)
-    try:
-        cursor = conexion.cursor()
-        consulta = "INSERT INTO categories_yelp  VALUES(%s,%s)"
-        cursor.executemany(consulta, categorias_yelp_new[['business_id','categories_id']].values.tolist())
+    print(f'La cantidad de restaurantes a ingestar es {yelp_new_data.shape[0]}')
+    if yelp_new_data.shape[0] != 0:
+        conexion = get_connection_mysql() # Genero una conexion a mysql
+        cursor = conexion.cursor() 
+        
+        consulta = "INSERT INTO business_yelp  VALUES(%s,%s,%s,%s,%s,%s)" 
+        yelp_insert = yelp_new_data[['business_id','name','latitude','longitude','stars','state_id']].copy()
+        cursor.executemany(consulta,yelp_insert.values.tolist() ) # Inserto los nuevos locales, sin insertar las categorias
+        
         conexion.commit()
         conexion.close()
-    except Exception as e:
-        print(f"Error al ejecutar la consulta SQL: {e}")
-        # Aquí puedes agregar código adicional para manejar la excepción según tus necesidades.
-        # Por ejemplo, podrías hacer un rollback si es necesario.
-    finally:
-        # Este bloque se ejecutará siempre, asegurando que la conexión se cierre incluso en caso de excepción.
-        if conexion and conexion.open:
-            conexion.rollback()  # Hacer un rollback en caso de excepción antes de cerrar la conexión.
+        
+        categories_origen = get_table('categories') # Cargo la tabla de categorias de la base de datos.    
+        
+        categorias_new_data = get_categories(yelp_new_data.copy())
+        print(categorias_new_data.shape[0])# Funcion que recibe el DF con las categorias como listas, y devuelve otro con bunisess_id y el nombre de cada categoria.
+        #Agrego la categoria Restaurants a cada local
+        df = categorias_new_data.drop_duplicates(subset='business_id').copy()
+        df['categories'] = 'Restaurants'
+        categorias_new_data = pd.concat([categorias_new_data,df])
+        
+        categorias_new = categorias_new_data[~(categorias_new_data['categories'].isin(categories_origen['name']))] # Selecciono las categorias que no estan en la DB
+        categories = categorias_new.drop_duplicates(subset='categories')['categories'].copy() # Elimino las categorias duplicadas y las convierto en lista de listas.
+        conexion = get_connection_mysql() 
+        cursor = conexion.cursor()
+        
+        # Ingesto las nuevas categorias.
+        consulta = "INSERT INTO categories  VALUES(NULL,%s)"
+        cursor.executemany(consulta, categories.values.tolist())
+        
+        conexion.commit()
+        conexion.close()
+        
+        
+        categories_acualizada = get_table('categories') # Cargo la tabla de categorias actualizada.
+        
+        #Hago un join entre la tabla business_id,categoria creada anteriormente con las categorias de la BD, y me quedo solo con business_id y categoria id
+        categorias_yelp_new =  pd.merge(categories_acualizada,categorias_new_data,left_on='name',right_on='categories',how='inner')
+        
+        conexion = get_connection_mysql()
+        
+        # Como business id ya es unico simplemente agrego las filas a la tabla cateogires_yelp
+        print(categorias_yelp_new)
+        try:
+            cursor = conexion.cursor()
+            consulta = "INSERT INTO categories_yelp  VALUES(%s,%s)"
+            cursor.executemany(consulta, categorias_yelp_new[['business_id','categories_id']].values.tolist())
+            conexion.commit()
             conexion.close()
+        except Exception as e:
+            print(f"Error al ejecutar la consulta SQL: {e}")
+            # Aquí puedes agregar código adicional para manejar la excepción según tus necesidades.
+            # Por ejemplo, podrías hacer un rollback si es necesario.
+        finally:
+            # Este bloque se ejecutará siempre, asegurando que la conexión se cierre incluso en caso de excepción.
+            if conexion and conexion.open:
+                conexion.rollback()  # Hacer un rollback en caso de excepción antes de cerrar la conexión.
+                conexion.close()
+    else:
+        return 'No habian restaurantes para ingestar'
 
 
     
@@ -351,5 +354,5 @@ def yelp_review_ER():
             
 
 
-#yelp_ER()
+yelp_ER()
 yelp_review_ER()
