@@ -91,6 +91,16 @@ def upload_all_files(bucket_name=bucket_name, local_folder='', s3_folder=''):
         s3_path = f"{s3_folder}{filename}"
 
         upload_file(bucket_name, local_path, s3_path)
+        
+def create_s3_folder(bucket_name=bucket_name, folder_name=''):
+    """
+    Crea una carpeta en un bucket de S3.
+
+    :param bucket_name: Nombre del bucket en S3.
+    :param folder_name: Nombre de la carpeta a crear.
+    """
+    s3_client = boto3.client('s3')
+    s3_client.put_object(Bucket=bucket_name, Key=(folder_name + '/'))
 
 if __name__ == '__main__':
     # ... (código existente)
