@@ -19,13 +19,13 @@ def state_normalize(state):
         int: Id del estado.
     """
     if state == 'CA':
-        return 1
-    elif state == 'FL':
-        return 0
-    elif state == 'NJ':
-        return 3
-    elif state == 'IL':
         return 2
+    elif state == 'FL':
+        return 1
+    elif state == 'NJ':
+        return 4
+    elif state == 'IL':
+        return 3
 
 # Funcion realiza el ETL y deja los datos de locales en su formato listo para subirlo.
 def transform_business(yelp_bussines):
@@ -119,7 +119,7 @@ def yelp_ER():
         conexion.close()
         
         categories_origen = get_table('categories') # Cargo la tabla de categorias de la base de datos.    
-        
+        max_id = categories_origen['categories_id']
         categorias_new_data = get_categories(yelp_new_data.copy())
         print(categorias_new_data.shape[0])# Funcion que recibe el DF con las categorias como listas, y devuelve otro con bunisess_id y el nombre de cada categoria.
         #Agrego la categoria Restaurants a cada local
@@ -134,12 +134,13 @@ def yelp_ER():
         
         
         categorias_new = categorias_new_data[~(categorias_new_data['categories'].isin(categories_origen['name']))] # Selecciono las categorias que no estan en la DB
+        categorias_new['categories_id'] = range(max_id + 1,max_id + 1 +categorias_new.shape[0] )
         categories = categorias_new.drop_duplicates(subset='categories')['categories'].copy() # Elimino las categorias duplicadas y las convierto en lista de listas.
         conexion = get_connection_mysql() 
         cursor = conexion.cursor()
         
         # Ingesto las nuevas categorias.
-        consulta = "INSERT INTO categories  VALUES(NULL,%s)"
+        consulta = "INSERT INTO categories  VALUES(%s,%s)"
         cursor.executemany(consulta, categories.values.tolist())
         
         conexion.commit()
@@ -300,7 +301,6 @@ def yelp_review_ER():
         'stars':'mean'
         
     }).reset_index()
-    print('Usuario existente')
     
     if not exist_user.empty:
         try:
@@ -313,7 +313,7 @@ def yelp_review_ER():
 
             # Ejecutar la consulta con execumany.
             cursor.executemany(consulta_new_user, new_users[['user_id', 'name','creation', 'review_count', 'influence','stars']].values.tolist())
-
+            print(f'{new_users.shape[0]} usuarios nuevos cargados.')
             # Consulta de actualización con placeholders.
             consulta_old_user = (
                 "UPDATE user_yelp "
@@ -323,7 +323,7 @@ def yelp_review_ER():
 
             # Ejecutar la consulta con execumany.
             cursor.executemany(consulta_old_user, exist_user[['name', 'creation', 'review_count', 'stars', 'user_id']].values.tolist())
-
+            print(f'{exist_user.shape[0]} usuarios actualizados.')
             conexion.commit()
         except Exception as e:
             print(f"Error al ejecutar la consulta SQL: {e}")

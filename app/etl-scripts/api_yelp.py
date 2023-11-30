@@ -92,7 +92,7 @@ def reviews_yelp_API(business_id):
         data = response.json()
         reviews_list = data.get('reviews', [])
         df = pd.json_normalize(reviews_list)
-        print(f'carga realizada: {df.shape[0]} filas cargadas')
+       
         
         return  df
 
@@ -119,7 +119,7 @@ def get_reviewsYelp_API():
     iter = 0
     for business_id in business_ids_distinct_list:
         if business_id is None: continue
-        if iter <= 15:
+        if iter <= 400:
             iter += 1
             reviews = reviews_yelp_API(business_id)
             reviews['business_id'] = business_id
@@ -129,7 +129,6 @@ def get_reviewsYelp_API():
             
             
         else :
-            
             return reviews_business
     
     return reviews_business

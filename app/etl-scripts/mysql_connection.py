@@ -16,10 +16,11 @@ def get_connection_mysql():
     """
     
     try:
-        return mysql.connect(host = 'localhost',
-                         user = 'root',
-                         password = 'root',
-                         database='quantyle_analitics')
+        return mysql.connect(host = 'servidorgrupo.cpfbmucjyznh.us-east-2.rds.amazonaws.com',
+                         user = 'admin',
+                         password = mysql_key,
+                         port=3306,
+                         database='quantyle')
     except mysql.Error as e:
         print(f"Error al conectar a la base de datos: {e}")
         raise  # Re-levanta la excepción para que el código que llama pueda manejarla si es necesario
