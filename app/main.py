@@ -30,7 +30,6 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-
 @st.cache_data
 def load_lottiefile(filepath: str):
     with open(filepath,"r") as f:
@@ -48,23 +47,20 @@ def pull_clean():
 with st.sidebar:
     selected = option_menu(
         'Quantyle analytics',
-        ["Introduccion", 'Comercial', '¿Dónde comer?', 'Nuestro aval', 'Sobre nosotros'],
+        ["Introducción", 'Comercial', '¿Dónde comer?', 'Nuestro aval', 'Sobre nosotros'],
         icons=['play-btn', 'search', 'search', 'info-circle'],
         menu_icon='intersect',
         default_index=0
     )
 
 
-    # Mostrar la imagen GIF en el sidebar
-    url_imagen_gif = "location-maps.gif"
-    st.sidebar.image(url_imagen_gif)
 
 #Introduccion
-if selected=="Introduccion":
+if selected=="Introducción":
     #Header
     st.markdown("<p class='big-font'>Quantyle Analitycs</p>", unsafe_allow_html=True)
     
-    st.title('Bienvenido a *La mejor empresa de analiticas de Estados Unidos*')
+    st.title('Bienvenido a Quantyle Analytics')
 
     st.divider()
 
@@ -84,13 +80,13 @@ En Quantyle Analytics, estamos comprometidos con la calidad de nuestros análisi
                 """
                 )
         with col2:
-            st.image('data-analysis.gif', use_column_width=True)
+            st.image(r'../src/data-analysis.gif', use_column_width=True)
     
     st.divider()
 
     #Tutorial Video
     st.header('¿Como funciona?')
-    video_file = open('Similo_Tutorial3_compressed.mp4', 'rb')
+    video_file = open('../src/Similo_Tutorial3_compressed.mp4', 'rb')
     video_bytes = video_file.read()
     st.video(video_bytes)
     
