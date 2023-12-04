@@ -12,7 +12,9 @@ import requests
 from streamlit_lottie import st_lottie
 import pydeck as pdk
 import snowflake.connector
-
+import os
+# Obtener la ruta del directorio del script actual
+route = os.path.abspath()
 #Layout
 st.set_page_config(
     page_title="Quantyle analitycs",
@@ -39,7 +41,7 @@ def load_lottiefile(filepath: str):
 def pull_clean():
     master_zip=pd.read_csv('MASTER_ZIP.csv',dtype={'ZCTA5': str})
     master_city=pd.read_csv('MASTER_CITY.csv',dtype={'ZCTA5': str})
-    state = pd.read_parquet(r'../datasets\processed\bd\1_states.parquet.gz')
+    state = pd.read_parquet(r'../datasets/processed/bd/1_states.parquet.gz')
     return master_zip, master_city, state
 
 
@@ -58,7 +60,7 @@ with st.sidebar:
     # Mostrar la imagen GIF en el sidebar
     url_imagen_gif = r"../src/location-maps.gif"
     st.sidebar.image(url_imagen_gif)
-
+    st.sidebar.image(url_imagen_gif, use_column_width=True)
 #Introduccion
 if selected=="Introducción":
     #Header
