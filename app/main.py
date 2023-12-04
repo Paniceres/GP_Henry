@@ -44,7 +44,7 @@ def pull_clean():
 
 
 
-# Options Menu en el sidebar
+# ------------------------------------ MENU ---------------------------------------
 with st.sidebar:
     selected = option_menu(
         'Quantyle analytics',
@@ -56,7 +56,7 @@ with st.sidebar:
 
 
     # Mostrar la imagen GIF en el sidebar
-    url_imagen_gif = "location-maps.gif"
+    url_imagen_gif = r"../src/location-maps.gif"
     st.sidebar.image(url_imagen_gif)
 
 #Introduccion
@@ -84,17 +84,17 @@ En Quantyle Analytics, estamos comprometidos con la calidad de nuestros análisi
                 """
                 )
         with col2:
-            st.image('data-analysis.gif', use_column_width=True)
+            st.image(r'../src/data-analysis.gif', use_column_width=True)
     
     st.divider()
 
     #Tutorial Video
     st.header('¿Como funciona?')
-    video_file = open('Similo_Tutorial3_compressed.mp4', 'rb')
+    video_file = open(r"../src/Similo_Tutorial3_compressed.mp4", 'rb')
     video_bytes = video_file.read()
     st.video(video_bytes)
     
-#Search Page
+# ------------------------------------ Comercial ---------------------------------------
 if selected=="Comercial":
 
     st.subheader('Select Location')
@@ -757,7 +757,7 @@ if selected=="Comercial":
                 col2.metric('Pct within 1 mile to Park','{:.1%}'.format(compare_record['PCT_TOPARK_ONEMILE'][0].round(2)/100),delta='{:.1%}'.format(dif_record['PCT_TOPARK_ONEMILE'][0]/100))
                                  
 
-#About Page
+# ------------------------------------ Donde comer ---------------------------------------
 if selected=='About':
     st.title('Data')
     #st.subheader('All data for this project was publicly sourced from:')
@@ -809,3 +809,110 @@ if selected=='About':
         col1.write('**Thanks for stopping by!**')
         col2.image('kevin8.png')
 
+# ------------------------------------ Nuestro aval ---------------------------------------
+
+if selected=='About':
+    st.title('Data')
+    #st.subheader('All data for this project was publicly sourced from:')
+    col1,col2,col3=st.columns(3)
+    col1.subheader('Source')
+    col2.subheader('Description')
+    col3.subheader('Link')
+    with st.container():
+        col1,col2,col3=st.columns(3)
+        #col1.image('census_graphic.png',width=150)
+        col1.write(':blue[U.S. Census Bureau]')
+        col2.write('Demographic, housing, industry at zip level')
+        #col2.write('American Community Survey, 5-Year Profiles, 2021, datasets DP02 - DP05')
+        col3.write('https://data.census.gov/')
+    
+    with st.container():
+        col1,col2,col3=st.columns(3)
+        #col1.image('cdc.png',width=150)
+        col1.write(':blue[Centers for Disease Control and Prevention]')
+        col2.write('Environmental factors at county level')
+        col3.write('https://data.cdc.gov/')
+    
+    with st.container():
+        col1,col2,col3=st.columns(3)
+        #col1.image('hud.png',width=150)\
+        col1.write(':blue[U.S. Dept Housing and Urban Development]')
+        col2.write('Mapping zip to county')
+        col3.write('https://www.huduser.gov/portal/datasets/')
+
+    with st.container():
+        col1,col2,col3=st.columns(3)
+        #col1.image('ods.png',width=150)
+        col1.write(':blue[OpenDataSoft]')
+        col2.write('Mapping zip to USPS city')
+        col3.write('https://data.opendatasoft.com/pages/home/')
+    
+    st.divider()
+    
+    st.title('Creator')
+    with st.container():
+        col1,col2=st.columns(2)
+        col1.write('')
+        col1.write('')
+        col1.write('')
+        col1.write('**Name:**    Kevin Soderholm')
+        col1.write('**Education:**    M.S. Applied Statistics')
+        col1.write('**Experience:**    8 YOE in Data Science across Banking, Fintech, and Retail')
+        col1.write('**Contact:**    kevin.soderholm@gmail.com or [linkedin](https://www.linkedin.com/in/kevin-soderholm-67788829/)')
+        col1.write('**Thanks for stopping by!**')
+        col2.image('kevin8.png')
+
+
+# ------------------------------------ Sobre nosotros ---------------------------------------
+
+
+if selected=='About':
+    st.title('Data')
+    #st.subheader('All data for this project was publicly sourced from:')
+    col1,col2,col3=st.columns(3)
+    col1.subheader('Source')
+    col2.subheader('Description')
+    col3.subheader('Link')
+    with st.container():
+        col1,col2,col3=st.columns(3)
+        #col1.image('census_graphic.png',width=150)
+        col1.write(':blue[U.S. Census Bureau]')
+        col2.write('Demographic, housing, industry at zip level')
+        #col2.write('American Community Survey, 5-Year Profiles, 2021, datasets DP02 - DP05')
+        col3.write('https://data.census.gov/')
+    
+    with st.container():
+        col1,col2,col3=st.columns(3)
+        #col1.image('cdc.png',width=150)
+        col1.write(':blue[Centers for Disease Control and Prevention]')
+        col2.write('Environmental factors at county level')
+        col3.write('https://data.cdc.gov/')
+    
+    with st.container():
+        col1,col2,col3=st.columns(3)
+        #col1.image('hud.png',width=150)\
+        col1.write(':blue[U.S. Dept Housing and Urban Development]')
+        col2.write('Mapping zip to county')
+        col3.write('https://www.huduser.gov/portal/datasets/')
+
+    with st.container():
+        col1,col2,col3=st.columns(3)
+        #col1.image('ods.png',width=150)
+        col1.write(':blue[OpenDataSoft]')
+        col2.write('Mapping zip to USPS city')
+        col3.write('https://data.opendatasoft.com/pages/home/')
+    
+    st.divider()
+    
+    st.title('Creator')
+    with st.container():
+        col1,col2=st.columns(2)
+        col1.write('')
+        col1.write('')
+        col1.write('')
+        col1.write('**Name:**    Kevin Soderholm')
+        col1.write('**Education:**    M.S. Applied Statistics')
+        col1.write('**Experience:**    8 YOE in Data Science across Banking, Fintech, and Retail')
+        col1.write('**Contact:**    kevin.soderholm@gmail.com or [linkedin](https://www.linkedin.com/in/kevin-soderholm-67788829/)')
+        col1.write('**Thanks for stopping by!**')
+        col2.image('kevin8.png')
