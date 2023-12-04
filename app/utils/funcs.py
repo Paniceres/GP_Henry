@@ -1,20 +1,49 @@
 import pandas as pd
 import numpy as np
+import streamlit as st
 import seaborn as sns
 import matplotlib.pyplot as plt
-import gzip
-import io
-import os
+
+
 import matplotlib.pyplot as plt
 import seaborn as sns
+import os.path
+# Obtener la ruta del directorio del script actual
+route = os.path.dirname(__file__)
 
 
-df_bg = pd.read_parquet(r'../datasets/processed/bd/5_business_google.parquet.gz')
-df_by = pd.read_parquet(r'../datasets/processed/bd/6_business_yelp.parquet.gz')
-df_ug = pd.read_parquet(r'../datasets/processed/bd/4_user_google.parquet.gz')
-df_uy = pd.read_parquet(r'../datasets/processed/bd/3_user_yelp.parquet.gz')
-df_rg = pd.read_parquet(r'../datasets/processed/bd/9_reviews_google.parquet.gz')
-df_ry = pd.read_parquet(r'../datasets/processed/bd/10_reviews_yelp.parquet.gz')
+
+
+@st.cache_data
+def pull_clean():
+    # Construir la ruta relativa al dataset
+    db_route = os.path.join(route, '..', '..', 'datasets', 'processed', 'bd')
+    # db_route = '../datasets/processed/bd/'
+    # Lista de nombres de archivos a leer
+    file_names = [
+        '1_states.parquet.gz',
+        # '3_user_yelp.parquet.gz',
+        '2_categories.parquet.gz',
+        '4_user_google.parquet.gz',
+        '5_business_google.parquet.gz',
+        '6_business_yelp.parquet.gz',
+        # '7_categories_google.parquet.gz',
+        # '8_categories_yelp.parquet.gz',
+        '9_reviews_google.parquet.gz',
+        # '10_reviews_yelp.parquet.gz',
+    ]
+
+    # Leer archivos Parquet y almacenar en un diccionario
+    data_frames = {}
+    for file_name in file_names:
+        full_path = os.path.abspath(os.path.join(db_route, file_name))
+        df_name = os.path.splitext(os.path.basename(file_name))[0]  # Nombre del DataFrame sin extensión
+        data_frames[df_name] = pd.read_parquet(full_path)
+
+    return data_frames
+
+
+
 
 # KPI 1
 def get_restaurants_per_capita(df_bg, target_state, year):
@@ -57,7 +86,7 @@ def get_restaurants_per_capita(df_bg, target_state, year):
     
     return df_businesses_per_capita
 
-
+# KPI 2
 
 
 

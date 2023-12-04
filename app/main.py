@@ -28,38 +28,6 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-@st.cache_data
-def load_lottiefile(filepath: str):
-    with open(filepath,"r") as f:
-        return json.load(f)
-
-@st.cache_data
-def pull_clean():
-    # Construir la ruta relativa al dataset
-    db_route = os.path.join(route, '..', 'datasets', 'processed', 'bd')
-
-    # Lista de nombres de archivos a leer
-    file_names = [
-        '1_states.parquet.gz',
-        # '3_user_yelp.parquet.gz',
-        '2_categories.parquet.gz',
-        '4_user_google.parquet.gz',
-        '5_business_google.parquet.gz',
-        '6_business_yelp.parquet.gz',
-        # '7_categories_google.parquet.gz',
-        # '8_categories_yelp.parquet.gz',
-        '9_reviews_google.parquet.gz',
-        # '10_reviews_yelp.parquet.gz',
-    ]
-
-    # Leer archivos Parquet y almacenar en un diccionario
-    data_frames = {}
-    for file_name in file_names:
-        full_path = os.path.abspath(os.path.join(db_route, file_name))
-        df_name = os.path.splitext(os.path.basename(file_name))[0]  # Nombre del DataFrame sin extensión
-        data_frames[df_name] = pd.read_parquet(full_path)
-
-    return data_frames
 
 # ------------------------------------ MENU ---------------------------------------
 with st.sidebar:
@@ -119,16 +87,15 @@ if selected=="Introducción":
 
 
 if selected=="Comercial":
-    st.subheader('Seleccione su ubicacion')
+    st.subheader('Seleccione su Criterio:')
 
     data_frames=pull_clean() 
     state = data_frames.get('1_states.parquet.gz')
-    
     df_bg = data_frames.get('5_business_google.parquet.gz')
-    df_by = data_frames.get('6_business_yelp.parquet.gz')
-    df_ug = data_frames.get('4_user_google.parquet.gz')
-    df_uy = data_frames.get('3_user_yelp.parquet.gz')
-    df_rg = data_frames.get('9_reviews_google.parquet.gz')
+    # df_by = data_frames.get('6_business_yelp.parquet.gz')
+    # df_ug = data_frames.get('4_user_google.parquet.gz')
+    # df_uy = data_frames.get('3_user_yelp.parquet.gz')
+    # df_rg = data_frames.get('9_reviews_google.parquet.gz')
     
     
     loc_select=st.radio('Type',['Estado', 'Restaurante'],horizontal=True, label_visibility="collapsed")
