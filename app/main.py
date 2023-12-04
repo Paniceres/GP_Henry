@@ -12,9 +12,10 @@ import requests
 from streamlit_lottie import st_lottie
 import pydeck as pdk
 import snowflake.connector
-import os
+import os.path
 # Obtener la ruta del directorio del script actual
-route = os.path.abspath()
+route = os.path.dirname(__file__)
+
 #Layout
 st.set_page_config(
     page_title="Quantyle analitycs",
@@ -39,12 +40,31 @@ def load_lottiefile(filepath: str):
 
 @st.cache_data
 def pull_clean():
-    master_zip=pd.read_csv('MASTER_ZIP.csv',dtype={'ZCTA5': str})
-    master_city=pd.read_csv('MASTER_CITY.csv',dtype={'ZCTA5': str})
-    state = pd.read_parquet(r'../datasets/processed/bd/1_states.parquet.gz')
-    return master_zip, master_city, state
+    # Construir la ruta relativa al dataset
+    db_route = os.path.join(route, '..', 'datasets', 'processed', 'bd')
 
+    # Lista de nombres de archivos a leer
+    file_names = [
+        '1_states.parquet.gz',
+        # '3_user_yelp.parquet.gz',
+        # '2_categories.parquet.gz',
+        # '4_user_google.parquet.gz',
+        '5_business_google.parquet.gz',
+        # '6_business_yelp.parquet.gz',
+        # '7_categories_google.parquet.gz',
+        # '8_categories_yelp.parquet.gz',
+        # '9_reviews_google.parquet.gz',
+        # '10_reviews_yelp.parquet.gz',
+    ]
 
+    # Leer archivos Parquet y almacenar en un diccionario
+    data_frames = {}
+    for file_name in file_names:
+        full_path = os.path.abspath(os.path.join(db_route, file_name))
+        df_name = os.path.splitext(os.path.basename(file_name))[0]  # Nombre del DataFrame sin extensión
+        data_frames[df_name] = pd.read_parquet(full_path)
+
+    return data_frames
 
 # ------------------------------------ MENU ---------------------------------------
 with st.sidebar:
@@ -56,11 +76,10 @@ with st.sidebar:
         default_index=0
     )
 
-
     # Mostrar la imagen GIF en el sidebar
-    url_imagen_gif = r"../src/location-maps.gif"
-    st.sidebar.image(url_imagen_gif)
+    url_imagen_gif = os.path.join(route, '..', 'src', 'location-maps.gif')
     st.sidebar.image(url_imagen_gif, use_column_width=True)
+    
 #Introduccion
 if selected=="Introducción":
     #Header
@@ -76,25 +95,22 @@ if selected=="Introducción":
         with col1:
             st.markdown(
                 """
-                Quantyle Analytics es una empresa líder en el análisis y la recomendación personalizada de lugares de comida, así como en la generación de informes detallados sobre el tipo de comercios disponibles en distintas localizaciones. Nuestro enfoque principal se centra en proporcionar a los usuarios recomendaciones gastronómicas adaptadas a sus gustos individuales y preferencias culinarias.
+                Quantyle Analytics lidera el análisis y recomendación personalizada de lugares gastronómicos, utilizando técnicas avanzadas de análisis de datos y machine learning. Nos enfocamos en entender los gustos de los usuarios a través de su historial y preferencias, ofreciendo recomendaciones precisas para mejorar su experiencia culinaria.
 
-Nuestra plataforma utiliza técnicas avanzadas de análisis de datos y machine learning para comprender los gustos de los usuarios en función de su historial de preferencias, reseñas anteriores y otros parámetros relevantes. A través de algoritmos inteligentes, ofrecemos recomendaciones precisas y personalizadas de restaurantes, cafeterías y establecimientos gastronómicos, optimizando así la experiencia del usuario.
+                Para emprendedores gastronómicos, proporcionamos informes detallados sobre el panorama comercial en diversas ubicaciones. Incluimos datos cruciales como competencia, demanda del mercado y tendencias locales para apoyar decisiones estratégicas en la apertura de nuevos establecimientos.
 
-Además, para emprendedores y empresarios del sector gastronómico, proporcionamos informes detallados y análisis exhaustivos sobre el panorama comercial en diversas ubicaciones. Nuestros informes incluyen datos relevantes como la competencia existente, la demanda del mercado, las tendencias gastronómicas locales y otros factores clave para ayudar en la toma de decisiones estratégicas a la hora de establecer un nuevo local de comida.
-
-En Quantyle Analytics, estamos comprometidos con la calidad de nuestros análisis, la precisión en nuestras recomendaciones y el apoyo a aquellos que buscan tomar decisiones informadas en la industria gastronómica. Nuestro objetivo es brindar soluciones innovadoras y datos confiables para mejorar la experiencia de los usuarios y fomentar el éxito comercial en el sector de la alimentación y la restauración.
-                """
-                )
+                En Quantyle Analytics, nos comprometemos con la calidad de nuestros análisis, la precisión en nuestras recomendaciones y el respaldo a aquellos que buscan tomar decisiones informadas en la industria gastronómica. Nuestro objetivo es brindar soluciones innovadoras y datos confiables para mejorar la experiencia del usuario y promover el éxito en el sector alimentario."""
+                        )
         with col2:
-            st.image(r'../src/data-analysis.gif', use_column_width=True)
-    
+            url_imagen_gif = os.path.join(route, '..', 'src', 'data-analysis.gif')
+            st.image(url_imagen_gif, use_column_width=True) 
     st.divider()
 
     #Tutorial Video
-    st.header('¿Como funciona?')
-    video_file = open(r"../src/Similo_Tutorial3_compressed.mp4", 'rb')
-    video_bytes = video_file.read()
-    st.video(video_bytes)
+    # st.header('¿Como funciona?')
+    # video_file = open(r"../src/Similo_Tutorial3_compressed.mp4", 'rb')
+    # video_bytes = video_file.read()
+    # st.video(video_bytes)
     
     
     
@@ -111,52 +127,25 @@ if selected=="Comercial":
 
     st.subheader('Seleccione su ubicacion')
 
-    master_zip,master_city,state=pull_clean()
-    
-    state_columns = state.columns.str.upper()
-    
-    master_zip.columns = master_zip.columns.str.upper()
-    
-    master_zip = master_zip.rename(columns={'ZCTA5': 'ZIP'})
-    
-    master_zip['ZIP'] = master_zip['ZIP'].astype(str).str.zfill(5)
-    
-    master_city.columns = master_city.columns.str.upper()
+    state=pull_clean()
+    business_google = pull_clean()   
 
-    loc_select=st.radio('Type',['Zip','state'],horizontal=True, label_visibility="collapsed")
+    loc_select=st.radio('Type',['Estado', 'Restaurante'],horizontal=True, label_visibility="collapsed")
 
-    if loc_select=='state':
-        city_select=st.selectbox(label='state',options=['Seleccione estado']+list(state['state'].unique()),label_visibility='collapsed')
-        st.caption('Note: City is aggregated to the USPS designation which may include additional nearby cities/towns/municipalities')
-        zip_select='Zip'
+    if loc_select=='Estado':
+        city_select=st.selectbox(label='Estado',options=['Seleccione estado']+list(state['state'].unique()),label_visibility='collapsed')
+        st.caption('Nota: Solo disponibilizados los estados criterio.')
+        zip_select='Estado'
         
         
-    if loc_select=='Zip':
-        zip_select = st.selectbox(label='zip',options=['Zip']+list(master_zip['ZIP'].unique()),label_visibility='collapsed')
+    if loc_select=='Restaurante':
+        zip_select = st.selectbox(label='Restaurante',options=['Restaurante']+list(business_google['name'].unique()),label_visibility='collapsed')
 
-    with st.expander('Advanced Settings'):
-
-        st.subheader('Filter Results')
-        col1,col2=st.columns(2)
-        states=sorted(list(master_zip['STATE_LONG'].astype(str).unique()))
-        state_select=col1.multiselect('Filter Results by State(s)',states)
-        count_select=col2.number_input(label='How many similar locations returned? (5-25)',min_value=5,max_value=25,value=10,step=5)
-        st.subheader('Data Category Importance')
-        st.caption('Lower values = lower importance, higher values = higher importnace, default = 1.0')
-        people_select=st.slider(label='People',min_value=0.1, max_value=2.0, step=0.1, value=1.0)
-        home_select=st.slider(label='Home',min_value=0.1, max_value=2.0, step=0.1, value=1.0)
-        work_select=st.slider(label='Work',min_value=0.1, max_value=2.0, step=0.1, value=1.0)
-        environment_select=st.slider(label='Environment',min_value=0.1, max_value=2.0, step=0.1, value=1.0)
-
-    filt_master_zip=master_zip
-    filt_master_city=master_city
-    if len(state_select)>0:
-        filt_master_zip=master_zip[master_zip['STATE_LONG'].isin(state_select)]
-        filt_master_city=master_city[master_city['STATE_LONG'].isin(state_select)]
-
-    #Benchmark
-
-                   
+        # with st.expander('Advanced Settings'):
+            
+        # Generar graficos interactivos
+        
+    #Benchmark                   
     if zip_select != 'Zip':
         # Coordenadas específicas (por ejemplo, latitud y longitud de un punto)
         latitud_especifica = 40.7128  # Latitud específica
