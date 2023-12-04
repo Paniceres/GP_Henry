@@ -1,17 +1,12 @@
 import streamlit as st
 import pandas as pd
-from urllib.request import urlopen
-from sklearn.preprocessing import StandardScaler
-from sklearn.metrics.pairwise import cosine_similarity
-from sklearn.metrics.pairwise import euclidean_distances
 import plotly.express as px
-import plotly.graph_objects as go
+
 from streamlit_option_menu import option_menu
 import json
-import requests
-from streamlit_lottie import st_lottie
-import pydeck as pdk
-import snowflake.connector
+
+
+from utils.funcs import pull_clean, get_restaurants_per_capita, analisis_respuestas, calcular_retencion, calcular_influencia
 import os.path
 # Obtener la ruta del directorio del script actual
 route = os.path.dirname(__file__)
@@ -47,13 +42,13 @@ def pull_clean():
     file_names = [
         '1_states.parquet.gz',
         # '3_user_yelp.parquet.gz',
-        # '2_categories.parquet.gz',
-        # '4_user_google.parquet.gz',
+        '2_categories.parquet.gz',
+        '4_user_google.parquet.gz',
         '5_business_google.parquet.gz',
-        # '6_business_yelp.parquet.gz',
+        '6_business_yelp.parquet.gz',
         # '7_categories_google.parquet.gz',
         # '8_categories_yelp.parquet.gz',
-        # '9_reviews_google.parquet.gz',
+        '9_reviews_google.parquet.gz',
         # '10_reviews_yelp.parquet.gz',
     ]
 
@@ -124,26 +119,41 @@ if selected=="Introducción":
 
 
 if selected=="Comercial":
-
     st.subheader('Seleccione su ubicacion')
 
-    state=pull_clean()
-    business_google = pull_clean()   
-
+    data_frames=pull_clean() 
+    state = data_frames.get('1_states.parquet.gz')
+    
+    df_bg = data_frames.get('5_business_google.parquet.gz')
+    df_by = data_frames.get('6_business_yelp.parquet.gz')
+    df_ug = data_frames.get('4_user_google.parquet.gz')
+    df_uy = data_frames.get('3_user_yelp.parquet.gz')
+    df_rg = data_frames.get('9_reviews_google.parquet.gz')
+    
+    
     loc_select=st.radio('Type',['Estado', 'Restaurante'],horizontal=True, label_visibility="collapsed")
 
     if loc_select=='Estado':
-        city_select=st.selectbox(label='Estado',options=['Seleccione estado']+list(state['state'].unique()),label_visibility='collapsed')
-        st.caption('Nota: Solo disponibilizados los estados criterio.')
+        # city_select=st.selectbox(label='Estado',options=['Seleccione estado']+list(state['state'].unique()),label_visibility='collapsed')
+        # st.caption('Nota: Solo disponibilizados los estados criterio.')
         zip_select='Estado'
-        
+        pass
         
     if loc_select=='Restaurante':
-        zip_select = st.selectbox(label='Restaurante',options=['Restaurante']+list(business_google['name'].unique()),label_visibility='collapsed')
+        # zip_select = st.selectbox(label='Restaurante',options=['Restaurante']+list(business_google['name'].unique()),label_visibility='collapsed')
+        zip_select='Restaurante'
+        st.header('KPI 1: Negocios por Capita')
+        target_state = st.selectbox('Selecciona un estado', df_bg['state_id'].unique())
+        target_year = st.selectbox('Selecciona un año', [2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023])
+        df_kpi1 = get_restaurants_per_capita(df_bg, target_state, target_year)
 
-        # with st.expander('Advanced Settings'):
-            
-        # Generar graficos interactivos
+        if df_kpi1 is not None:
+            st.write(df_kpi1)
+
+    
+    with st.expander('Advanced Settings'):
+        pass
+    # Generar graficos interactivos
         
     #Benchmark                   
     if zip_select != 'Zip':
@@ -187,7 +197,7 @@ if selected=='Sobre nosotros':
         col2.write('**Contacto:**    brunozenobio4@gmail.com or [linkedin](https://www.linkedin.com/in/brunozenobio/)')
         
         
-        col4.image(r'../src/kevin8.png')
+        col4.image(r'../src/logo.png')
 
 
 
