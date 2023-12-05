@@ -1,7 +1,0 @@
-0 10 * * * python3 /home/ubuntu/Primer-Test/secuencia.py >> /home/ubuntu/registro.txt 2>&1
-
-
-Esta secuencia de pasos, comienza dandole la orden de utilizar python3 como motor de ejecucion
-luego asignamos la ruta del script que queremos que ejecute y para finalizar, le asignamos 
-un punto de salida a la informacion del script luego de la ruta '>>' con la terminacion 2>&1,
-esto nos guarda todos los outputs a modo de registro dentro del archivo 'registro.txt'.
