@@ -8,5 +8,13 @@ extras/
 .venv/
 .env
 
+.\venv
+./venv
+
+./venv/
+.\venv\
+
+venv
+
 # Python
 __pycache__/
