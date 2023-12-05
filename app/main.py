@@ -108,7 +108,7 @@ En Quantyle Analytics, estamos comprometidos con la calidad de nuestros análisi
 
 # --------------------------------------
 
-'''if selected == "Comercial":
+if selected == "Comercial":
     st.subheader('Seleccione su ubicacion')
     business, state = pull_clean()
 
@@ -155,9 +155,9 @@ En Quantyle Analytics, estamos comprometidos con la calidad de nuestros análisi
                 )
                 fig1.update_traces(marker=dict(color='red', size=20, opacity=1))
                 # Mostrar el mapa en Streamlit con el ancho responsivo
-                st.plotly_chart(fig1, use_container_width=True)'''
-
-
+                st.plotly_chart(fig1, use_container_width=True)
+                
+                
 
 # ------------------------------------ Donde comer ---------------------------------------
 
@@ -171,21 +171,24 @@ En Quantyle Analytics, estamos comprometidos con la calidad de nuestros análisi
 if selected=='Sobre nosotros':
     
     with st.container():
-        col1,col2,col3,col4,col5 = st.columns(5)
+        col1,col2,col3 = st.columns(3)
         col2.markdown("<h1 style='text-align: center;'>Desarrolladores</h1>", unsafe_allow_html=True)
     
 
     with st.container():
-        col2,col2,col3,col4,col5=st.columns(5)
+        col1,col2,col3=st.columns(3)
+        col1.write('')
+        col1.write('')
+        col1.write('')
+        col1.write('')
+        col1.write('### Nombre: Bruno Zenobio')
+        col1.write('### Rol:    Data engineer')
+        
+        col1.write('### Contacto:    brunozenobio4@gmail.com or [linkedin](https://www.linkedin.com/in/brunozenobio/)')
+        
+        
+        col2.image(r'../src/kevin8.png')
 
-        col2.write('### Nombre:')
-        col3.write('### Bruno')
-        col2.write('**Rol:**    Data engineer')
-        
-        col2.write('**Contacto:**    brunozenobio4@gmail.com or [linkedin](https://www.linkedin.com/in/brunozenobio/)')
-        
-        
-        col4.image(r'../src/kevin8.png')
 
 
 
