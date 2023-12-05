@@ -1,4 +1,5 @@
 import streamlit as st
+
 import pandas as pd
 import plotly.express as px
 
@@ -6,7 +7,7 @@ from streamlit_option_menu import option_menu
 import json
 
 
-from utils.funcs import pull_clean, get_restaurants_per_capita, analisis_respuestas, calcular_retencion, calcular_influencia
+from utils.funcs import get_unique_names, pull_clean, get_restaurants_per_capita, analisis_respuestas, calcular_retencion, calcular_influencia
 import os.path
 # Obtener la ruta del directorio del script actual
 route = os.path.dirname(__file__)
@@ -18,6 +19,17 @@ st.set_page_config(
     initial_sidebar_state="expanded")
 
 #Data Pull and Functions
+data_frames = pull_clean() 
+
+state = data_frames.get('1_states.parquet')
+business_google = data_frames.get('5_business_google.parquet')
+# business_yelp = data_frames.get('6_business_yelp.parquet')
+# users_google = data_frames.get('4_user_google.parquet')
+# users_yelp = data_frames.get('3_user_yelp.parquet')
+# reviews_google = data_frames.get('9_reviews_google.parquet')
+
+unique_names = get_unique_names(business_google)
+
 st.markdown("""
 <style>
 .big-font {
@@ -26,8 +38,6 @@ st.markdown("""
 }
 </style>
 """, unsafe_allow_html=True)
-
-
 
 # ------------------------------------ MENU ---------------------------------------
 with st.sidebar:
@@ -82,63 +92,74 @@ if selected=="Introducción":
     
 # ------------------------------------ Comercial ---------------------------------------
 
-
-
-
-
 if selected=="Comercial":
     st.subheader('Seleccione su Criterio:')
 
-    data_frames=pull_clean() 
-    state = data_frames.get('1_states.parquet.gz')
-    df_bg = data_frames.get('5_business_google.parquet.gz')
-    # df_by = data_frames.get('6_business_yelp.parquet.gz')
-    # df_ug = data_frames.get('4_user_google.parquet.gz')
-    # df_uy = data_frames.get('3_user_yelp.parquet.gz')
-    # df_rg = data_frames.get('9_reviews_google.parquet.gz')
-    
-    
-    loc_select=st.radio('Type',['Estado', 'Restaurante'],horizontal=True, label_visibility="collapsed")
 
-    if loc_select=='Estado':
-        # city_select=st.selectbox(label='Estado',options=['Seleccione estado']+list(state['state'].unique()),label_visibility='collapsed')
-        # st.caption('Nota: Solo disponibilizados los estados criterio.')
-        zip_select='Estado'
-        pass
+    
+    target_state = st.multiselect(label='Selecciona estado:',options=['California', 'Florida', 'New Jersey', 'Illinoais'],label_visibility='collapsed')
+    target_year = st.multiselect('Selecciona un año', [2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023])
+    
+    
+    loc_select=st.radio('Type',['Restaurante', 'Business'],horizontal=True, label_visibility="collapsed")
+    
+    st.caption('Nota: Solo disponibilizados los estados criterio.')   
+        
         
     if loc_select=='Restaurante':
-        # zip_select = st.selectbox(label='Restaurante',options=['Restaurante']+list(business_google['name'].unique()),label_visibility='collapsed')
-        zip_select='Restaurante'
+        zip_select = st.selectbox(label='Restaurante',options=[unique_names])
         st.header('KPI 1: Negocios por Capita')
-        target_state = st.selectbox('Selecciona un estado', df_bg['state_id'].unique())
-        target_year = st.selectbox('Selecciona un año', [2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023])
-        df_kpi1 = get_restaurants_per_capita(df_bg, target_state, target_year)
+        
+        df_kpi1 = get_restaurants_per_capita(business_google, target_state, target_year)
 
         if df_kpi1 is not None:
             st.write(df_kpi1)
+        else: 
+            st.write('error')
 
-    
+    if loc_select == 'Business':
+        # zip_select = st.selectbox(label='Business', options=['Seleccione el nombre de un restaurante'] + list(business_google['name'].unique()), label_visibility='collapsed')
+        
+        df_kpi1 = get_restaurants_per_capita(business_google, target_state, target_year)
+        if df_kpi1 is not None:
+            st.write(df_kpi1)
+        
+        st.header('Top {} Most Similar Locations'.format(len(business_google)))
+        # CSS to inject contained in a string
+
+        # Mover esta sección fuera del bloque de código anterior
+        tabs = st.tabs(['# Map'])
+
+        if tabs[0]:  # Utiliza el índice para verificar la pestaña activa
+            token = "pk.eyJ1Ijoia3NvZGVyaG9sbTIyIiwiYSI6ImNsZjI2djJkOTBmazU0NHBqdzBvdjR2dzYifQ.9GkSN9FUYa86xldpQvCvxA"
+            # Convertir latitud y longitud a tipo flotante si no lo están
+            business_google['latitude'] = business_google['latitude'].astype(float)
+            business_google['longitude'] = business_google['longitude'].astype(float)
+            latcenter = business_google['latitude'].mean()
+            loncenter = business_google['longitude'].mean()
+
+            fig1 = px.scatter_mapbox(
+                business_google,
+                lat='latitude',
+                lon='longitude',
+                color_continuous_scale=px.colors.sequential.Blackbody,
+                center=go.layout.mapbox.Center(lat=latcenter, lon=loncenter),
+                hover_name='name',
+                zoom=8,
+            )
+            fig1.update_traces(marker={'size': 15})
+            fig1.update_layout(
+                mapbox_style="mapbox://styles/mapbox/satellite-streets-v12",
+                mapbox_accesstoken=token,
+                height=600
+            )
+            fig1.update_traces(marker=dict(color='red', size=20, opacity=1))
+            # Mostrar el mapa en Streamlit con el ancho responsivo
+            st.plotly_chart(fig1, use_container_width=True)
+                
     with st.expander('Advanced Settings'):
         pass
     # Generar graficos interactivos
-        
-    #Benchmark                   
-    if zip_select != 'Zip':
-        # Coordenadas específicas (por ejemplo, latitud y longitud de un punto)
-        latitud_especifica = 40.7128  # Latitud específica
-        longitud_especifica = -74.006  # Longitud específica
-
-        # Crear un DataFrame con los datos específicos (en este caso, solo un punto)
-        data = {'LAT': [latitud_especifica], 'LON': [longitud_especifica]}
-        df = pd.DataFrame(data)
-
-        # Generar el mapa centrado en la latitud y longitud específicas con un marcador en esa posición
-        fig = px.scatter_mapbox(df, lat='LAT', lon='LON')
-        fig.update_layout(mapbox_style="mapbox://styles/mapbox/light-v10", mapbox_center={"lat": latitud_especifica, "lon": longitud_especifica}, mapbox_zoom=12)
-
-        # Mostrar el mapa en Streamlit
-        st.plotly_chart(fig, use_container_width=True)
-            # --------------------------------------
 
 
 # ------------------------------------ Donde comer ---------------------------------------
