@@ -1,16 +1,20 @@
 import pandas as pd
 import requests
+import yaml
 import os
-from dotenv import load_dotenv 
+# Obtener la ruta del directorio del script actual
+route = os.path.dirname(__file__)
+
 import sys
 import random
 from mysql_connection import *
 import warnings
 warnings.filterwarnings('ignore')
 
-load_dotenv('.env') # Cargo la archivo donde esta la variable de entorno.
-api_key_yelp =  "coloque su clave api de yelp" # Cargo la variable de entorno
-
+with open('config.yaml', 'r') as stream:
+    config = yaml.safe_load(stream)
+    
+api_key_yelp = config['yelp']['api_key']
  
 # Funcion que consulta la API de yelp para obtener los locales por estado.    
 def get_business_API(state):
@@ -63,11 +67,13 @@ def extract_businesses():
     
     url = f'https://api.yelp.com/v3/businesses/search'
 
-    yelp_bussines = pd.DataFrame()
+    yelp_business = pd.DataFrame()
     for state in ['CA','FL','NJ','IL']:
         businesses = get_business_API(state)
-        yelp_bussines = pd.concat([businesses,yelp_bussines])
-    yelp_bussines.to_parquet('/home/ubuntu/Primer-Test/datalake/business_API.parquet')
+        yelp_business = pd.concat([businesses,yelp_business])
+    load_path = os.path.join(route, 'datalake', 'business_yelp.parquet')
+    yelp_business.to_parquet(load_path)
+
 
 
 
@@ -130,9 +136,10 @@ def get_reviewsYelp_API():
             
             
         else :
-            reviews_business.to_parquet('/home/ubuntu/Primer-Test/datalake/reviews_yelp.parquet')
+            load_path = os.path.join(route, 'datalake', 'reviews_yelp.parquet')
+            reviews_business.to_parquet(load_path)
             return 'Extraccón realizada'
     
-    reviews_business.to_parquet('/home/ubuntu/Primer-Test/datalake/reviews_yelp.parquet')
+    reviews_business.to_parquet(r'/datalake/reviews_yelp.parquet')
     
     return 'Extraccón realizada'

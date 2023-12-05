@@ -2,10 +2,16 @@ import pandas as pd
 from dotenv import load_dotenv 
 from nltk.sentiment import SentimentIntensityAnalyzer
 import nltk
+<<<<<<< HEAD:app/etl-scripts/transform_API.py
 import warnings
 warnings.filterwarnings('ignore')
 
 ##### BUSINES ###### 
+=======
+
+
+##### BUSINES ######
+>>>>>>> 56ba5683d93246397f4bad17b157c893b287a50c:datasets/api/transform_API.py
 
 from mysql_connection import * # Función para conectarme a la base de datos mysql
 
@@ -40,7 +46,11 @@ def transform_business():
         pd.DataFrame: DataFrame restaurantes.
     """
     
+<<<<<<< HEAD:app/etl-scripts/transform_API.py
     yelp_bussines = pd.read_parquet('/home/ubuntu/Primer-Test/datalake/business_API.parquet')
+=======
+    yelp_bussines = pd.read_parquet('./datalake/business_API.parquet')
+>>>>>>> 56ba5683d93246397f4bad17b157c893b287a50c:datasets/api/transform_API.py
     
     
     if yelp_bussines is not None and 'categories' in yelp_bussines.columns:
@@ -65,7 +75,11 @@ def transform_business():
         yelp_bussines.loc[:, 'stars'] = round(yelp_bussines['stars'], 2)
         
         
+<<<<<<< HEAD:app/etl-scripts/transform_API.py
         yelp_bussines.to_parquet('/home/ubuntu/Primer-Test/datalake/business_trasnform.parquet')
+=======
+        yelp_bussines.to_parquet('./datalake/business_trasnform.parquet')
+>>>>>>> 56ba5683d93246397f4bad17b157c893b287a50c:datasets/api/transform_API.py
     else:
         return 'No se cargaron nuevos datos.'
     
@@ -124,8 +138,14 @@ def trasnform_reviews_yelp():
         reivews_yelp: DataFrame trasnformado de reviews_yelp.
     """
     
+<<<<<<< HEAD:app/etl-scripts/transform_API.py
     reivews_yelp = pd.read_parquet('/home/ubuntu/Primer-Test/datalake/reviews_yelp.parquet')
     sid = SentimentIntensityAnalyzer()
+=======
+    reivews_yelp = pd.read_parquet('./datalake/reviews_yelp.parquet')
+    sid = SentimentIntensityAnalyzer()
+    print(f'C: {reivews_yelp.columns} columnas')
+>>>>>>> 56ba5683d93246397f4bad17b157c893b287a50c:datasets/api/transform_API.py
     analisis = reivews_yelp['text'].apply(lambda x: sid.polarity_scores(x)["compound"])
     valorEstrellas = reivews_yelp['rating'] / 5 
     analisis += valorEstrellas
@@ -156,6 +176,15 @@ def trasnform_reviews_yelp():
 
     columns= ['review_id','user_id','business_id','stars','sentiment','date','name',]
     reivews_yelp = reivews_yelp[columns]
+<<<<<<< HEAD:app/etl-scripts/transform_API.py
     reivews_yelp.to_parquet('/home/ubuntu/Primer-Test/datalake/reviews_yelp_transform.parquet')
     
     
+=======
+    reivews_yelp.to_parquet('./datalake/reviews_yelp_transform.parquet')
+    
+    
+    
+transform_business()
+trasnform_reviews_yelp()
+>>>>>>> 56ba5683d93246397f4bad17b157c893b287a50c:datasets/api/transform_API.py
