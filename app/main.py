@@ -13,6 +13,7 @@ from streamlit_lottie import st_lottie
 import pydeck as pdk
 import snowflake.connector
 
+
 #Layout
 st.set_page_config(
     page_title="Quantyle analitycs",
@@ -39,7 +40,6 @@ def load_lottiefile(filepath: str):
 @st.cache_data
 def pull_clean():
     business = pd.read_parquet(r'../datasets\processed\bd\6_business_yelp.parquet.gz')
-    business = business.head(20)
     state = pd.read_parquet(r'../datasets\processed\bd\1_states.parquet.gz')
     return business, state
 
@@ -106,41 +106,57 @@ En Quantyle Analytics, estamos comprometidos con la calidad de nuestros análisi
 
 
 
-if selected=="Comercial":
+# --------------------------------------
 
+'''if selected == "Comercial":
     st.subheader('Seleccione su ubicacion')
+    business, state = pull_clean()
 
-    business,state=pull_clean()
+    loc_select = st.radio('Type', ['business', 'state'], horizontal=True, label_visibility="collapsed")
 
-    loc_select=st.radio('Type',['business','state'],horizontal=True, label_visibility="collapsed")
-
-    if loc_select=='state':
+    if loc_select == 'state':
         city_select = st.selectbox(label='state',options=['Seleccione estado']+list(state['state'].unique()),label_visibility='collapsed')
-        st.caption('Note: City is aggregated to the USPS designation which may include additional nearby cities/towns/municipalities')
-        zip_select = 'Zip'
-        
-        
-    if loc_select=='business':
-        zip_select = st.selectbox(label='business',options=['Seleccione el nombre de un establecimiento']+list(business['name'].unique()),label_visibility='collapsed')
+        st.caption('Nota: solo podra elegir entre los 4 estados que seleccionamos para el analisis')
+        zip_select = 'state'
 
+    if loc_select == 'business':
+        zip_select = st.selectbox(label='business', options=['Seleccione el nombre de un establecimiento'] + list(business['name'].unique()), label_visibility='collapsed')
+        zip_select = 'Nombre'
 
+        if zip_select == 'Nombre':
+            st.header('Top {} Most Similar Locations'.format(len(business)))
+            # CSS to inject contained in a string
 
-    if zip_select != 'business':
-        # Coordenadas específicas (por ejemplo, latitud y longitud de un punto)
-        latitud_especifica = 40.7128  # Latitud específica
-        longitud_especifica = -74.006  # Longitud específica
+            # Mover esta sección fuera del bloque de código anterior
+            tabs = st.tabs(['# Map'])
 
-        # Crear un DataFrame con los datos específicos (en este caso, solo un punto)
-        data = {'LAT': [latitud_especifica], 'LON': [longitud_especifica]}
-        df = pd.DataFrame(data)
+            if tabs[0]:  # Utiliza el índice para verificar la pestaña activa
+                token = "pk.eyJ1Ijoia3NvZGVyaG9sbTIyIiwiYSI6ImNsZjI2djJkOTBmazU0NHBqdzBvdjR2dzYifQ.9GkSN9FUYa86xldpQvCvxA"
+                # Convertir latitud y longitud a tipo flotante si no lo están
+                business['latitude'] = business['latitude'].astype(float)
+                business['longitude'] = business['longitude'].astype(float)
+                latcenter = business['latitude'].mean()
+                loncenter = business['longitude'].mean()
 
-        # Generar el mapa centrado en la latitud y longitud específicas con un marcador en esa posición
-        fig = px.scatter_mapbox(df, lat='LAT', lon='LON')
-        fig.update_layout(mapbox_style="mapbox://styles/mapbox/light-v10", mapbox_center={"lat": latitud_especifica, "lon": longitud_especifica}, mapbox_zoom=12)
+                fig1 = px.scatter_mapbox(
+                    business,
+                    lat='latitude',
+                    lon='longitude',
+                    color_continuous_scale=px.colors.sequential.Blackbody,
+                    center=go.layout.mapbox.Center(lat=latcenter, lon=loncenter),
+                    hover_name='name',
+                    zoom=8,
+                )
+                fig1.update_traces(marker={'size': 15})
+                fig1.update_layout(
+                    mapbox_style="mapbox://styles/mapbox/satellite-streets-v12",
+                    mapbox_accesstoken=token,
+                    height=600
+                )
+                fig1.update_traces(marker=dict(color='red', size=20, opacity=1))
+                # Mostrar el mapa en Streamlit con el ancho responsivo
+                st.plotly_chart(fig1, use_container_width=True)'''
 
-        # Mostrar el mapa en Streamlit
-        st.plotly_chart(fig, use_container_width=True)
-            # --------------------------------------
 
 
 # ------------------------------------ Donde comer ---------------------------------------
