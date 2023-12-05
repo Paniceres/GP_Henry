@@ -38,10 +38,10 @@ def load_lottiefile(filepath: str):
 
 @st.cache_data
 def pull_clean():
-    master_zip=pd.read_csv('MASTER_ZIP.csv',dtype={'ZCTA5': str})
-    master_city=pd.read_csv('MASTER_CITY.csv',dtype={'ZCTA5': str})
+    business = pd.read_parquet(r'../datasets\processed\bd\6_business_yelp.parquet.gz')
+    business = business.head(20)
     state = pd.read_parquet(r'../datasets\processed\bd\1_states.parquet.gz')
-    return master_zip, master_city, state
+    return business, state
 
 
 
@@ -110,53 +110,22 @@ if selected=="Comercial":
 
     st.subheader('Seleccione su ubicacion')
 
-    master_zip,master_city,state=pull_clean()
-    
-    state_columns = state.columns.str.upper()
-    
-    master_zip.columns = master_zip.columns.str.upper()
-    
-    master_zip = master_zip.rename(columns={'ZCTA5': 'ZIP'})
-    
-    master_zip['ZIP'] = master_zip['ZIP'].astype(str).str.zfill(5)
-    
-    master_city.columns = master_city.columns.str.upper()
+    business,state=pull_clean()
 
-    loc_select=st.radio('Type',['Zip','state'],horizontal=True, label_visibility="collapsed")
+    loc_select=st.radio('Type',['business','state'],horizontal=True, label_visibility="collapsed")
 
     if loc_select=='state':
-        city_select=st.selectbox(label='state',options=['Seleccione estado']+list(state['state'].unique()),label_visibility='collapsed')
+        city_select = st.selectbox(label='state',options=['Seleccione estado']+list(state['state'].unique()),label_visibility='collapsed')
         st.caption('Note: City is aggregated to the USPS designation which may include additional nearby cities/towns/municipalities')
-        zip_select='Zip'
+        zip_select = 'Zip'
         
         
-    if loc_select=='Zip':
-        zip_select = st.selectbox(label='zip',options=['Zip']+list(master_zip['ZIP'].unique()),label_visibility='collapsed')
+    if loc_select=='business':
+        zip_select = st.selectbox(label='business',options=['Seleccione el nombre de un establecimiento']+list(business['name'].unique()),label_visibility='collapsed')
 
-    with st.expander('Advanced Settings'):
 
-        st.subheader('Filter Results')
-        col1,col2=st.columns(2)
-        states=sorted(list(master_zip['STATE_LONG'].astype(str).unique()))
-        state_select=col1.multiselect('Filter Results by State(s)',states)
-        count_select=col2.number_input(label='How many similar locations returned? (5-25)',min_value=5,max_value=25,value=10,step=5)
-        st.subheader('Data Category Importance')
-        st.caption('Lower values = lower importance, higher values = higher importnace, default = 1.0')
-        people_select=st.slider(label='People',min_value=0.1, max_value=2.0, step=0.1, value=1.0)
-        home_select=st.slider(label='Home',min_value=0.1, max_value=2.0, step=0.1, value=1.0)
-        work_select=st.slider(label='Work',min_value=0.1, max_value=2.0, step=0.1, value=1.0)
-        environment_select=st.slider(label='Environment',min_value=0.1, max_value=2.0, step=0.1, value=1.0)
 
-    filt_master_zip=master_zip
-    filt_master_city=master_city
-    if len(state_select)>0:
-        filt_master_zip=master_zip[master_zip['STATE_LONG'].isin(state_select)]
-        filt_master_city=master_city[master_city['STATE_LONG'].isin(state_select)]
-
-    #Benchmark
-
-                   
-    if zip_select != 'Zip':
+    if zip_select != 'business':
         # Coordenadas específicas (por ejemplo, latitud y longitud de un punto)
         latitud_especifica = 40.7128  # Latitud específica
         longitud_especifica = -74.006  # Longitud específica
@@ -175,6 +144,9 @@ if selected=="Comercial":
 
 
 # ------------------------------------ Donde comer ---------------------------------------
+
+
+
 
 
 # ------------------------------------ Sobre nosotros ---------------------------------------
@@ -198,8 +170,6 @@ if selected=='Sobre nosotros':
         
         
         col4.image(r'../src/kevin8.png')
-
-
 
 
 
