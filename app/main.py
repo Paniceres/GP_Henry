@@ -32,7 +32,7 @@ st.set_page_config(
 
 #Data Pull and Functions
 data_frames = pull_clean() 
-# groups = get_group_category()
+groups = get_groups()
 
 state = data_frames.get('1_states.parquet.gz')
 # categories = data_frames.get('2_categories.parquet.gz')
