@@ -3,13 +3,24 @@ import numpy as np
 import streamlit as st
 import seaborn as sns
 import matplotlib.pyplot as plt
-
-
 import matplotlib.pyplot as plt
 import seaborn as sns
 import os.path
+
+
 # Obtener la ruta del directorio del script actual
 route = os.path.dirname(__file__)
+
+@st.cache_data
+def read_config(file_path="config.toml"):
+    try:
+        with open(file_path, "r") as file:
+            config_data = toml.load(file)
+            return config_data
+    except FileNotFoundError:
+        print(f"El archivo {file_path} no fue encontrado.")
+        return None
+
 
 @st.cache_data
 def get_unique_names(dataframe):
@@ -175,10 +186,3 @@ def calcular_influencia(df_uy):
     }
 
     return kpi5_metrics
-
-
-
-
-
-
-
