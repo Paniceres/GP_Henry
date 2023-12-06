@@ -12,6 +12,17 @@ import os.path
 route = os.path.dirname(__file__)
 
 @st.cache_data
+def read_config(file_path="config.toml"):
+    try:
+        with open(file_path, "r") as file:
+            config_data = toml.load(file)
+            return config_data
+    except FileNotFoundError:
+        print(f"El archivo {file_path} no fue encontrado.")
+        return None
+
+
+@st.cache_data
 def get_unique_names(dataframe):
     if 'name' in dataframe.columns:
         unique_names = dataframe['name'].unique().tolist()
