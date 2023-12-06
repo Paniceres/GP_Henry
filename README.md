@@ -123,13 +123,10 @@ This is an example of how to list things you need to use the software and how to
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-<a href="https://enacom-data-analytics-paniceres.streamlit.app/">View Deploy</a>
+<a href="https://restaurant-analysis-gmap-yelp.streamlit.app/">View Deploy</a>
 
-<img src="/src/usage.png" alt="Streamlit localhost" width="1000" height="520">
+<img src="/src/data-analysis.png" alt="Streamlit localhost" width="1000" height="520">
 
-
-<img src="/src/caution.png" alt="Caution" width="341" height="415">
-No encontré forma de ocultar los nombres de los modulos, solo usar la casilla interactiva de abajo.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -235,3 +232,40 @@ Project Link: [https://github.com/Paniceres/PI_Data_Analytics](https://github.co
 [PyArrow-url]: https://arrow.apache.org/pyarrow/
 [Manjaro-logo]: https://img.shields.io/badge/Manjaro-35BF5C?style=for-the-badge&logo=manjaro&logoColor=white
 [Manjaro-url]: https://manjaro.org/
+
+<!-- Enlaces completos -->
+[Deploy]: https://restaurants-analysis-google-yelp.streamlit.app/
+[Python-logo]: https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white
+[Python-url]: https://www.python.org/
+[Pandas-logo]: https://img.shields.io/badge/Pandas-150458?style=for-the-badge&logo=pandas&logoColor=white
+[Pandas-url]: https://pandas.pydata.org/
+[CronJobs-logo]: https://img.shields.io/badge/CronJobs-FFFFFF?style=for-the-badge&logo=cron&logoColor=black
+[CronJobs-url]: https://en.wikipedia.org/wiki/Cron
+[EC2-logo]: https://img.shields.io/badge/Amazon%20EC2-232F3E?style=for-the-badge&logo=amazon-aws&logoColor=white
+[EC2-url]: https://aws.amazon.com/ec2/
+[MySQL-logo]: https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white
+[MySQL-url]: https://www.mysql.com/
+[RDS-logo]: https://img.shields.io/badge/Amazon%20RDS-232F3E?style=for-the-badge&logo=amazon-aws&logoColor=white
+[RDS-url]: https://aws.amazon.com/rds/
+[PowerBI-logo]: https://img.shields.io/badge/Power%20BI-F2C811?style=for-the-badge&logo=power-bi&logoColor=black
+[PowerBI-url]: https://powerbi.microsoft.com/
+[Monday-logo]: https://img.shields.io/badge/Monday.com-14B2C6?style=for-the-badge&logo=monday-dot-com&logoColor=white
+[Monday-url]: https://monday.com/
+[GoogleMaps-logo]: https://img.shields.io/badge/Google%20Maps-4285F4?style=for-the-badge&logo=google-maps&logoColor=white
+[GoogleMaps-url]: https://www.google.com/maps
+[Yelp-logo]: https://img.shields.io/badge/Yelp-D32323?style=for-the-badge&logo=yelp&logoColor=white
+[Yelp-url]: https://www.yelp.com/
+[PySpark-logo]: https://img.shields.io/badge/PySpark-E25A1C?style=for-the-badge&logo=apache-spark&logoColor=white
+[PySpark-url]: https://spark.apache.org/docs/latest/api/python/index.html
+[Matplotlib-logo]: https://img.shields.io/badge/Matplotlib-3776AB?style=for-the-badge&logo=python&logoColor=white
+[Matplotlib-url]: https://matplotlib.org/
+[Seaborn-logo]: https://img.shields.io/badge/Seaborn-3776AB?style=for-the-badge&logo=python&logoColor=white
+[Seaborn-url]: https://seaborn.pydata.org/
+[Streamlit-logo]: https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white
+[Streamlit-url]: https://streamlit.io/
+[PyArrow-logo]: https://img.shields.io/badge/PyArrow-F63E02?style=for-the-badge&logo=apache-arrow&logoColor=white
+[PyArrow-url]: https://arrow.apache.org/pyarrow/
+[Manjaro-logo]: https://img.shields.io/badge/Manjaro-35BF5C?style=for-the-badge&logo=manjaro&logoColor=white
+[Manjaro-url]: https://manjaro.org/
+[Ubuntu-logo]: https://img.shields.io/badge/Ubuntu-E95420?style=for-the-badge&logo=ubuntu&logoColor=white
+[Ubuntu-url]: https://ubuntu.com/
