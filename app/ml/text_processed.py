@@ -48,7 +48,7 @@ def categories_nlp():
 
     # Cambiar por la lectura a la BD
 
-    local_categories_google = pd.read_parquet('../../datasets/processed/bd/7_categories_google.parquet.gz')
+    local_categories_google = pd.read_parquet('./datasets/processed/bd/7_categories_google.parquet.gz')
 
     # Cambiar por la lectura a la BD
     local_categories_yelp = pd.read_parquet('./datasets/processed/bd/8_categories_yelp.parquet.gz')
@@ -93,9 +93,12 @@ def categories_nlp():
     )   
     
     local_categories = local_categories[['business_id','name','processed']]
-    local_categories.to_parquet('./datasets/locales_categories.parquet') # Guardo el dataset util
+    local_categories.to_parquet('./app/ml/datasetes/locales_categories.parquet') # Guardo el dataset util
 
 
     tfidf_vectorizer = TfidfVectorizer()
     tfidf_matrix = tfidf_vectorizer.fit_transform(local_categories['processed'])
     return tfidf_matrix
+
+
+categories_nlp()

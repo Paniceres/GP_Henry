@@ -75,6 +75,7 @@ def distance(business_id,business_id_list,rang=None):
     # si se lee de la base de datos cambiar stars de business_yelp por avg_stars
     business = pd.concat([business_google[['business_id','name','avg_stars','latitude','longitude','state_id']],business_yelp[['business_id','name','avg_stars','latitude','longitude','state_id']]])
     #Genero las coordenadas del local al que le quiero encontrar recomendaciones.
+    print(business,business_id)
     lat_origin,long_origin = business[business['business_id']==business_id]['latitude'].iloc[0],business[business['business_id']==business_id]['longitude'].iloc[0]
     #Filtro solo por los restaurantes que pertenecen a las recomendaciones.
     business = business[business['business_id'].isin(business_id_list)]
@@ -129,6 +130,8 @@ def get_recommendations(business_id,rang=None):
     business = business[business['distance']!=0.0] # Elimino al restaurante mismos.
     #Uno las caractereisticas de los locales, con las categorias.
     business_cat = pd.merge(local_categories,business,on='business_id')
+    if business_cat.shape[0] == 0:
+        return 'Restaurante no encontrado.'
     business_cat = business_cat.groupby('business_id').agg({
         'latitude':'first',
         'longitude':'first',
@@ -177,7 +180,11 @@ def recommendation(business_ids=None,user_id=None,category=None,distance=None,ta
         
     if category:
         df_categories = pd.read_parquet('./app/ml/datasets/locales_categories.parquet')
-        business_ids = df_categories[df_categories['name'].str.lower().str.contains(category.lower())].sample(10).iloc[:10]['business_id'].tolist()
+        business_ids = df_categories[df_categories['name'].str.lower().str.contains(category.lower())].sample(10).iloc[:10]['business_id']
+        if business_ids.shape[0] == 0:
+            return 'Categoria no encontrada.'
+        else:
+            business_ids = business_ids.tolist()
         distance = None
         if len(business_ids) == 0:
             return 'Categoria no encontrada.'
@@ -199,4 +206,4 @@ def recommendation(business_ids=None,user_id=None,category=None,distance=None,ta
         
     return business_cat.sort_values(by=['avg_stars'],ascending=[False]).iloc[0:10]
 
-print(recommendation(business_ids='0x808f86f459cf5fcb:0xf2be0b65edddcbd0'))
+print(recommendation(category='taco'))
