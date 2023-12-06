@@ -10,8 +10,18 @@ import os.path
 route = os.path.dirname(__file__)
 
 # Secrets
-config = read_config()
-mapbox_token = config.get("mapbox_token")
+# Intentar cargar la configuración desde el archivo local
+try:
+    config_path = os.path.join("..", "config.toml")
+    with open(config_path, "r") as file:
+        config = toml.load(file)
+        mapbox_token = config.get("mapbox_token")
+        
+# Sino, utilizar st.secrets para deploy
+except FileNotFoundError:
+    config = st.secrets
+    mapbox_token = config["mapbox_token"]
+
 
 #Layout
 st.set_page_config(
@@ -19,16 +29,22 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded")
 
+
 #Data Pull and Functions
 data_frames = pull_clean() 
-groups = get_group_category()
+groups = get_groups()
 
-state = data_frames.get('1_states.parquet')
-business_google = data_frames.get('5_business_google.parquet')
-# business_yelp = data_frames.get('6_business_yelp.parquet')
-# users_google = data_frames.get('4_user_google.parquet')
-# users_yelp = data_frames.get('3_user_yelp.parquet')
-# reviews_google = data_frames.get('9_reviews_google.parquet')
+state = data_frames.get('1_states.parquet.gz')
+# categories = data_frames.get('2_categories.parquet.gz')
+# user_yelp = data_frames.get('3_user_yelp.parquet.gz')
+# user_google = data_frames.get('4_user_google.parquet.gz')
+business_google = data_frames.get('5_business_google.parquet.gz')
+# business_yelp = data_frames.get('6_business_yelp.parquet.gz')
+# categories_google = data_frames.get('7_categories_google.parquet.gz')
+# categories_yelp = data_frames.get('8_categories_yelp.parquet.gz')
+# reviews_google = data_frames.get('9_reviews_google.parquet.gz')
+# reviews_yelp = data_frames.get('10_reviews_yelp.parquet.gz')
+
 
 unique_names = get_unique_names(business_google)
 
