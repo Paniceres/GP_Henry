@@ -29,7 +29,7 @@
     <a href="https://github.com/Paniceres/PI_Data_Analytics"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://restaurant-analysis-google-yelp.streamlit.app/">View Deploy</a>
+    <a href="https://restaurant-analysis-gmap-yelp.streamlit.app/">View Deploy</a>
     ·
     <a href="https://github.com/Paniceres/GP_Henry/issues">Report Bug</a>
     ·
@@ -217,7 +217,7 @@ Project Link: [https://github.com/Paniceres/GP_Henry](https://github.com/Panicer
 
 
 <!-- Enlaces completos -->
-[Deploy]: https://restaurants-analysis-google-yelp.streamlit.app/
+[Deploy]: https://restaurant-analysis-gmap-yelp.streamlit.app/
 [contributors-shield]: https://img.shields.io/github/contributors/Paniceres/GP_Henry.svg?style=for-the-badge
 [contributors-url]: https://github.com/Paniceres/GP_Henry/graphs/contributors
 [forks-shield]: https://img.shields.io/github/forks/Paniceres/GP_Henry.svg?style=for-the-badge
