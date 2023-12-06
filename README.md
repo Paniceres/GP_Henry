@@ -8,11 +8,11 @@
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
-[![LinkedIn: Lucio][linkedin-shield]][P-linkedin-url]
-[![LinkedIn: Bruno][linkedin-shield]][B-linkedin-url]
-[![LinkedIn: Damián][linkedin-shield]][D-linkedin-url]
-[![LinkedIn: Jonathan][linkedin-shield]][Jc-linkedin-url]
-[![LinkedIn: Jefferson][linkedin-shield]][JT-linkedin-url]
+[![Lucio][linkedin-shield]][P-linkedin-url]
+[![Bruno][linkedin-shield]][B-linkedin-url]
+[![Damián][linkedin-shield]][D-linkedin-url]
+[![Jonathan][linkedin-shield]][Jc-linkedin-url]
+[![Jefferson][linkedin-shield]][JT-linkedin-url]
 
 <!-- PROJECT LOGO -->
 <br />
@@ -201,13 +201,19 @@ Don't forget to give the project a star! Thanks again!
 <!-- CONTACT -->
 ## Contact
 Paniceres Lucio - panicereslucio@gmail.com
+Albariño Damián - damianlabarino@hotmail.com
+Zenobio Bruno - brunozenobio4@gmail.com
+Jonathan Castillo - 
+Jefferson Tonetto - jeffersson2210@gmail.com
 
-Project Link: [https://github.com/Paniceres/PI_Data_Analytics](https://github.com/Paniceres/PI_Data_Analytics)
+Project Link: [https://github.com/Paniceres/GP_Henry](https://github.com/Paniceres/GP_Henry)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+
+
 
 <!-- Enlaces completos -->
 [Deploy]: https://restaurants-analysis-google-yelp.streamlit.app/
