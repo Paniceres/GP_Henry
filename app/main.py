@@ -1,16 +1,17 @@
 import streamlit as st
-
-import pandas as pd
-import plotly.express as px
-
 from streamlit_option_menu import option_menu
-import json
-
-
-from utils.funcs import get_unique_names, pull_clean, get_restaurants_per_capita, analisis_respuestas, calcular_retencion, calcular_influencia
+import pandas as pd
+import toml
+import plotly.express as px
+from utils.funcs import read_config, get_unique_names, pull_clean, get_restaurants_per_capita, analisis_respuestas, calcular_retencion, calcular_influencia
 import os.path
+
 # Obtener la ruta del directorio del script actual
 route = os.path.dirname(__file__)
+
+# Secrets
+config = read_config()
+mapbox_token = config.get("mapbox_token")
 
 #Layout
 st.set_page_config(
@@ -20,6 +21,7 @@ st.set_page_config(
 
 #Data Pull and Functions
 data_frames = pull_clean() 
+groups = get_group_category()
 
 state = data_frames.get('1_states.parquet')
 business_google = data_frames.get('5_business_google.parquet')
@@ -107,55 +109,8 @@ if selected=="Comercial":
         
         
     if loc_select=='Restaurante':
-        zip_select = st.selectbox(label='Restaurante',options=[unique_names])
-        st.header('KPI 1: Negocios por Capita')
+        zip_select = st.selectbox(label='Restaurante',options=[groups])
         
-        df_kpi1 = get_restaurants_per_capita(business_google, target_state, target_year)
-
-        if df_kpi1 is not None:
-            st.write(df_kpi1)
-        else: 
-            st.write('error')
-
-    if loc_select == 'Business':
-        # zip_select = st.selectbox(label='Business', options=['Seleccione el nombre de un restaurante'] + list(business_google['name'].unique()), label_visibility='collapsed')
-        
-        df_kpi1 = get_restaurants_per_capita(business_google, target_state, target_year)
-        if df_kpi1 is not None:
-            st.write(df_kpi1)
-        
-        st.header('Top {} Most Similar Locations'.format(len(business_google)))
-        # CSS to inject contained in a string
-
-        # Mover esta sección fuera del bloque de código anterior
-        tabs = st.tabs(['# Map'])
-
-        if tabs[0]:  # Utiliza el índice para verificar la pestaña activa
-            token = "pk.eyJ1Ijoia3NvZGVyaG9sbTIyIiwiYSI6ImNsZjI2djJkOTBmazU0NHBqdzBvdjR2dzYifQ.9GkSN9FUYa86xldpQvCvxA"
-            # Convertir latitud y longitud a tipo flotante si no lo están
-            business_google['latitude'] = business_google['latitude'].astype(float)
-            business_google['longitude'] = business_google['longitude'].astype(float)
-            latcenter = business_google['latitude'].mean()
-            loncenter = business_google['longitude'].mean()
-
-            fig1 = px.scatter_mapbox(
-                business_google,
-                lat='latitude',
-                lon='longitude',
-                color_continuous_scale=px.colors.sequential.Blackbody,
-                center=go.layout.mapbox.Center(lat=latcenter, lon=loncenter),
-                hover_name='name',
-                zoom=8,
-            )
-            fig1.update_traces(marker={'size': 15})
-            fig1.update_layout(
-                mapbox_style="mapbox://styles/mapbox/satellite-streets-v12",
-                mapbox_accesstoken=token,
-                height=600
-            )
-            fig1.update_traces(marker=dict(color='red', size=20, opacity=1))
-            # Mostrar el mapa en Streamlit con el ancho responsivo
-            st.plotly_chart(fig1, use_container_width=True)
                 
     with st.expander('Advanced Settings'):
         pass
@@ -213,4 +168,3 @@ if selected=='Sobre nosotros':
         col1,col2=st.columns(2)
         #col1.image('hud.png',width=150)\
         col1.write(':blue[U.S. Dept Housing and Urban Development]')
-

@@ -48,7 +48,7 @@ def categories_nlp():
 
     # Cambiar por la lectura a la BD
 
-    local_categories_google = pd.read_parquet('../../datasets/processed/bd/7_categories_google.parquet.gz')
+    local_categories_google = pd.read_parquet('.datasets/processed/bd/7_categories_google.parquet.gz')
 
     # Cambiar por la lectura a la BD
     local_categories_yelp = pd.read_parquet('./datasets/processed/bd/8_categories_yelp.parquet.gz')
