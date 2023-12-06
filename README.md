@@ -200,11 +200,12 @@ Don't forget to give the project a star! Thanks again!
 
 <!-- CONTACT -->
 ## Contact
-Paniceres Lucio - panicereslucio@gmail.com
-Albariño Damián - damianlabarino@hotmail.com
-Zenobio Bruno - brunozenobio4@gmail.com
-Jonathan Castillo - 
-Jefferson Tonetto - jeffersson2210@gmail.com
+* Paniceres Lucio - panicereslucio@gmail.com
+* Albariño Damián - damianlabarino@hotmail.com
+* Zenobio Bruno - brunozenobio4@gmail.com
+* Jonathan Castillo - 
+* Jefferson Tonetto - jeffersson2210@gmail.com
+
 
 Project Link: [https://github.com/Paniceres/GP_Henry](https://github.com/Paniceres/GP_Henry)
 
