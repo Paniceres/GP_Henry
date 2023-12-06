@@ -17,19 +17,19 @@
     <img src="/src/logo.png" alt="Logo" width="500" height="225">
   </a>
 
-<h3 align="center">ENACOM Data Analytics Project</h3>
+<h3 align="center">Google & Yelp Data Analytics Project</h3>
 
   <p align="center">
-    Data Analysis for Network Optimization
+    Data Analysis for Restaurant in USA
     <br />
     <a href="https://github.com/Paniceres/PI_Data_Analytics"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://enacom-data-analytics-paniceres.streamlit.app/">View Deploy</a>
+    <a href="https://restaurant-analysis-google-yelp.streamlit.app/">View Deploy</a>
     ·
-    <a href="https://github.com/Paniceres/PI_Data_Analytics/issues">Report Bug</a>
+    <a href="https://github.com/Paniceres/GP_Henry/issues">Report Bug</a>
     ·
-    <a href="https://github.com/Paniceres/PI_Data_Analytics/issues">Request Feature</a>
+    <a href="https://github.com/Paniceres/GP_Henry/issues">Request Feature</a>
   </p>
 </div>
 
