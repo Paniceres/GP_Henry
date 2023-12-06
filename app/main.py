@@ -3,7 +3,7 @@ from streamlit_option_menu import option_menu
 import pandas as pd
 import toml
 import plotly.express as px
-from utils.funcs import read_config, get_unique_names, pull_clean, get_restaurants_per_capita, analisis_respuestas, calcular_retencion, calcular_influencia
+from utils.funcs import read_config, get_unique_names, pull_clean, get_kpi2_respuestas, get_kpi3_retencion, get_kpi4_influencia
 import os.path
 
 # Obtener la ruta del directorio del script actual
