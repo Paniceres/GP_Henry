@@ -4,17 +4,12 @@ import streamlit as st
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-
-
 from math import radians, sin, cos, sqrt, atan2
 from sklearn.neighbors import NearestNeighbors
 from sklearn.feature_extraction.text import TfidfVectorizer
 import pickle
 
-
 import os.path
-
-
 # Obtener la ruta del directorio del script actual
 route = os.path.dirname(__file__)
 
@@ -71,48 +66,48 @@ def pull_clean():
 
 
 # KPI 1
-def get_restaurants_per_capita(df_bg, target_state, target_year):
-    population_data = {
-        'California': {2015: 39144818, 2016: 39250017, 2017: 39399349, 2018: 39538223, 2019: 39613506,
-                       2020: 39538223, 2021: 39296476, 2022: 39056079, 2023: 38982847},
-        'Florida': {2015: 20271272, 2016: 20656589, 2017: 20984400, 2018: 21299325, 2019: 21477737,
-                    2020: 21538187, 2021: 21733312, 2022: 22244823, 2023: 22733312},
-        'Illinois': {2015: 12859995, 2016: 12802503, 2017: 12778828, 2018: 12741080, 2019: 12671821,
-                     2020: 12812508, 2021: 12671869, 2022: 12518144, 2023: 12470000},
-        'New Jersey': {2015: 8958013, 2016: 9005644, 2017: 9032872, 2018: 8908520, 2019: 8882190,
-                       2020: 9288994, 2021: 9261692, 2022: 9288994, 2023: 9290000}
-    }
+# def get_restaurants_per_capita(df_bg, target_state, target_year):
+#     population_data = {
+#         'California': {2015: 39144818, 2016: 39250017, 2017: 39399349, 2018: 39538223, 2019: 39613506,
+#                        2020: 39538223, 2021: 39296476, 2022: 39056079, 2023: 38982847},
+#         'Florida': {2015: 20271272, 2016: 20656589, 2017: 20984400, 2018: 21299325, 2019: 21477737,
+#                     2020: 21538187, 2021: 21733312, 2022: 22244823, 2023: 22733312},
+#         'Illinois': {2015: 12859995, 2016: 12802503, 2017: 12778828, 2018: 12741080, 2019: 12671821,
+#                      2020: 12812508, 2021: 12671869, 2022: 12518144, 2023: 12470000},
+#         'New Jersey': {2015: 8958013, 2016: 9005644, 2017: 9032872, 2018: 8908520, 2019: 8882190,
+#                        2020: 9288994, 2021: 9261692, 2022: 9288994, 2023: 9290000}
+#     }
 
-    if year not in {2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023}:
-        st.error("Año no válido. Por favor, elige un año entre '2015 y 2023'")
-    businesses_per_capita = {}
+#     if year not in {2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023}:
+#         st.error("Año no válido. Por favor, elige un año entre '2015 y 2023'")
+#     businesses_per_capita = {}
 
-    for state, population in population_data.items():
-        if state != target_state:
-            continue
+#     for state, population in population_data.items():
+#         if state != target_state:
+#             continue
 
-        # Filtrar los datos del DataFrame por estado
-        df_filtered = df_bg[df_bg['state_id'] == state]
-        # Calcular el número de negocios únicos
-        unique_businesses = df_filtered['gmap_id'].nunique()
-        # Calcular el número de negocios únicos por habitantes en año seleccionado
-        businesses_per_capita[state] = unique_businesses / (population[target_year]/10000)
+#         # Filtrar los datos del DataFrame por estado
+#         df_filtered = df_bg[df_bg['state_id'] == state]
+#         # Calcular el número de negocios únicos
+#         unique_businesses = df_filtered['gmap_id'].nunique()
+#         # Calcular el número de negocios únicos por habitantes en año seleccionado
+#         businesses_per_capita[state] = unique_businesses / (population[target_year]/10000)
 
-    if not businesses_per_capita:
-        st.warning(f"No hay datos disponibles para {target_state} en 2023.")
-        return None
+#     if not businesses_per_capita:
+#         st.warning(f"No hay datos disponibles para {target_state} en 2023.")
+#         return None
 
-    # Convertir el diccionario a un DataFrame para Seaborn
-    df_businesses_per_capita = pd.DataFrame(list(businesses_per_capita.items()), columns=['Estado', 'Negocios por 10,000 habitantes'])
+#     # Convertir el diccionario a un DataFrame para Seaborn
+#     df_businesses_per_capita = pd.DataFrame(list(businesses_per_capita.items()), columns=['Estado', 'Negocios por 10,000 habitantes'])
     
-    return df_businesses_per_capita
+#     return df_businesses_per_capita
 
 # KPI 2
 
 
 
 # KPI 3
-def analisis_respuestas(df_rg, df_bg):
+def get_kpi2_respuestas(df_rg, df_bg):
     # Convertir 'date' y 'resp_date' al formato datetime
     df_rg['date'] = pd.to_datetime(df_rg['date'], format='%Y-%m-%d %H:%M:%S.%f', errors='coerce')
     df_rg['resp_date'] = pd.to_datetime(df_rg['resp_date'], format='%Y-%m-%d %H:%M:%S.%f', errors='coerce')
@@ -143,7 +138,7 @@ def analisis_respuestas(df_rg, df_bg):
 
 
 # KPI 4
-def calcular_retencion(df_rg):
+def get_kpi3_retencion(df_rg):
     # Convertir 'date' al formato datetime
     df_rg['date'] = pd.to_datetime(df_rg['date'], format='%Y-%m-%d %H:%M:%S.%f', errors='coerce')
 
@@ -165,7 +160,7 @@ def calcular_retencion(df_rg):
     return tasa_retencion_actual, tasa_retencion_objetivo, usuarios_repetidos_necesarios
 
 # KPI 5
-def calcular_influencia(df_uy):
+def get_kpi4_influencia(df_uy):
     # Definir la función de rango de influencia
     def rango_influyente(cant_fans):
         if cant_fans < 10:
