@@ -51,14 +51,14 @@ def categories_nlp():
     local_categories_google = pd.read_parquet('../../datasets/processed/bd/7_categories_google.parquet.gz')
 
     # Cambiar por la lectura a la BD
-    local_categories_yelp = pd.read_parquet('../../datasets/processed/bd/8_categories_yelp.parquet.gz')
+    local_categories_yelp = pd.read_parquet('./datasets/processed/bd/8_categories_yelp.parquet.gz')
 
     #Si se lee de la base de datos business_id ya esta como nombre.
     local_categories_google.rename(columns={'gmap_id':'business_id'},inplace=True)
     local_categories = pd.concat([local_categories_google,local_categories_yelp])
 
     # Cambiar por la lectura a la BD
-    categoires = pd.read_parquet('../../datasets/processed/bd/2_categories.parquet.gz')
+    categoires = pd.read_parquet('./datasets/processed/bd/2_categories.parquet.gz')
     local_categories = pd.merge(local_categories,categoires,on='categories_id',how='inner')
     
     #### Se genera el dataframe local_categories.#####
@@ -75,7 +75,7 @@ def categories_nlp():
     from gensim.models import KeyedVectors
 
     # Ruta al archivo GoogleNews-vectors-negative300.bin
-    ruta_modelo = '../../datasets/extras/model/GoogleNews-vectors-negative300.bin/GoogleNews-vectors-negative300.bin'
+    ruta_modelo = './datasets/extras/model/GoogleNews-vectors-negative300.bin/GoogleNews-vectors-negative300.bin'
 
     # Cargar el modelo
     modelo = KeyedVectors.load_word2vec_format(ruta_modelo, binary=True,limit=500000)

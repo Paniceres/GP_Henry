@@ -66,14 +66,14 @@ def distance(business_id,business_id_list,rang=None):
     #Genero un dataframe con los restaurantes de google y yelp
     
     # Cambiar por la lectura a la BD, si se lee de ahi business_id ya esta como nombre
-    business_google=pd.read_parquet('../../datasets/processed/bd/5_business_google.parquet.gz') 
+    business_google=pd.read_parquet('./datasets/processed/bd/5_business_google.parquet.gz') 
     business_google.rename(columns={'gmap_id':'business_id'},inplace=True) 
     
     # Cambiar por la lectura a la BD
-    business_yelp=pd.read_parquet('../../datasets/processed/bd/6_business_yelp.parquet.gz') 
+    business_yelp=pd.read_parquet('./datasets/processed/bd/6_business_yelp.parquet.gz') 
     
     # si se lee de la base de datos cambiar stars de business_yelp por avg_stars
-    business = pd.concat([business_google[['business_id','name','avg_stars','latitude','longitude']],business_yelp[['business_id','name','avg_stars','latitude','longitude']]])
+    business = pd.concat([business_google[['business_id','name','avg_stars','latitude','longitude','state_id']],business_yelp[['business_id','name','avg_stars','latitude','longitude','state_id']]])
     #Genero las coordenadas del local al que le quiero encontrar recomendaciones.
     lat_origin,long_origin = business[business['business_id']==business_id]['latitude'].iloc[0],business[business['business_id']==business_id]['longitude'].iloc[0]
     #Filtro solo por los restaurantes que pertenecen a las recomendaciones.
@@ -102,14 +102,14 @@ def get_recommendations(business_id,rang=None):
     """
     
     # Cargo el modelo
-    with open('./modelo_knn.pkl', 'rb') as file: 
+    with open('./app/ml/modelo_knn.pkl', 'rb') as file: 
         knn_model = pickle.load(file)
         
-    with open('./tfidf_matrix.pkl', 'rb') as file:
+    with open('./app/ml/tfidf_matrix.pkl', 'rb') as file:
         categories_procceced = pickle.load(file)
     
     ######### categories_procceced podria ser un df importado  con todos los pasos anteriores.#########
-    local_categories = pd.read_parquet('./datasets/locales_categories.parquet')
+    local_categories = pd.read_parquet('./app/ml/datasets/locales_categories.parquet')
 
     idx = local_categories[local_categories['business_id'] == business_id].index[0]
    
@@ -118,6 +118,7 @@ def get_recommendations(business_id,rang=None):
     #Genero las recomendaciones.
     _, indices = knn_model.kneighbors(categories_procceced[idx])
     recommendations = local_categories['business_id'].iloc[indices[0][1:]]  # Excluye el propio restaurante
+
     
     #Calcula las distancias entre las recomendaciones y el local.
     if rang:
@@ -132,9 +133,10 @@ def get_recommendations(business_id,rang=None):
         'name_x':list,
         'name_y':'first',
         'distance':'first',
-        'avg_stars':'mean'
+        'avg_stars':'mean',
+        'state_id':'first'
         
-    }).reset_index()
+    }).reset_index().rename(columns =({'name_x':'category','name_y':'name'}))
         
     
     return business_cat
@@ -142,7 +144,7 @@ def get_recommendations(business_id,rang=None):
 
 
 #Funcion que recibe un business id userid o categoria y recomienda locales, tambien puede agregarse el rango en metros de distancia.
-def recommendation(business_ids=None,user_id=None,category=None,distance=None):
+def recommendation(business_ids=None,user_id=None,category=None,distance=None,target_state=None):
     """
     Esta funcion a partird e un negocio usuario o categoria recomienda otros negocios, teniendo en cuenta la distancia de ser requerida.
     Para esto la funcion toma un negocio, o selecciona una lista de ellos usando user_id, y categorias, y aplica la funcion *get_recommendations*
@@ -151,33 +153,46 @@ def recommendation(business_ids=None,user_id=None,category=None,distance=None):
         business_ids (str, optional): Id de un negocio.
         user_id (str, optional): Id de un usuario.
         category (str, optional): Categoria (nombre).
-        distance (float, optional): Distancia en metros.
+        distance (float, optional): Distancia en kilometros.
 
     Returns:
         pd.DataFrame: Data Frame con ñas recomendaciones y otras caracteristicas(analizar el uso de json)
     """
         
+    if business_ids:
+        business_ids = [business_ids]
     
     if user_id:
         
         # Cambiar por la lectura a la BD
-        df_rg = pd.read_parquet('../../datasets/processed/bd/9_reviews_google.parquet.gz',columns=['user_id','gmap_id','sentiment'])
-        df_ry = pd.read_parquet('../../datasets/processed/bd/10_reviews_yelp.parquet.gz',columns=['user_id','gmap_id','sentiment'])
+        df_rg = pd.read_parquet('./datasets/processed/bd/9_reviews_google.parquet.gz',columns=['user_id','gmap_id','sentiment'])
+        df_ry = pd.read_parquet('./datasets/processed/bd/10_reviews_yelp.parquet.gz',columns=['user_id','business_id','sentiment'])
         df = pd.concat([df_rg,df_ry])
-        business_ids = df[df['user_id']==user_id].iloc[:10]['gmap_id'].tolist()
+        business_ids = df[df['user_id']==user_id].iloc[:10]['business_id'].tolist()
+        distance = None
         if len(business_ids) == 0:
             return 'Usuario no encontrado.'
         
     if category:
-        df_categories = pd.read_parquet('./datasets/locales_categories.parquet')
+        df_categories = pd.read_parquet('./app/ml/datasets/locales_categories.parquet')
         business_ids = df_categories[df_categories['name'].str.lower().str.contains(category.lower())].sample(10).iloc[:10]['business_id'].tolist()
+        distance = None
         if len(business_ids) == 0:
             return 'Categoria no encontrada.'
         
+        
     business_cat = pd.DataFrame()
-    for business_id in business_ids:
-        business_cat = pd.concat([business_cat,get_recommendations(business_ids,rang=distance)])    
     
+    for business_id in business_ids:
+        business_cat = pd.concat([get_recommendations(business_id,rang=distance),business_cat])    
+        
     if business_cat.shape[0] == 0:
         return 'Restaurante no encontrado.'
-    return business_cat
+    
+    states = pd.read_parquet('./datasets/processed/bd/1_states.parquet.gz')
+    business_cat = pd.merge(business_cat,states,on='state_id',how='inner')
+    business_cat = business_cat[['business_id','name','category','state','latitude','longitude','avg_stars','distance']]
+    if target_state:
+        business_cat = business_cat[business_cat['state']==target_state]
+        
+    return business_cat.sort_values(by=['avg_stars'],ascending=[False]).iloc[0:10]
