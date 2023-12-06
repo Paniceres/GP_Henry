@@ -8,7 +8,11 @@
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
-[![LinkedIn][linkedin-shield]][linkedin-url]
+[![LinkedIn: Lucio][linkedin-shield]][P-linkedin-url]
+[![LinkedIn: Bruno][linkedin-shield]][B-linkedin-url]
+[![LinkedIn: Damián][linkedin-shield]][D-linkedin-url]
+[![LinkedIn: Jonathan][linkedin-shield]][Jc-linkedin-url]
+[![LinkedIn: Jefferson][linkedin-shield]][JT-linkedin-url]
 
 <!-- PROJECT LOGO -->
 <br />
@@ -204,37 +208,26 @@ Project Link: [https://github.com/Paniceres/PI_Data_Analytics](https://github.co
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[Deploy]: https://enacom-data-analytics-paniceres.streamlit.app/
-[contributors-shield]: https://img.shields.io/github/contributors/Paniceres/PI_Data_Analytics.svg?style=for-the-badge
-[contributors-url]: https://github.com/Paniceres/PI_Data_Analytics/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/Paniceres/PI_Data_Analytics.svg?style=for-the-badge
-[forks-url]: https://github.com/Paniceres/PI_Data_Analytics/network/members
-[stars-shield]: https://img.shields.io/github/stars/Paniceres/PI_Data_Analytics.svg?style=for-the-badge
-[stars-url]: https://github.com/Paniceres/PI_Data_Analitycs/stargazers
-[issues-shield]: https://img.shields.io/github/issues/Paniceres/PI_Data_Analytics.svg?style=for-the-badge
-[issues-url]: https://github.com/Paniceres/PI_Data_Analytics/issues
-[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
-[linkedin-url]: https://www.linkedin.com/in/paniceres-lucio/
-
-[NumPy-logo]: https://img.shields.io/badge/NumPy-013243?style=for-the-badge&logo=numpy&logoColor=white
-[NumPy-url]: https://numpy.org/
-[Pandas-logo]: https://img.shields.io/badge/Pandas-150458?style=for-the-badge&logo=pandas&logoColor=white
-[Pandas-url]: https://pandas.pydata.org/
-[Python-logo]: https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white
-[Python-url]: https://www.python.org/
-[Matplotlib-logo]: https://img.shields.io/badge/Matplotlib-3776AB?style=for-the-badge&logo=python&logoColor=white
-[Matplotlib-url]: https://matplotlib.org/
-[Seaborn-logo]: https://img.shields.io/badge/Seaborn-3776AB?style=for-the-badge&logo=python&logoColor=white
-[Seaborn-url]: https://seaborn.pydata.org/
-[Streamlit-logo]: https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white
-[Streamlit-url]: https://streamlit.io/
-[PyArrow-logo]: https://img.shields.io/badge/PyArrow-F63E02?style=for-the-badge&logo=apache-arrow&logoColor=white
-[PyArrow-url]: https://arrow.apache.org/pyarrow/
-[Manjaro-logo]: https://img.shields.io/badge/Manjaro-35BF5C?style=for-the-badge&logo=manjaro&logoColor=white
-[Manjaro-url]: https://manjaro.org/
 
 <!-- Enlaces completos -->
 [Deploy]: https://restaurants-analysis-google-yelp.streamlit.app/
+[contributors-shield]: https://img.shields.io/github/contributors/Paniceres/GP_Henry.svg?style=for-the-badge
+[contributors-url]: https://github.com/Paniceres/GP_Henry/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/Paniceres/GP_Henry.svg?style=for-the-badge
+[forks-url]: https://github.com/Paniceres/GP_Henry/network/members
+[stars-shield]: https://img.shields.io/github/stars/Paniceres/GP_Henry.svg?style=for-the-badge
+[stars-url]: https://github.com/Paniceres/GP_Henry/stargazers
+[issues-shield]: https://img.shields.io/github/issues/Paniceres/GP_Henry.svg?style=for-the-badge
+[issues-url]: https://github.com/Paniceres/GP_Henry/issues
+[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
+[P-linkedin-url]: https://www.linkedin.com/in/paniceres-lucio/
+[B-linkedin-url]: https://www.linkedin.com/in/brunozenobio/
+[D-linkedin-url]: https://www.linkedin.com/in/dami%C3%A1n-nicol%C3%A1s-albari%C3%B1o-b03b9a1ab/
+[Jc-linkedin-url]: https://www.linkedin.com/in/jonathan-castillo-7962b7163/
+[JT-linkedin-url]: https://www.linkedin.com/in/jeferson-tonetto-mogollon-09ba311b0/
+
+
+<!-- Logos y URLs -->
 [Python-logo]: https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white
 [Python-url]: https://www.python.org/
 [Pandas-logo]: https://img.shields.io/badge/Pandas-150458?style=for-the-badge&logo=pandas&logoColor=white
