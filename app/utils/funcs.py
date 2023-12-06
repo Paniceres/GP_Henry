@@ -3,22 +3,29 @@ import numpy as np
 import streamlit as st
 import seaborn as sns
 import matplotlib.pyplot as plt
-
-
 import matplotlib.pyplot as plt
 import seaborn as sns
 import os.path
+
+
 # Obtener la ruta del directorio del script actual
 route = os.path.dirname(__file__)
 
- 
-
+@st.cache_data
+def get_unique_names(dataframe):
+    if 'name' in dataframe.columns:
+        unique_names = dataframe['name'].unique().tolist()
+        return unique_names
+    else:
+        print("El DataFrame no contiene la columna 'name'. Verifica la estructura de tus datos.")
+        return []
 
 @st.cache_data
 def pull_clean():
     # Construir la ruta relativa al dataset
     db_route = os.path.join(route, '..', '..', 'datasets', 'processed', 'bd')
-    # db_route = '../datasets/processed/bd/'
+    print('db_route')
+    # db_route = '../../datasets/processed/bd/'
     # Lista de nombres de archivos a leer
     file_names = [
         '1_states.parquet.gz',
@@ -39,14 +46,14 @@ def pull_clean():
         full_path = os.path.abspath(os.path.join(db_route, file_name))
         df_name = os.path.splitext(os.path.basename(file_name))[0]  # Nombre del DataFrame sin extensión
         data_frames[df_name] = pd.read_parquet(full_path)
-
+        print(f"{df_name}: {data_frames[df_name].shape}")
     return data_frames
 
 
 
 
 # KPI 1
-def get_restaurants_per_capita(df_bg, target_state, year):
+def get_restaurants_per_capita(df_bg, target_state, target_year):
     population_data = {
         'California': {2015: 39144818, 2016: 39250017, 2017: 39399349, 2018: 39538223, 2019: 39613506,
                        2020: 39538223, 2021: 39296476, 2022: 39056079, 2023: 38982847},
@@ -57,10 +64,6 @@ def get_restaurants_per_capita(df_bg, target_state, year):
         'New Jersey': {2015: 8958013, 2016: 9005644, 2017: 9032872, 2018: 8908520, 2019: 8882190,
                        2020: 9288994, 2021: 9261692, 2022: 9288994, 2023: 9290000}
     }
-
-    if target_state not in population_data:
-        st.error("Estado no válido. Por favor, elige entre 'California', 'Florida', 'Illinois', o 'New Jersey'.")
-        return None
 
     if year not in {2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023}:
         st.error("Año no válido. Por favor, elige un año entre '2015 y 2023'")
@@ -75,7 +78,7 @@ def get_restaurants_per_capita(df_bg, target_state, year):
         # Calcular el número de negocios únicos
         unique_businesses = df_filtered['gmap_id'].nunique()
         # Calcular el número de negocios únicos por habitantes en año seleccionado
-        businesses_per_capita[state] = unique_businesses / (population[year]/10000)
+        businesses_per_capita[state] = unique_businesses / (population[target_year]/10000)
 
     if not businesses_per_capita:
         st.warning(f"No hay datos disponibles para {target_state} en 2023.")
@@ -172,10 +175,3 @@ def calcular_influencia(df_uy):
     }
 
     return kpi5_metrics
-
-
-
-
-
-
-
