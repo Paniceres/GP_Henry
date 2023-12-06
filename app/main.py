@@ -1,14 +1,10 @@
 import streamlit as st
-
+from streamlit_option_menu import option_menu
 import pandas as pd
 import plotly.express as px
-
-from streamlit_option_menu import option_menu
-import json
-
-
 from utils.funcs import get_unique_names, pull_clean, get_restaurants_per_capita, analisis_respuestas, calcular_retencion, calcular_influencia
 import os.path
+
 # Obtener la ruta del directorio del script actual
 route = os.path.dirname(__file__)
 
