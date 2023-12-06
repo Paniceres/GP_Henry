@@ -1,11 +1,14 @@
 import streamlit as st
+
 import pandas as pd
 import plotly.express as px
 import seaborn as sn
 from streamlit_option_menu import option_menu
 import json
-from utils.funcs import pull_clean, get_restaurants_per_capita, analisis_respuestas, calcular_retencion, calcular_influencia
+from utils.funcs import get_unique_names, pull_clean, get_restaurants_per_capita, analisis_respuestas, calcular_retencion, calcular_influencia
 import os.path
+# Obtener la ruta del directorio del script actual
+route = os.path.dirname(__file__)
 
 #Layout
 st.set_page_config(
@@ -14,6 +17,17 @@ st.set_page_config(
     initial_sidebar_state="expanded")
 
 #Data Pull and Functions
+data_frames = pull_clean() 
+
+state = data_frames.get('1_states.parquet')
+business_google = data_frames.get('5_business_google.parquet')
+# business_yelp = data_frames.get('6_business_yelp.parquet')
+# users_google = data_frames.get('4_user_google.parquet')
+# users_yelp = data_frames.get('3_user_yelp.parquet')
+# reviews_google = data_frames.get('9_reviews_google.parquet')
+
+unique_names = get_unique_names(business_google)
+
 st.markdown("""
 <style>
 .big-font {
@@ -22,7 +36,6 @@ st.markdown("""
 }
 </style>
 """, unsafe_allow_html=True)
-
 
 
 # ------------------------------------ MENU ---------------------------------------
@@ -73,9 +86,30 @@ if selected=="Introducción":
     
 # ------------------------------------ Comercial ---------------------------------------
 
+if selected=="Comercial":
+    st.subheader('Seleccione su Criterio:')
 
 
+    
+    target_state = st.multiselect(label='Selecciona estado:',options=['California', 'Florida', 'New Jersey', 'Illinoais'],label_visibility='collapsed')
+    target_year = st.multiselect('Selecciona un año', [2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023])
+    
+    
+    loc_select=st.radio('Type',['Restaurante', 'Business'],horizontal=True, label_visibility="collapsed")
+    
+    st.caption('Nota: Solo disponibilizados los estados criterio.')   
+        
+        
+    if loc_select=='Restaurante':
+        zip_select = st.selectbox(label='Restaurante',options=[unique_names])
+        st.header('KPI 1: Negocios por Capita')
+        
+        df_kpi1 = get_restaurants_per_capita(business_google, target_state, target_year)
 
+        if df_kpi1 is not None:
+            st.write(df_kpi1)
+        else: 
+            st.write('error')
 
 if selected=="Comercial":
     st.subheader('Seleccione su Criterio:')
