@@ -199,4 +199,4 @@ def recommendation(business_ids=None,user_id=None,category=None,distance=None,ta
         
     return business_cat.sort_values(by=['avg_stars'],ascending=[False]).iloc[0:10]
 
-print(recommendation(business_ids='0x808f86f459cf5fcb:0xf2be0b65edddcbd0'))
+print(recommendation(business_ids='0x808f86f459cf5fcb:0xf2be0b65edddcbd0').columns)
