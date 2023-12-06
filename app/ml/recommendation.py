@@ -23,7 +23,7 @@ def haversine(lat1, lon1, lat2, lon2):
     """
     
     # Radio de la Tierra en metros
-    R = 6371000.0
+    R = 6371.0
 
     # Convierte las coordenadas de grados a radianes
     lat1, lon1, lat2, lon2 = map(radians, [lat1, lon1, lat2, lon2])
@@ -125,6 +125,8 @@ def get_recommendations(business_id,rang=None):
         business = distance(business_id,recommendations,rang)
     else:
         business = distance(business_id,recommendations)
+        
+    business = business[business['distance']!=0.0] # Elimino al restaurante mismos.
     #Uno las caractereisticas de los locales, con las categorias.
     business_cat = pd.merge(local_categories,business,on='business_id')
     business_cat = business_cat.groupby('business_id').agg({
@@ -196,3 +198,5 @@ def recommendation(business_ids=None,user_id=None,category=None,distance=None,ta
         business_cat = business_cat[business_cat['state']==target_state]
         
     return business_cat.sort_values(by=['avg_stars'],ascending=[False]).iloc[0:10]
+
+print(recommendation(business_ids='0x808f86f459cf5fcb:0xf2be0b65edddcbd0'))
