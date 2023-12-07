@@ -14,27 +14,18 @@ import os.path
 # Obtener la ruta del directorio del script actual
 route = os.path.dirname(__file__)
 
-@st.cache_data
-def read_config(file_path="config.toml"):
+
+def read_config(file_path = "../.streamlit/secrets.toml"):
     try:
         with open(file_path, "r") as file:
-            config_data = toml.load(file)
-            return config_data
+            secrets = toml.load(file)
+            return secrets      
+    # Sino, utilizar st.secrets para deploy
     except FileNotFoundError:
-        print(f"El archivo {file_path} no fue encontrado.")
-        return None
+        return st.secrets
+        
 
-
-@st.cache_data
-def get_unique_names(dataframe):
-    if 'name' in dataframe.columns:
-        unique_names = dataframe['name'].unique().tolist()
-        return unique_names
-    else:
-        print("El DataFrame no contiene la columna 'name'. Verifica la estructura de tus datos.")
-        return []
-
-@st.cache_data
+# @st.cache_data
 def pull_clean():
     # Construir la ruta relativa al dataset
     db_route = os.path.join(route, '..', '..', 'datasets', 'processed', 'bd')
@@ -44,13 +35,13 @@ def pull_clean():
     file_names = [
         '1_states.parquet.gz',
         # '3_user_yelp.parquet.gz',
-        '2_categories.parquet.gz',
-        '4_user_google.parquet.gz',
+        # '2_categories.parquet.gz',
+        # '4_user_google.parquet.gz',
         '5_business_google.parquet.gz',
         '6_business_yelp.parquet.gz',
         # '7_categories_google.parquet.gz',
         # '8_categories_yelp.parquet.gz',
-        '9_reviews_google.parquet.gz',
+        # '9_reviews_google.parquet.gz',
         # '10_reviews_yelp.parquet.gz',
     ]
 
