@@ -24,7 +24,7 @@
 <h3 align="center">Google & Yelp Data Analytics Project</h3>
 
   <p align="center">
-    Data Analysis for Restaurant in USA
+    Análisis de datos para restaurantes en EE. UU.
     <br />
     <a href="https://github.com/Paniceres/PI_Data_Analytics"><strong>Explora los documentos »</strong></a>
     <br />
@@ -64,13 +64,13 @@
 
 <!-- ABOUT THE PROJECT -->
 
-## About The Project
+## Sobre el proyecto
 
 Quantyle Analytics: análisis del rubro de Restaurantes en USA.
 
 <p align="right">(<a href="#readme-top">Volver al principio</a>)</p>
 
-### Built With
+### Construido con
 
 - [![Python][Python-logo]][Python-url]
 - [![Pandas][Pandas-logo]][Pandas-url]
@@ -98,15 +98,15 @@ Quantyle Analytics: análisis del rubro de Restaurantes en USA.
 
 <!-- GETTING STARTED -->
 
-## Getting Started
+## Empezar
 
 Para probar nuestro proyecto, puedes seguir los siguientes pasos.
 
-### Prerequisites
+### Prerrequisitos
 
 - pip install requirements.txt
 
-### Installation
+### Instalación
 
 Este es un ejemplo de cómo enumerar las cosas que necesita para usar el software y cómo instalarlas.
 
@@ -115,7 +115,7 @@ Este es un ejemplo de cómo enumerar las cosas que necesita para usar el softwar
   pip install requirements.txt
   ```
 
-### Installation
+### Instalación
 
 1. Clonar el repositorio
    ```sh
@@ -130,7 +130,7 @@ Este es un ejemplo de cómo enumerar las cosas que necesita para usar el softwar
 
 <!-- USAGE EXAMPLES -->
 
-## Usage
+## Uso
 
 <a href="https://restaurant-analysis-gmap-yelp.streamlit.app/">Ver implementación</a>
 
@@ -140,7 +140,7 @@ Este es un ejemplo de cómo enumerar las cosas que necesita para usar el softwar
 
 <!-- METHODOLOGY -->
 
-# Methodology
+# Metodología
 
 La metodología empleada en este proyecto implicó los siguientes pasos clave:
 **Contexto y criterio de los datos; Extraer, transformar y cargar; Análisis de datos; Desplegar**
