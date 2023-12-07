@@ -13,7 +13,7 @@ def process_text(text):
     Funcion que realiza tokeinizacion en base a un texto.
 
     Args:
-        text (string): Palabra u oración para aplicar la tokeinizacin.
+        text (string): Palabra u oraciÃ³n para aplicar la tokeinizacin.
 
     Returns:
         str: Serie de strings.
@@ -74,13 +74,14 @@ def categories_nlp():
     
     from gensim.models import KeyedVectors
 
+    print('cargando modelo\n')
     # Ruta al archivo GoogleNews-vectors-negative300.bin
-    ruta_modelo = './datasets/extras/model/GoogleNews-vectors-negative300.bin/GoogleNews-vectors-negative300.bin'
+    ruta_modelo = './extras/model/GoogleNews-vectors-negative300.bin'
 
     # Cargar el modelo
-    modelo = KeyedVectors.load_word2vec_format(ruta_modelo, binary=True,limit=500000)
+    modelo = KeyedVectors.load_word2vec_format(ruta_modelo, binary=True,limit=1000000)
     
-    
+    print('Generando columna\n')
     local_categories['processed'] = local_categories['procceced'].apply(
     lambda text: ' '.join(
         [
@@ -91,14 +92,12 @@ def categories_nlp():
         ]
     )
     )   
+    print('Termino de generar columna\n')
     
     local_categories = local_categories[['business_id','name','processed']]
-    local_categories.to_parquet('./app/ml/datasetes/locales_categories.parquet') # Guardo el dataset util
+    local_categories.to_parquet('app/ml/datasets/locales_categories.parquet') # Guardo el dataset util
 
 
     tfidf_vectorizer = TfidfVectorizer()
     tfidf_matrix = tfidf_vectorizer.fit_transform(local_categories['processed'])
     return tfidf_matrix
-
-
-categories_nlp()
