@@ -142,7 +142,7 @@ def get_groups(df):
     
 #     return df_businesses_per_capita
 
-# KPI 2
+# KPI 1
 def get_kpi1_rating(df, target_group, target_state):
     """
     Calcula el promedio de las estrellas para cada grupo único en un DataFrame.
@@ -155,7 +155,7 @@ def get_kpi1_rating(df, target_group, target_state):
 
     return df_rating
 
-# KPI 3
+# KPI 2
 def get_kpi2_respuestas(reviews_google, business_google, state, group, target_state, target_group):
     '''
     Calcula la calidad de las respuestas
@@ -199,7 +199,7 @@ def get_kpi2_respuestas(reviews_google, business_google, state, group, target_st
     return kpi_respuestas
 
 
-# KPI 4
+# KPI 3
 def get_kpi3_retencion(df_rg):
     # Convertir 'date' al formato datetime
     df_rg['date'] = pd.to_datetime(df_rg['date'], format='%Y-%m-%d %H:%M:%S.%f', errors='coerce')
@@ -221,7 +221,7 @@ def get_kpi3_retencion(df_rg):
 
     return tasa_retencion_actual, tasa_retencion_objetivo, usuarios_repetidos_necesarios
 
-# KPI 5
+# KPI 4
 def get_kpi4_influencia(df_uy):
     # Definir la función de rango de influencia
     def rango_influyente(cant_fans):
