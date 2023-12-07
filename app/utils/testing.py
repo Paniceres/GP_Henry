@@ -24,9 +24,9 @@ reviews_google = data_frames.get('9_reviews_google.parquet')
 # reviews_yelp = data_frames.get('10_reviews_yelp.parquet')
 
 
-
-
 groups = get_groups(business_google)
 
-print(groups.columns) 
 
+
+kpi2 = get_kpi2_respuestas(reviews_google, business_google, categories_google, state, categories, target_state='Florida', target_group='general')
+print(kpi2)

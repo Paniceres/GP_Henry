@@ -37,8 +37,8 @@ def pull_clean():
     # Lista de nombres de archivos a leer
     file_names = [
         '1_states.parquet.gz',
-        # '3_user_yelp.parquet.gz',
         '2_categories.parquet.gz',
+        # '3_user_yelp.parquet.gz',
         '4_user_google.parquet.gz',
         '5_business_google.parquet.gz',
         '6_business_yelp.parquet.gz',
@@ -156,7 +156,8 @@ def get_kpi1_rating(df, target_group, target_state):
     return df_rating
 
 # KPI 2
-def get_kpi2_respuestas(reviews_google, business_google, state, group, target_state, target_group):
+# Habria que separarla en partes, tarda 40mins y da error
+def get_kpi2_respuestas(reviews_google, business_google, categories_google, state, categories, target_state, target_group):
     '''
     Calcula la calidad de las respuestas
     kpi_respuestas = (ratio respuestas/review * rango tiempo) + sentiment_resp promedio
@@ -171,18 +172,29 @@ def get_kpi2_respuestas(reviews_google, business_google, state, group, target_st
 
     # Fusionar con el dataframe de estados para obtener el nombre del estado
     merged_df = pd.merge(merged_df, state, on='state_id', how='inner')
+    
+    # Fusionar con el dataframe de categorías para obtener el nombre de la categoría
+    categories_df = pd.merge(categories, categories_google, on='categories_id', how='inner')
 
-    # Fusionar con el dataframe de grupos para obtener el nombre del grupo
-    merged_df = pd.merge(merged_df, group, on='categories_id', how='inner')
+    # Fusionar con el dataframe de categorías para obtener el nombre de la categoría
+    merged_df = pd.merge(merged_df, categories_df, on='gmap_id', how='inner')
+    
+    # Renombrar columnas
+    merged_df = merged_df.rename(columns={'name_x': 'name', 'name_y': 'category'})
 
+    # Borrar columnas residuales
+    merged_df.drop(columns=['categories_id', 'state_id'], inplace=True)
+    
     # Filtrar las filas por estado y grupo
     filtered_df = merged_df[(merged_df['state'] == target_state) & (merged_df['group'] == target_group)]
-
+    print(filtered_df)
+    
+    # Calcular el ratio de respuestas/comentarios
+    count_nonzero_resp = (filtered_df['resp_sentiment'] != 0.0).sum()
+    count_comments = len(filtered_df)
+    
     # Filtrar las filas donde 'resp_time' no es NaT
     filtered_df = filtered_df[~pd.isna(filtered_df['resp_date'])]
-
-    # Calcular la ratio de respuesta/review
-    # ratio_resp_review = filtered_df.groupby('name').size()
 
     # Calcular la diferencia de tiempo en horas
     filtered_df['tiempo_diff'] = (filtered_df['resp_date'] - filtered_df['date']).dt.total_seconds() / 3600
@@ -190,13 +202,20 @@ def get_kpi2_respuestas(reviews_google, business_google, state, group, target_st
     # Calcular el sentiment_resp promedio
     sentiment_resp_promedio = filtered_df['resp_sentiment'].mean()
 
-    # Calcular el ratio de respuestas/comentarios
-    ratio_resp_comentarios = filtered_df['resp_date'].count() / filtered_df['date'].count()
-
+    print("Count Nonzero Resp:", count_nonzero_resp)
+    print("Count Comments:", count_comments)
+    
+    # Verificar si count_dates es diferente de cero antes de la división
+    ratio_resp_comentarios = count_nonzero_resp / count_comments if count_comments > 0 else 0
+    print("Ratio Respuestas/Comentarios:", ratio_resp_comentarios)
+    
+    print("tiempo_diff:", filtered_df['tiempo_diff'].mean())
     # Calcular el KPI final
     kpi_respuestas = (ratio_resp_comentarios * filtered_df['tiempo_diff'].mean()) + sentiment_resp_promedio
 
     return kpi_respuestas
+
+
 
 
 # KPI 3
