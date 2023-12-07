@@ -3,6 +3,7 @@ import numpy as np
 import streamlit as st
 import seaborn as sns
 import matplotlib.pyplot as plt
+import toml
 
 
 
@@ -68,7 +69,51 @@ def pull_clean():
 
 
 
+def get_groups(df):
+    # Reemplaza 'restaurant' por cadena vacía, excepto cuando el nombre es 'restaurant'
+    df['name'] = df['name'].apply(lambda x: x.replace('restaurant', '') if x != 'restaurant' else x)
 
+    # Crea la columna 'group' y asigna el valor predeterminado 'general'
+    df['group'] = 'general'
+
+    # Asigna grupos basados en patrones en el nombre
+    df.loc[(df['name'].str.contains('caf')) | (df['name'].str.contains('cof')) | 
+           (df['name'].str.contains('brea')) | (df['name'].str.contains('tea')), 'group'] = 'coffess & breakfast'
+
+    df.loc[(df['name'].str.contains('bar')) & (~df['name'].str.contains('barb')) | 
+           (df['name'].str.contains('nigh')) | (df['name'].str.contains('pub')), 'group'] = 'bars & nightlife'
+
+    df.loc[
+        (df['name'].str.contains('burg') |
+         (df['name'].str.contains('fast') & ~df['name'].str.contains('break')) |
+         df['name'].str.contains('pizza') |
+         df['name'].str.contains('sandw') |
+         df['name'].str.contains('hot dog') |
+         df['name'].str.contains('takeou')),
+        'group'] = 'fast food'
+
+    df.loc[
+        (df['name'].str.contains('suhi') |
+         df['name'].str.contains('asian') |
+         df['name'].str.contains('japa') |
+         df['name'].str.contains('kore') |
+         df['name'].str.contains('mexi') |
+         df['name'].str.contains('eth') |
+         df['name'].str.contains('falafel') |
+         df['name'].str.contains('chilean') |
+         df['name'].str.contains('mongolian') |
+         df['name'].str.contains('polish') |
+         df['name'].str.contains('italian') |
+         df['name'].str.contains('british')),
+        'group'] = 'foreign'
+
+    df.loc[(df['name'].str.contains('veg')), 'group'] = 'veggie & vegetarian'
+
+    return df
+
+
+
+# ------------------------------------ KPI ------------------------------------------------
 # KPI 1
 # def get_restaurants_per_capita(df_bg, target_state, target_year):
 #     population_data = {
