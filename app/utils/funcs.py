@@ -5,12 +5,16 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import toml
 
+
+
 from math import radians, sin, cos, sqrt, atan2
 from sklearn.neighbors import NearestNeighbors
 from sklearn.feature_extraction.text import TfidfVectorizer
 import pickle
 
 import os.path
+
+
 # Obtener la ruta del directorio del script actual
 route = os.path.dirname(__file__)
 
