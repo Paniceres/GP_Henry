@@ -201,26 +201,6 @@ evaluacion de modelo(comparar su precision)
 
 El objetivo es optimizar el tamaño de los datasets y que los comentarios tomen valor.
 
-**Elaboración de un análisis de sentimiento para las reseñas de los usuarios**
-
-Las etapas del análisis de sentimientos incluyen:
-**Preprocesamiento del texto:**
-Este paso implica la eliminación de caracteres no alfanuméricos, puntuación, palabras cortas y repetidas, y la conversión de todo el texto a minúsculas.
-
-**Tokenización:**
-En esta etapa, se divide la oración en varios tokens o palabras únicas.
-
-**Stemming:**
-Este proceso consiste en reducir las palabras a su forma base, por ejemplo, "amigo" y "amigos" se reducen a "amig".
-
-**Modelado de sentimientos:**
-Se entrena un modelo de clasificación para predcir si un comentario es positivo, negativo o neutro.
-
-**Evaluación del modelo:**
-Se compara la precisión del modelo entrenado con otros modelos o métodos de clasificación para determinar su eficacia.
-
-El objetivo principal del análisis de sentimientos es determinar si el contenido en cuestión tiene una connotación positiva, negativa o neutra. Esto puede ser útil para comprender las opiniones y emociones de los clientes, mejorar la experiencia del cliente, identificar las necesidades del cliente y desarrollar estrategias de marketing más efectivas.
-
 ### Interactividad de visualización:
 
 Hacer que el panel fuera interactivo y respondiera a las entradas de los usuarios era una prioridad. Esto requirió la implementación de widgets interactivos y garantizar una comunicación fluida entre los diferentes componentes del tablero.
