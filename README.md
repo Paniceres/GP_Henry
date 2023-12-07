@@ -161,13 +161,73 @@ La fase de implementación presentó varios desafíos técnicos, particularmente
 
 El procesamiento eficiente de múltiples conjuntos de datos era crucial.
 
+**Eliminacion de columnas a nuestro criterio innecesarias**
+
+columnas eliminadas se pueden agrupar en dos categorías:
+
+**Irrelevantes:**
+Estas columnas no son relevantes para el análisis de datos o no proporcionan información útil para la tarea en cuestión.
+por ejemplo:
+satate, description
+
+**Redundantes:**
+Estas columnas ya existen en la base de datos o se pueden obtener fácilmente a través de API o cálculos.
+por ejemplo:
+address y hours
+
+Algunos archivos grandes se dividieron en partes más pequeñas y manejables, lo que facilito su transformación y trabajo.
+
+**seleccion de los estados de interes**
+se realizo bajo los siguientes criterios:
+
+El rubro (identificando la actividad comercial a nuestro crierio atractiva)
+El lugar (vineo en los distintos estados la variedad de actividades comeciales, se decide tomar estados donde se encuentra mas nuestra actividad de interes)
+El tiempo (teniendo en cuenta los años, trabajamos solo son los años donde la actividad y cantidad de datos es mayor)
+
+**Se identifico discrepancias en la asignación de estados en un conjunto de datos de empresas**
+para solucionarlo se realizo:
+
+La incorporación de un conjunto de datos geojson de los Estados Unidos
+Creación de un GeoDataFrame determinando el área de cada estado
+Esta estrategia soluciona la asignación incorrecta de estados, mejorando significativamente la precisión de la información geográfica.
+
+**Elaboración de un análisis de sentimiento para las reseñas de los usuarios**
+
+Preprocesamiento del texto (caracteres no alfanuméricos, puntuación, palabras cortas y repetidas, y convertir todo a minúsculas)
+Tokenización (separar el texto en palabras únicas)
+stemming(reducir palabras a su forma base, ejemplo: "amigo" y "amigos")
+modelado de sentimientos(entrenar un modelo de clasificación: positivo, negativo o neutro)
+evaluacion de modelo(comparar su precision)
+
+El objetivo es optimizar el tamaño de los datasets y que los comentarios tomen valor.
+
+**Elaboración de un análisis de sentimiento para las reseñas de los usuarios**
+
+Las etapas del análisis de sentimientos incluyen:
+**Preprocesamiento del texto:**
+Este paso implica la eliminación de caracteres no alfanuméricos, puntuación, palabras cortas y repetidas, y la conversión de todo el texto a minúsculas.
+
+**Tokenización:**
+En esta etapa, se divide la oración en varios tokens o palabras únicas.
+
+**Stemming:**
+Este proceso consiste en reducir las palabras a su forma base, por ejemplo, "amigo" y "amigos" se reducen a "amig".
+
+**Modelado de sentimientos:**
+Se entrena un modelo de clasificación para predcir si un comentario es positivo, negativo o neutro.
+
+**Evaluación del modelo:**
+Se compara la precisión del modelo entrenado con otros modelos o métodos de clasificación para determinar su eficacia.
+
+El objetivo principal del análisis de sentimientos es determinar si el contenido en cuestión tiene una connotación positiva, negativa o neutra. Esto puede ser útil para comprender las opiniones y emociones de los clientes, mejorar la experiencia del cliente, identificar las necesidades del cliente y desarrollar estrategias de marketing más efectivas.
+
 ### Interactividad de visualización:
 
 Hacer que el panel fuera interactivo y respondiera a las entradas de los usuarios era una prioridad. Esto requirió la implementación de widgets interactivos y garantizar una comunicación fluida entre los diferentes componentes del tablero.
 
 ### Integración de datos:
 
-Integrating diverse datasets and ensuring consistency across different data sources was a challenge. Data cleaning and transformation procedures were meticulously applied to harmonize the data and prevent inconsistencies.
+Integrar diversos conjuntos de datos y garantizar la coherencia entre las diferentes fuentes de datos fue un desafío. Los procedimientos de limpieza y transformación de datos se aplicaron meticulosamente para armonizar los datos y evitar incoherencias.
 
 ### Diseño de Experiencia de Usuario:
 
