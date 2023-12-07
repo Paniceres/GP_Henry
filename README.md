@@ -161,45 +161,46 @@ La fase de implementación presentó varios desafíos técnicos, particularmente
 
 El procesamiento eficiente de múltiples conjuntos de datos era crucial.
 
-**Eliminacion de columnas a nuestro criterio innecesarias**
+**Eliminación de columnas a nuestro criterio innecesarias**
 
-columnas eliminadas se pueden agrupar en dos categorías:
+Las columnas eliminadas se pueden agrupar en dos categorías:
 
-**Irrelevantes:**
-Estas columnas no son relevantes para el análisis de datos o no proporcionan información útil para la tarea en cuestión.
-por ejemplo:
-satate, description
+- **Irrelevantes:**
+  Estas columnas no son relevantes para el análisis de datos o no proporcionan información útil para la tarea en cuestión.
+  por ejemplo:
+  state, description
 
-**Redundantes:**
-Estas columnas ya existen en la base de datos o se pueden obtener fácilmente a través de API o cálculos.
-por ejemplo:
-address y hours
+- **Redundantes:**
+  Estas columnas ya existen en la base de datos o se pueden obtener fácilmente a través de API o cálculos.
+  por ejemplo:
+  address y hours
 
-Algunos archivos grandes se dividieron en partes más pequeñas y manejables, lo que facilito su transformación y trabajo.
+Algunos archivos grandes se dividieron en partes más pequeñas y manejables, lo que facilitó su transformación y trabajo.
 
-**seleccion de los estados de interes**
-se realizo bajo los siguientes criterios:
+**Selección de los estados de interés**
+se realizó bajo los siguientes criterios:
 
-El rubro (identificando la actividad comercial a nuestro crierio atractiva)
-El lugar (vineo en los distintos estados la variedad de actividades comeciales, se decide tomar estados donde se encuentra mas nuestra actividad de interes)
-El tiempo (teniendo en cuenta los años, trabajamos solo son los años donde la actividad y cantidad de datos es mayor)
+- El rubro (identificando la actividad comercial a nuestro criterio atractiva) <br>
+- El lugar (vineo en los distintos estados la variedad de actividades comerciales, se decide tomar estados donde se encuentra más nuestra actividad de interés) <br>
+- El tiempo (teniendo en cuenta los años, trabajamos solo son los años donde la actividad y cantidad de datos es mayor)
 
-**Se identifico discrepancias en la asignación de estados en un conjunto de datos de empresas**
-para solucionarlo se realizo:
+**Se identificó discrepancias en la asignación de estados en un conjunto de datos de empresas**
+para solucionarlo se realizó:
 
-La incorporación de un conjunto de datos geojson de los Estados Unidos
-Creación de un GeoDataFrame determinando el área de cada estado
+- La incorporación de un conjunto de datos geojson de los Estados Unidos <br>
+- Creación de un GeoDataFrame determinando el área de cada estado <br>
+
 Esta estrategia soluciona la asignación incorrecta de estados, mejorando significativamente la precisión de la información geográfica.
 
 **Elaboración de un análisis de sentimiento para las reseñas de los usuarios**
 
-Preprocesamiento del texto (caracteres no alfanuméricos, puntuación, palabras cortas y repetidas, y convertir todo a minúsculas)
-Tokenización (separar el texto en palabras únicas)
-stemming(reducir palabras a su forma base, ejemplo: "amigo" y "amigos")
-modelado de sentimientos(entrenar un modelo de clasificación: positivo, negativo o neutro)
-evaluacion de modelo(comparar su precision)
+- **Preprocesamiento del texto** (caracteres no alfanuméricos, puntuación, palabras cortas y repetidas, y convertir todo a minúsculas)<br>
+- **Tokenización** (separar el texto en palabras únicas) <br>
+- **Stemming** (reducir palabras a su forma base, ejemplo: "amigo" y "amigos") <br>
+- **Modelado de sentimientos** (entrenar un modelo de clasificación: positivo, negativo o neutro) <br>
+- **Evaluacion de modelo** (comparar su precision) <br>
 
-El objetivo es optimizar el tamaño de los datasets y que los comentarios tomen valor.
+El objetivo es optimizar el tamaño de los datasets y que los comentarios tomen valor. <br>
 
 ### Interactividad de visualización:
 
