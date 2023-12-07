@@ -78,7 +78,7 @@ def categories_nlp():
     ruta_modelo = './datasets/extras/model/GoogleNews-vectors-negative300.bin/GoogleNews-vectors-negative300.bin'
 
     # Cargar el modelo
-    modelo = KeyedVectors.load_word2vec_format(ruta_modelo, binary=True,limit=500000)
+    modelo = KeyedVectors.load_word2vec_format(ruta_modelo, binary=True,limit=1000)
     
     
     local_categories['processed'] = local_categories['procceced'].apply(
@@ -91,9 +91,10 @@ def categories_nlp():
         ]
     )
     )   
-    
+    local_categories['processed'] = local_categories['processed'].apply(lambda x:'restaur' if x == '' else x)
+
     local_categories = local_categories[['business_id','name','processed']]
-    local_categories.to_parquet('./app/ml/datasetes/locales_categories.parquet') # Guardo el dataset util
+    local_categories.to_parquet('./app/ml/datasets/locales_categories.parquet') # Guardo el dataset util
 
 
     tfidf_vectorizer = TfidfVectorizer()
