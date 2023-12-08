@@ -159,7 +159,8 @@ La fase de implementación presentó varios desafíos técnicos, particularmente
 
 ### Optimización del procesamiento de datos:
 
-El procesamiento eficiente de múltiples conjuntos de datos era crucial.
+Los procedimientos de limpieza y transformación de datos se aplicaron meticulosamente para armonizar los datos y evitar incoherencias. <br>
+El procesamiento eficiente de múltiples conjuntos de datos era crucial. <br>
 
 **Eliminación de columnas a nuestro criterio innecesarias**
 
@@ -202,24 +203,18 @@ Esta estrategia soluciona la asignación incorrecta de estados, mejorando signif
 
 El objetivo es optimizar el tamaño de los datasets y que los comentarios tomen valor. <br>
 
-### Interactividad de visualización:
+### Diseño de Experiencia de Usuario, Interactividad de visualización:
 
-Hacer que el panel fuera interactivo y respondiera a las entradas de los usuarios era una prioridad. Esto requirió la implementación de widgets interactivos y garantizar una comunicación fluida entre los diferentes componentes del tablero.
+Para lograr que el panel fuera interactivo, requirió la implementación de widgets interactivos y garantizar una comunicación fluida entre los diferentes componentes del tablero,
+el objetivo de diseñar una interfaz intuitiva y fácil de usar era fundamental para garantizar una experiencia de usuario positiva. <br>
 
-### Integración de datos:
+La implementación de PowerBI, con todas sus herramientas nos permitió realizar una presentación eficiente para la comprensión de la información <br>
+Algunos aspectos destacados de la presentacion en Power BI interactiva incluyeron: <br>
 
-Integrar diversos conjuntos de datos y garantizar la coherencia entre las diferentes fuentes de datos fue un desafío. Los procedimientos de limpieza y transformación de datos se aplicaron meticulosamente para armonizar los datos y evitar incoherencias.
-
-### Diseño de Experiencia de Usuario:
-
-Diseñar una interfaz intuitiva y fácil de usar era fundamental para garantizar una experiencia de usuario positiva. Los elementos de la interfaz de usuario se eligieron cuidadosamente y se incorporaron los comentarios de los usuarios para refinar el diseño y mejorar la usabilidad.
-
-## Visualizaciones y análisis resultantes
-
-El proyecto culminó en un tablero interactivo de múltiples aplicaciones que permite a los usuarios explorar y analizar el panorama económico de la Argentina moderna. El tablero proporciona información sobre varios aspectos de la economía del país, incluidas las tasas de crecimiento, los totales de penetración, la disponibilidad del servicio y la velocidad.
-Conclusión
-
-La metodología empleada en este proyecto permitió la creación de un tablero completo e interactivo que ofrece información valiosa sobre el panorama de la Argentina moderna. Al comprender las correlaciones entre las diferentes métricas y visualizarlas en una sola plataforma, los usuarios pueden tomar decisiones informadas y optimizar sus estrategias en consecuencia.
+- Interacción <br>
+- Dinamismo <br>
+- Personalización <br>
+- Compartición <br>
 
 <p align="right">(<a href="#readme-top">Volver al principio</a>)</p>
 
