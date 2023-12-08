@@ -24,188 +24,252 @@
 <h3 align="center">Google & Yelp Data Analytics Project</h3>
 
   <p align="center">
-    Data Analysis for Restaurant in USA
+    Análisis de datos para restaurantes en EE. UU.
     <br />
-    <a href="https://github.com/Paniceres/PI_Data_Analytics"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/Paniceres/PI_Data_Analytics"><strong>Explora los documentos »</strong></a>
     <br />
     <br />
-    <a href="https://restaurant-analysis-gmap-yelp.streamlit.app/">View Deploy</a>
+    <a href="https://restaurant-analysis-gmap-yelp.streamlit.app/">Ver implementación</a>
     ·
-    <a href="https://github.com/Paniceres/GP_Henry/issues">Report Bug</a>
+    <a href="https://github.com/Paniceres/GP_Henry/issues">Informar de error</a>
     ·
-    <a href="https://github.com/Paniceres/GP_Henry/issues">Request Feature</a>
+    <a href="https://github.com/Paniceres/GP_Henry/issues">Función de solicitud</a>
   </p>
 </div>
 
 <!-- TABLE OF CONTENTS -->
 <details>
-  <summary>Table of Contents</summary>
+  <summary>Tabla de contenidos</summary>
   <ol>
     <li>
-      <a href="#about-the-project">About The Project</a>
+      <a href="#about-the-project">Sobre el proyecto</a>
       <ul>
-        <li><a href="#built-with">Built With</a></li>
+        <li><a href="#built-with">Construido con</a></li>
       </ul>
     </li>
     <li>
-      <a href="#getting-started">Getting Started</a>
+      <a href="#getting-started">Empezar</a>
       <ul>
-        <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#installation">Installation</a></li>
+        <li><a href="#prerequisites">Prerrequisitos</a></li>
+        <li><a href="#installation">Instalación</a></li>
       </ul>
     </li>
-    <li><a href="#usage">Usage</a></li>
-    <li><a href="#methodology">Methodology</a></li>
-    <li><a href="#conclusion">Conclusion</a></li>
-    <li><a href="#contributing">Contributing</a></li>
-    <li><a href="#contact">Contact</a></li>
+    <li><a href="#usage">Uso</a></li>
+    <li><a href="#methodology">Metodología</a></li>
+    <li><a href="#conclusion">Conclusión</a></li>
+    <li><a href="#contributing">Contribuyendo</a></li>
+    <li><a href="#contact">Contacto</a></li>
   </ol>
 </details>
 
 <!-- ABOUT THE PROJECT -->
-## About The Project
+
+## Sobre el proyecto
 
 Quantyle Analytics: análisis del rubro de Restaurantes en USA.
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+<p align="right">(<a href="#readme-top">Volver al principio</a>)</p>
 
-### Built With
-* [![Python][Python-logo]][Python-url]
-* [![Pandas][Pandas-logo]][Pandas-url]
-* [![CronJobs][CronJobs-logo]][CronJobs-url]
-* [![EC2][EC2-logo]][EC2-url]
-* [![MySQL][MySQL-logo]][MySQL-url]
-* [![RDS][RDS-logo]][RDS-url]
+### Construido con
 
-* [![PowerBI][PowerBI-logo]][PowerBI-url]
-* [![Monday][Monday-logo]][Monday-url]
+- [![Python][Python-logo]][Python-url]
+- [![Pandas][Pandas-logo]][Pandas-url]
+- [![CronJobs][CronJobs-logo]][CronJobs-url]
+- [![EC2][EC2-logo]][EC2-url]
+- [![MySQL][MySQL-logo]][MySQL-url]
+- [![RDS][RDS-logo]][RDS-url]
 
-* [![GoogleMaps][GoogleMaps-logo]][GoogleMaps-url]
-* [![Yelp][Yelp-logo]][Yelp-url]
+- [![PowerBI][PowerBI-logo]][PowerBI-url]
+- [![Monday][Monday-logo]][Monday-url]
 
-* [![PySpark][PySpark-logo]][PySpark-url]
-* [![Matplotlib][Matplotlib-logo]][Matplotlib-url]
-* [![Seaborn][Seaborn-logo]][Seaborn-url]
-* [![Streamlit][Streamlit-logo]][Streamlit-url]
-* [![PowerBI][PowerBI-logo]][PowerBI-url]
-* [![PyArrow][PyArrow-logo]][PyArrow-url]
-* [![Manjaro][Manjaro-logo]][Manjaro-url]
-* [![Ubuntu][Ubuntu-logo]][Ubuntu-url]
-  
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+- [![GoogleMaps][GoogleMaps-logo]][GoogleMaps-url]
+- [![Yelp][Yelp-logo]][Yelp-url]
+
+- [![PySpark][PySpark-logo]][PySpark-url]
+- [![Matplotlib][Matplotlib-logo]][Matplotlib-url]
+- [![Seaborn][Seaborn-logo]][Seaborn-url]
+- [![Streamlit][Streamlit-logo]][Streamlit-url]
+- [![PowerBI][PowerBI-logo]][PowerBI-url]
+- [![PyArrow][PyArrow-logo]][PyArrow-url]
+- [![Manjaro][Manjaro-logo]][Manjaro-url]
+- [![Ubuntu][Ubuntu-logo]][Ubuntu-url]
+
+<p align="right">(<a href="#readme-top">Volver al principio</a>)</p>
 
 <!-- GETTING STARTED -->
-## Getting Started
+
+## Empezar
 
 Para probar nuestro proyecto, puedes seguir los siguientes pasos.
 
-### Prerequisites
+### Prerrequisitos
 
-* pip install requirements.txt
+- pip install requirements.txt
 
-### Installation
+### Instalación
 
-This is an example of how to list things you need to use the software and how to install them.
-* pip
+Este es un ejemplo de cómo enumerar las cosas que necesita para usar el software y cómo instalarlas.
+
+- pip
   ```sh
   pip install requirements.txt
   ```
 
-### Installation
+### Instalación
 
-1. Clone the repo
+1. Clonar el repositorio
    ```sh
    git clone https://github.com/Paniceres/GP_Henry.git
    ```
-2. Execute main.py
+2. Ejecutar main.py
    ```sh
    streamlit run 'GP_Henry/app/main.py'
    ```
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+<p align="right">(<a href="#readme-top">Volver al principio</a>)</p>
 
 <!-- USAGE EXAMPLES -->
-## Usage
 
-<a href="https://restaurant-analysis-gmap-yelp.streamlit.app/">View Deploy</a>
+## Uso
+
+<a href="https://restaurant-analysis-gmap-yelp.streamlit.app/">Ver implementación</a>
 
 <img src="/src/data-analysis.png" alt="Streamlit localhost" width="1000" height="520">
 
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+<p align="right">(<a href="#readme-top">Volver al principio</a>)</p>
 
 <!-- METHODOLOGY -->
-# Methodology
 
-The methodology employed in this project involved the following key steps:
-**Data context and criterion; Extract, Transform and Load; Data Anlalysis; Deploy**
+# Metodología
 
-Over 30 available datasets were analyzed, and a set of criteria was imposed to optimize efforts. The selected 12 datasets were processed through ETL processes, resulting in the creation of tables containing ratios and growth rates.
-Data Analysis
+La metodología empleada en este proyecto implicó los siguientes pasos clave:
+**Contexto y criterio de los datos; Extraer, transformar y cargar; Análisis de datos; Desplegar**
 
-A comprehensive dataset, **df_kpi**, was generated from the processed data, serving as the basis for all visualizations and analyses. The economic landscape of modern Argentina was explored by understanding various correlations among technologies, growth rates, penetration totals (access rates, service availability), and speed (service quality).
-Deployment Challenges
+Se analizaron más de 30 conjuntos de datos disponibles y se impuso un conjunto de criterios para optimizar los esfuerzos. Los 12 conjuntos de datos seleccionados se procesaron a través de procesos ETL, lo que dio como resultado la creación de tablas que contienen ratios y tasas de crecimiento.
 
-The deployment phase presented several technical challenges, particularly during the creation of the multi-app interactive dashboard. One significant challenge involved standardizing the project's directory structure to streamline data processing. Ensuring the interactivity of the dashboard required considerable effort and attention to detail.
+Análisis de datos
 
-## Key Technical Challenges Faced During Deployment:
+A partir de los datos procesados se generó un conjunto de datos completo, **df_kpi**, que sirvió de base para todas las visualizaciones y análisis. Se exploró el panorama económico de la Argentina moderna mediante la comprensión de diversas correlaciones entre tecnologías, tasas de crecimiento, totales de penetración (tasas de acceso, disponibilidad del servicio) y velocidad (calidad del servicio).
 
- ### Data Processing Optimization: 
-  Efficient processing of multiple datasets was crucial.
-  
- ### Visualization Interactivity: 
-  Making the dashboard interactive and responsive to user inputs was a priority. This required implementing interactive widgets and ensuring seamless communication between different components of the dashboard.
-  
- ### Data Integration: 
-  Integrating diverse datasets and ensuring consistency across different data sources was a challenge. Data cleaning and transformation procedures were meticulously applied to harmonize the data and prevent inconsistencies.
-  
- ### User Experience Design: 
-  Designing an intuitive and user-friendly interface was critical for ensuring a positive user experience. User interface elements were carefully chosen, and user feedback was incorporated to refine the design and enhance usability.
+Desafíos de implementación
 
-## Resulting Visualizations and Analyses
+La fase de implementación presentó varios desafíos técnicos, particularmente durante la creación del panel interactivo de múltiples aplicaciones. Un desafío importante consistió en estandarizar la estructura de directorios del proyecto para agilizar el procesamiento de datos. Garantizar la interactividad del tablero requirió un esfuerzo considerable y atención al detalle.
 
-The project culminated in a multi-app interactive dashboard that enables users to explore and analyze the economic landscape of modern Argentina. The dashboard provides insights into various aspects of the country's economy, including growth rates, penetration totals, service availability, and speed.
-Conclusion
+## Principales desafíos técnicos a los que se enfrenta durante la implementación:
 
-The methodology employed in this project effectively enabled the creation of a comprehensive and interactive dashboard that offers valuable insights into the landscape of modern Argentina. By understanding the correlations among different metrics and visualizing them on a single platform, users can make informed decisions and optimize their strategies accordingly.
+### Optimización del procesamiento de datos:
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+Los procedimientos de limpieza y transformación de datos se aplicaron meticulosamente para armonizar los datos y evitar incoherencias. <br>
+El procesamiento eficiente de múltiples conjuntos de datos era crucial. <br>
+
+**Eliminación de columnas a nuestro criterio innecesarias**
+
+Las columnas eliminadas se pueden agrupar en dos categorías:
+
+- **Irrelevantes:**
+  Estas columnas no son relevantes para el análisis de datos o no proporcionan información útil para la tarea en cuestión.
+  por ejemplo:
+  state, description
+
+- **Redundantes:**
+  Estas columnas ya existen en la base de datos o se pueden obtener fácilmente a través de API o cálculos.
+  por ejemplo:
+  address y hours
+
+Algunos archivos grandes se dividieron en partes más pequeñas y manejables, lo que facilitó su transformación y trabajo.
+
+**Selección de los estados de interés**
+se realizó bajo los siguientes criterios:
+
+- El rubro (identificando la actividad comercial a nuestro criterio atractiva) <br>
+- El lugar (vineo en los distintos estados la variedad de actividades comerciales, se decide tomar estados donde se encuentra más nuestra actividad de interés) <br>
+- El tiempo (teniendo en cuenta los años, trabajamos solo son los años donde la actividad y cantidad de datos es mayor)
+
+**Se identificó discrepancias en la asignación de estados en un conjunto de datos de empresas**
+para solucionarlo se realizó:
+
+- La incorporación de un conjunto de datos geojson de los Estados Unidos <br>
+- Creación de un GeoDataFrame determinando el área de cada estado <br>
+
+Esta estrategia soluciona la asignación incorrecta de estados, mejorando significativamente la precisión de la información geográfica.
+
+**Elaboración de un análisis de sentimiento para las reseñas de los usuarios**
+
+- **Preprocesamiento del texto** (caracteres no alfanuméricos, puntuación, palabras cortas y repetidas, y convertir todo a minúsculas)<br>
+- **Tokenización** (separar el texto en palabras únicas) <br>
+- **Stemming** (reducir palabras a su forma base, ejemplo: "amigo" y "amigos") <br>
+- **Modelado de sentimientos** (entrenar un modelo de clasificación: positivo, negativo o neutro) <br>
+- **Evaluacion de modelo** (comparar su precision) <br>
+
+El objetivo es optimizar el tamaño de los datasets y que los comentarios tomen valor. <br>
+
+### Diseño de Experiencia de Usuario, Interactividad de visualización:
+
+Para lograr que el panel fuera interactivo, requirió la implementación de widgets interactivos y garantizar una comunicación fluida entre los diferentes componentes del tablero,
+el objetivo de diseñar una interfaz intuitiva y fácil de usar era fundamental para garantizar una experiencia de usuario positiva. <br>
+
+La implementación de PowerBI, con todas sus herramientas nos permitió realizar una presentación eficiente para la comprensión de la información <br>
+Algunos aspectos destacados de la presentacion en Power BI interactiva incluyeron: <br>
+
+- Interacción <br>
+- Dinamismo <br>
+- Personalización <br>
+- Compartición <br>
+
+# Pipeline
+
+Nuestro Pipeline nos permite ver una serie de pasos y herramientas utilizados para recopilar datos, procesarlos y presentar los resultados en un formato comprensible. <br>
+Nos permiten automatizar y optimizar el procesamiento de datos, lo que resulta en una mejor gestión de la información y un mayor valor para la empresa. <br>
+Algunos beneficios de utilizar nuestro pipeline de datos son:
+
+- **Eficiencia:** Los pipelines de datos permiten procesar datos en tiempo real, lo que facilita la toma de decisiones empresariales más rápidas y precisas. <br>
+
+- **Automatización:** La automatización de la canalización de datos permite ejecutar cualquier componente de la pipeline de manera repetitiva y tolerante a errores, lo que reduce la posibilidad de fallos y aumenta la calidad de los resultados. <br>
+
+- **Orquestación:** La orquestación de la canalización de datos permite ejecutar todos los componentes de la pipeline de manera coordinada y eficiente, lo que facilita la gestión y supervisión de los procesos de datos. <br>
+
+<p align="right">(<a href="#readme-top">Volver al principio</a>)</p>
+
+<img src="/src/PIPELINE.png" width="1000" height="520">
 
 <!-- CONCLUSION -->
-# Conclusion
 
-Upon analyzing the net income trends in dollars, with its relative **stability around $500,000 USD**, we decided to interpret correlation patterns with other non-economic variables. We observed how **Fiber Optics stands out as the central focus of the proposal**, being the most cost-effective to install, increasing average speed, and enhancing connectivity rates for every province where it is implemented.
+# Conclusión
 
-It is crucial to understand that Fiber Optics has an inverse correlation with ADSL, a technology that needs to be reduced. ADSL not only lacks technical features that favor accessibility or service quality but is also susceptible to theft due to its high copper content.
+Al analizar la evolución de la utilidad neta en dólares, con su relativa **estabilidad en torno a los $500,000 USD**, decidimos interpretar patrones de correlación con otras variables no económicas. Observamos cómo **la Fibra Óptica se destaca como el foco central de la propuesta**, siendo la más costo-efectiva de instalar, aumentando la velocidad promedio y mejorando las tasas de conectividad para cada provincia donde se implementa.
 
-Wireless technology emerges as the one suggesting the highest connectivity, excelling in both rural and densely populated areas, owing to its wireless nature.
+Es crucial entender que la Fibra Óptica tiene una correlación inversa con el ADSL, una tecnología que necesita ser reducida. El ADSL no solo carece de características técnicas que favorezcan la accesibilidad o la calidad del servicio, sino que también es susceptible de robo debido a su alto contenido en cobre.
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+La tecnología inalámbrica emerge como la que sugiere la mayor conectividad, sobresaliendo tanto en áreas rurales como densamente pobladas, debido a su naturaleza inalámbrica.
+
+<p align="right">(<a href="#readme-top">Volver al principio</a>)</p>
 
 <!-- CONTRIBUTING -->
-## Contributing
 
-Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+## Contribuyendo
 
-If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
-Don't forget to give the project a star! Thanks again!
+Las contribuciones son lo que hace que la comunidad de código abierto sea un lugar increíble para aprender, inspirar y crear. Cualquier contribución que haga es **muy apreciada**.
 
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+Si tienes alguna sugerencia que mejore esto, bifurca el repositorio y crea una solicitud de extracción. También puede simplemente abrir un problema con la etiqueta "mejora".
+¡No te olvides de darle una estrella al proyecto! ¡Gracias de nuevo!
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+1. Hacerle un Fork al proyecto ('git fork <url-del-proyecto>')
+2. Cree su rama de características (`git checkout -b feature/AmazingFeature`)
+3. Hacer un Commit de sus cambios (`git commit -m 'Add some AmazingFeature'`)
+4. Hacer un Push a la (`git push origin feature/AmazingFeature`)
+5. Abrir una solicitud de Pull para incorporar los cambios ('git pull')
+
+<p align="right">(<a href="#readme-top">Volver al principio</a>)</p>
 
 <!-- CONTACT -->
-## Contact
-* Paniceres Lucio - panicereslucio@gmail.com
-* Albariño Damián - damianlabarino@hotmail.com
-* Zenobio Bruno - brunozenobio4@gmail.com
-* Jonathan Castillo - jonathancastillo185@gmail.com 
-* Jefferson Tonetto - jeffersson2210@gmail.com
 
+## Contact
+
+- Paniceres Lucio - panicereslucio@gmail.com
+- Albariño Damián - damianlabarino@hotmail.com
+- Zenobio Bruno - brunozenobio4@gmail.com
+- Jonathan Castillo - jonathancastillo185@gmail.com
+- Jefferson Tonetto - jeffersson2210@gmail.com
 
 Project Link: [https://github.com/Paniceres/GP_Henry](https://github.com/Paniceres/GP_Henry)
 
@@ -214,9 +278,8 @@ Project Link: [https://github.com/Paniceres/GP_Henry](https://github.com/Panicer
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 
-
-
 <!-- Enlaces completos -->
+
 [Deploy]: https://restaurant-analysis-gmap-yelp.streamlit.app/
 [contributors-shield]: https://img.shields.io/github/contributors/Paniceres/GP_Henry.svg?style=for-the-badge
 [contributors-url]: https://github.com/Paniceres/GP_Henry/graphs/contributors
@@ -233,8 +296,8 @@ Project Link: [https://github.com/Paniceres/GP_Henry](https://github.com/Panicer
 [Jc-linkedin-url]: https://www.linkedin.com/in/jonathan-castillo-7962b7163/
 [JT-linkedin-url]: https://www.linkedin.com/in/jeferson-tonetto-mogollon-09ba311b0/
 
-
 <!-- Logos y URLs -->
+
 [Python-logo]: https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white
 [Python-url]: https://www.python.org/
 [Pandas-logo]: https://img.shields.io/badge/Pandas-150458?style=for-the-badge&logo=pandas&logoColor=white
