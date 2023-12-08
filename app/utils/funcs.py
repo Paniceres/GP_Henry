@@ -453,6 +453,8 @@ def get_recommendation(df_user,df_categories,states,df_rg,df_ry,business_google,
         pd.DataFrame: Data Frame con ñas recomendaciones y otras caracteristicas(analizar el uso de json)
     """
         
+        
+        
     if business_ids: # Si se ingresa el id de un negocio, se convierte a lista.
         business_ids = [business_ids]
     
@@ -466,28 +468,20 @@ def get_recommendation(df_user,df_categories,states,df_rg,df_ry,business_google,
         if pd.isna(category): # Si es nan retorna no encontrada.
             return 'Usuario no encontrado.'
         
+    # Encuentra negocios con esa categoria   
     if category is not None and category != '':
-        # Convert lists to strings and use apply with lambda
+        # Manejo de listas
         business_ids = df_categories[df_categories['name'].apply(
             lambda x: any(category.lower() in str(item).lower() for item in x) if isinstance(x, list) else (category.lower() in str(x).lower())
         )]
+        
         if len(business_ids) > 1:
             business_ids = business_ids.sample(min(10, len(business_ids)))['business_id'].tolist()
         else:
             return 'Categoria no encontrada'
     
-
-
-# Encuentra negocios con esa categoria
-        distance = None
-        
-        if len(business_ids) > 1:
-            business_ids = business_ids.sample(min(10, len(business_ids)))['business_id'].tolist() # Toma 10 restaurantes en esa categoria 
-        else:
-            return 'Categoria no encontrada'
-        
-
-            
+    
+    
     business_cat = pd.DataFrame()
     
     for business_id in business_ids: # Para cada negocio encontrado se realiza la recomendación.
