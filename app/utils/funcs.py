@@ -46,6 +46,8 @@ def pull_clean(db_route=None):
         # '8_categories_yelp.parquet.gz',
         '9_reviews_google.parquet.gz',
         # '10_reviews_yelp.parquet.gz',
+        'user_categories.parquet',
+        'locales_categories.parquet'
     ]
 
     # Leer archivos Parquet y almacenar en un diccionario
@@ -105,7 +107,7 @@ def get_groups(df):
 
 # ------------------------------------ KPI ------------------------------------------------
 
-# KPI 1
+# KPI 0
 # def get_restaurants_per_capita(df_bg, target_state, target_year):
 #     population_data = {
 #         'California': {2015: 39144818, 2016: 39250017, 2017: 39399349, 2018: 39538223, 2019: 39613506,
@@ -362,7 +364,7 @@ def get_distance(business_google,business_yelp,business_id,business_id_list,rang
     
     
 # Función para obtener recomendaciones
-def get_recommendation_business(business_google,business_yelp,local_categories,business_id,rang=None):
+def get_recommendation_business(business_google,business_yelp,df_categories,business_id,rang=None):
     
     """
     Funcion que a partir de un negocio, recomienda otros, en funcion de sus categorias usando el modelo KNN.
@@ -388,7 +390,7 @@ def get_recommendation_business(business_google,business_yelp,local_categories,b
     
     idx = None  # Asigna un valor predeterminado
     try:
-        idx = local_categories[local_categories['business_id'] == business_id].index[0]
+        idx = df_categories[df_categories['business_id'] == business_id].index[0]
     except IndexError:
         return pd.DataFrame()
         # Puedes realizar acciones adicionales aquí si es necesario cuando no se encuentra una coincidencia.
@@ -406,7 +408,7 @@ def get_recommendation_business(business_google,business_yelp,local_categories,b
     
     _, indices = knn_model.kneighbors(categories_procceced[idx])
 
-    recommendations = local_categories['business_id'].iloc[indices[0,1:]]  # Excluye el propio restaurante
+    recommendations = df_categories['business_id'].iloc[indices[0,1:]]  # Excluye el propio restaurante
     
     
     #Calcula las distancias entre las recomendaciones y el local.
@@ -417,7 +419,7 @@ def get_recommendation_business(business_google,business_yelp,local_categories,b
         
     business = business[business['distance']!=0.0] # Elimino al restaurante mismos.
     #Uno las caractereisticas de los locales, con las categorias.
-    business_cat = pd.merge(local_categories,business,on='business_id')
+    business_cat = pd.merge(df_categories,business,on='business_id')
     if business_cat.shape[0] == 0:
         return 'Restaurante no encontrado.'
     business_cat = business_cat.groupby('business_id').agg({
@@ -468,6 +470,7 @@ def get_recommendation(df_user,df_categories,states,df_rg,df_ry,business_google,
         
     if category is not None and category != '': # para las categorias
         #df_categories = pd.read_parquet('./app/ml/datasets/locales_categories.parquet')
+
         business_ids = df_categories[df_categories['name'].str.lower().str.contains(category.lower())] # Encuentra negocios con esa categoria
         distance = None
         
