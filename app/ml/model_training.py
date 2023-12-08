@@ -5,6 +5,7 @@ from nltk.stem import PorterStemmer
 from sklearn.feature_extraction.text import TfidfVectorizer
 import pandas as pd
 from sklearn.neighbors import NearestNeighbors
+from gensim.models import KeyedVectors
 import pickle
 
 nltk.download('stopwords')
@@ -62,7 +63,7 @@ local_categories['procceced'] = local_categories['procceced'].apply(lambda x:x.r
 local_categories['procceced'] = local_categories['procceced'].astype(str)
 # Crear una matriz TF-IDF para medir la similitud del contenido
     
-from gensim.models import KeyedVectors
+
 
 # Ruta al archivo GoogleNews-vectors-negative300.bin
 ruta_modelo = './datasets/extras/model/GoogleNews-vectors-negative300.bin/GoogleNews-vectors-negative300.bin'
