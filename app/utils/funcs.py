@@ -105,7 +105,7 @@ def get_groups(df):
 
 # ------------------------------------ KPI ------------------------------------------------
 
-# KPI 1
+# KPI 0
 # def get_restaurants_per_capita(df_bg, target_state, target_year):
 #     population_data = {
 #         'California': {2015: 39144818, 2016: 39250017, 2017: 39399349, 2018: 39538223, 2019: 39613506,

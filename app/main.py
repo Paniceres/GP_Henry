@@ -156,9 +156,9 @@ if selected=="Comercial":
 # ------------------------------------ Donde comer ---------------------------------------
 if selected=='¿Dónde comer?':
     
-    target_state = st.multiselect(label='Selecciona estado:',options=states['state'].values.tolist(),label_visibility='collapsed')   
+    target_state = st.multiselect(label='Selecciona estado:',options=states['state'].values.tolist(),label_visibility='collapsed', default=states['state'].values.tolist())   
      
-    target_group = st.multiselect('Selecciona un grupo:', options=unique_groups)
+    target_group = st.multiselect('Selecciona un grupo:', options=unique_groups, default=unique_groups)
     if target_group:
         # Filtrar por categorías asociadas al grupo seleccionado
         categories_options = groups[groups['group'].isin(target_group)]['name'].tolist()
