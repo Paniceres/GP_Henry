@@ -73,10 +73,12 @@ def distance(business_id,business_id_list,rang=None):
     business_yelp=pd.read_parquet('./datasets/processed/bd/6_business_yelp.parquet.gz') 
     
     # si se lee de la base de datos cambiar stars de business_yelp por avg_stars
+    
     business = pd.concat([business_google[['business_id','name','avg_stars','latitude','longitude','state_id']],business_yelp[['business_id','name','avg_stars','latitude','longitude','state_id']]])
     #Genero las coordenadas del local al que le quiero encontrar recomendaciones.
-    print(business,business_id)
+    
     lat_origin,long_origin = business[business['business_id']==business_id]['latitude'].iloc[0],business[business['business_id']==business_id]['longitude'].iloc[0]
+    
     #Filtro solo por los restaurantes que pertenecen a las recomendaciones.
     business = business[business['business_id'].isin(business_id_list)]
     #Calculo la distancia de cada restuarante recomendado al inicial
@@ -112,14 +114,29 @@ def get_recommendations(business_id,rang=None):
     ######### categories_procceced podria ser un df importado  con todos los pasos anteriores.#########
     local_categories = pd.read_parquet('./app/ml/datasets/locales_categories.parquet')
 
-    idx = local_categories[local_categories['business_id'] == business_id].index[0]
-   
     
-    
-    #Genero las recomendaciones.
-    _, indices = knn_model.kneighbors(categories_procceced[idx])
-    recommendations = local_categories['business_id'].iloc[indices[0][1:]]  # Excluye el propio restaurante
+    idx = None  # Asigna un valor predeterminado
+    try:
+        idx = local_categories[local_categories['business_id'] == business_id].index[0]
+    except IndexError:
+        return pd.DataFrame()
+        # Puedes realizar acciones adicionales aquí si es necesario cuando no se encuentra una coincidencia.
+    except Exception as e:
+        return f"Ocurrió un error inesperado: {str(e)}"
+        # Aquí manejas cualquier otro tipo de excepción que pueda ocurrir.
 
+    # Ahora puedes usar idx, que podría ser None si no se encontró ninguna coincidencia
+    if idx is  None:
+        return pd.DataFrame()
+
+    
+
+    #Genero las recomendaciones.
+    
+    _, indices = knn_model.kneighbors(categories_procceced[idx])
+
+    recommendations = local_categories['business_id'].iloc[indices[0,1:]]  # Excluye el propio restaurante
+    
     
     #Calcula las distancias entre las recomendaciones y el local.
     if rang:
@@ -164,35 +181,34 @@ def recommendation(business_ids=None,user_id=None,category=None,distance=None,ta
         pd.DataFrame: Data Frame con ñas recomendaciones y otras caracteristicas(analizar el uso de json)
     """
         
-    if business_ids:
+    if business_ids: # Si se ingresa el id de un negocio, se convierte a lista.
         business_ids = [business_ids]
     
-    if user_id:
+    elif user_id is not None and user_id != '': # Si no se pregunta si es un id de usuario
         
-        # Cambiar por la lectura a la BD
-        df_rg = pd.read_parquet('./datasets/processed/bd/9_reviews_google.parquet.gz',columns=['user_id','gmap_id','sentiment'])
-        df_ry = pd.read_parquet('./datasets/processed/bd/10_reviews_yelp.parquet.gz',columns=['user_id','business_id','sentiment'])
-        df = pd.concat([df_rg,df_ry])
-        business_ids = df[df['user_id']==user_id].iloc[:10]['business_id'].tolist()
+        df = pd.read_parquet('./app/ml/datasets/user_categories.parquet')
+        category = df[df['user_id']== user_id]['name'].max() # En caso de que sea se carga un dataset auxiliar y se busca la categoria en la que tiene mas reseñas
+        
         distance = None
-        if len(business_ids) == 0:
+        
+        if pd.isna(category): # Si es nan retorna no encontrada.
             return 'Usuario no encontrado.'
         
-    if category:
+    if category is not None and category != '': # para las categorias
         df_categories = pd.read_parquet('./app/ml/datasets/locales_categories.parquet')
-        business_ids = df_categories[df_categories['name'].str.lower().str.contains(category.lower())].sample(10).iloc[:10]['business_id']
-        if business_ids.shape[0] == 0:
-            return 'Categoria no encontrada.'
-        else:
-            business_ids = business_ids.tolist()
+        business_ids = df_categories[df_categories['name'].str.lower().str.contains(category.lower())] # Encuentra negocios con esa categoria
         distance = None
-        if len(business_ids) == 0:
-            return 'Categoria no encontrada.'
         
+        if len(business_ids) > 1:
+            business_ids = business_ids.sample(min(10, len(business_ids)))['business_id'].tolist() # Toma 10 restaurantes en esa categoria 
+        else:
+            return 'Categoria no encontrada'
         
+
+            
     business_cat = pd.DataFrame()
     
-    for business_id in business_ids:
+    for business_id in business_ids: # Para cada negocio encontrado se realiza la recomendación.
         business_cat = pd.concat([get_recommendations(business_id,rang=distance),business_cat])    
         
     if business_cat.shape[0] == 0:
@@ -200,10 +216,32 @@ def recommendation(business_ids=None,user_id=None,category=None,distance=None,ta
     
     states = pd.read_parquet('./datasets/processed/bd/1_states.parquet.gz')
     business_cat = pd.merge(business_cat,states,on='state_id',how='inner')
-    business_cat = business_cat[['business_id','name','category','state','latitude','longitude','avg_stars','distance']]
+    business_cat = business_cat[['business_id','name','category','state','latitude','longitude','avg_stars','distance']] # Se selccionan columnas a usar
     if target_state:
-        business_cat = business_cat[business_cat['state']==target_state]
-        
-    return business_cat.sort_values(by=['avg_stars'],ascending=[False]).iloc[0:10]
+        business_cat = business_cat[business_cat['state']==target_state] # Si se pasa un estado se filtra por este.
+         
+    if user_id: # se eliminan todas las recomendaciones de un usuario si son de un restaurante en el que haya estado.
+        df_rg = pd.read_parquet('./datasets/processed/bd/9_reviews_google.parquet.gz',columns=['user_id','gmap_id','sentiment'])
+        df_rg.rename(columns=({'gmap_id':'business_id'}),inplace=True)
+        df_ry = pd.read_parquet('./datasets/processed/bd/10_reviews_yelp.parquet.gz',columns=['user_id','business_id','sentiment'])
+        df = pd.concat([df_rg,df_ry])
+        business_cat = business_cat[business_cat['business_id'].isin(df[df['user_id']!=user_id]['business_id'])]
+    business_cat.drop_duplicates(subset='business_id',inplace=True)
 
-print(recommendation(category='taco'))
+   
+
+    return business_cat.sort_values(by=['avg_stars'],ascending=[False]).iloc[0:10][['name','category']]
+
+
+print(recommendation(user_id='qVc8ODYU5SZjKXVBgXdI7w'))
+
+
+
+
+
+
+
+
+
+
+
