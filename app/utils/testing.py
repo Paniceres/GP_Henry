@@ -29,7 +29,16 @@ secrets = read_config()
 
 # print(categories.head(100))
 
-recommendation = get_recommendation(category=('dart bar'), target_state=None)
+df_user = pd.read_parquet('./datasets/processed/bd/user_categories.parquet')
+df_categories = pd.read_parquet('./datasets/processed/bd/locales_categories.parquet')
+states = pd.read_parquet('./datasets/processed/bd/1_states.parquet.gz')
+df_rg = pd.read_parquet('./datasets/processed/bd/9_reviews_google.parquet.gz',columns=['user_id','gmap_id','sentiment'])
+df_ry = pd.read_parquet('./datasets/processed/bd/10_reviews_yelp.parquet.gz',columns=['user_id','business_id','sentiment'])
+local_categories = pd.read_parquet('./datasets/processed/bd/locales_categories.parquet')
+business_google=pd.read_parquet('./datasets/processed/bd/5_business_google.parquet.gz') 
+business_yelp=pd.read_parquet('./datasets/processed/bd/6_business_yelp.parquet.gz') 
+
+print(get_recommendation(df_user,df_categories,states,df_rg,df_ry,local_categories,business_google,business_yelp,category='dart bar'))
 
 
 # kpi2 = get_kpi2_respuestas(reviews_google, business_google, categories_google, state, categories, target_state='Florida', target_group='general')

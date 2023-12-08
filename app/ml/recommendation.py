@@ -112,7 +112,7 @@ def get_recommendations(business_id,rang=None):
         categories_procceced = pickle.load(file)
     
     ######### categories_procceced podria ser un df importado  con todos los pasos anteriores.#########
-    local_categories = pd.read_parquet('./app/ml/datasets/locales_categories.parquet')
+    local_categories = pd.read_parquet('./datasets/processed/bd/locales_categories.parquet')
 
     
     idx = None  # Asigna un valor predeterminado
@@ -186,7 +186,7 @@ def recommendation(business_ids=None,user_id=None,category=None,distance=None,ta
     
     elif user_id is not None and user_id != '': # Si no se pregunta si es un id de usuario
         
-        df = pd.read_parquet('./app/ml/datasets/user_categories.parquet')
+        df = pd.read_parquet('./datasets/processed/bd/user_categories.parquet')
         category = df[df['user_id']== user_id]['name'].max() # En caso de que sea se carga un dataset auxiliar y se busca la categoria en la que tiene mas reseñas
         
         distance = None
@@ -195,7 +195,7 @@ def recommendation(business_ids=None,user_id=None,category=None,distance=None,ta
             return 'Usuario no encontrado.'
         
     if category is not None and category != '': # para las categorias
-        df_categories = pd.read_parquet('./app/ml/datasets/locales_categories.parquet')
+        df_categories = pd.read_parquet('./datasets/processed/bd/locales_categories.parquet')
         business_ids = df_categories[df_categories['name'].str.lower().str.contains(category.lower())] # Encuentra negocios con esa categoria
         distance = None
         

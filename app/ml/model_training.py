@@ -85,7 +85,7 @@ lambda text: ' '.join(
 local_categories['processed'] = local_categories['processed'].apply(lambda x:'restaur' if x == '' else x)
 
 local_categories = local_categories[['business_id','name','processed']]
-local_categories.to_parquet('./app/ml/datasets/locales_categories.parquet') # Guardo el dataset util
+local_categories.to_parquet('./datasets/processed/bd/locales_categories.parquet') # Guardo el dataset util
 
 
 tfidf_vectorizer = TfidfVectorizer()
@@ -124,4 +124,4 @@ df.groupby('user_id').agg({
     'categories_id':'count',
     'name':'first'
     
-}).reset_index().to_parquet('.app/ml/datasets/user_categories.parquet')
+}).reset_index().to_parquet('./datasets/processed/bd/user_categories.parquet')
