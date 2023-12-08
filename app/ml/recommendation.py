@@ -7,7 +7,7 @@ from math import radians, sin, cos, sqrt, atan2
 
 
 # Funcion que calcula la distancia entre dos punto en funcion de las coordenadas
-def haversine(lat1, lon1, lat2, lon2):
+def get_distance_coords(lat1, lon1, lat2, lon2):
     
     """
     Esta funcion aplica la distancia hervesine para encontrar la distancia entre dos puntos a partir de sus coordenaadas.
@@ -45,7 +45,7 @@ def haversine(lat1, lon1, lat2, lon2):
 
 
 #Funcion que a partir de un id de negocio y una lista ids retorna la distancia entre ese negocio y cada uno de los demas
-def distance(business_id,business_id_list,rang=None):
+def get_distance(business_id,business_id_list,rang=None):
     
     """
     Esta funcion calcula a partir de un negocio y una lista de negocios, la distancia entre los puntos.
@@ -82,7 +82,7 @@ def distance(business_id,business_id_list,rang=None):
     #Filtro solo por los restaurantes que pertenecen a las recomendaciones.
     business = business[business['business_id'].isin(business_id_list)]
     #Calculo la distancia de cada restuarante recomendado al inicial
-    business['distance'] = business.apply(lambda row: haversine(lat_origin, long_origin, row['latitude'], row['longitude']), axis=1)
+    business['distance'] = business.apply(lambda row: get_distance_coords(lat_origin, long_origin, row['latitude'], row['longitude']), axis=1)
     #Aplico el filtro de distancia.
     business = business[business['distance']<filtro_distance]
     return business
@@ -91,7 +91,7 @@ def distance(business_id,business_id_list,rang=None):
     
     
 # Función para obtener recomendaciones
-def get_recommendations(business_id,rang=None):
+def get_recommendation_business(business_id,rang=None):
     
     """
     Funcion que a partir de un negocio, recomienda otros, en funcion de sus categorias usando el modelo KNN.
@@ -112,7 +112,7 @@ def get_recommendations(business_id,rang=None):
         categories_procceced = pickle.load(file)
     
     ######### categories_procceced podria ser un df importado  con todos los pasos anteriores.#########
-    local_categories = pd.read_parquet('./app/ml/datasets/locales_categories.parquet')
+    local_categories = pd.read_parquet('./datasets/processed/bd/locales_categories.parquet')
 
     
     idx = None  # Asigna un valor predeterminado
@@ -140,9 +140,9 @@ def get_recommendations(business_id,rang=None):
     
     #Calcula las distancias entre las recomendaciones y el local.
     if rang:
-        business = distance(business_id,recommendations,rang)
+        business = get_distance(business_id,recommendations,rang)
     else:
-        business = distance(business_id,recommendations)
+        business = get_distance(business_id,recommendations)
         
     business = business[business['distance']!=0.0] # Elimino al restaurante mismos.
     #Uno las caractereisticas de los locales, con las categorias.
@@ -186,7 +186,7 @@ def recommendation(business_ids=None,user_id=None,category=None,distance=None,ta
     
     elif user_id is not None and user_id != '': # Si no se pregunta si es un id de usuario
         
-        df = pd.read_parquet('./app/ml/datasets/user_categories.parquet')
+        df = pd.read_parquet('./datasets/processed/bd/user_categories.parquet')
         category = df[df['user_id']== user_id]['name'].max() # En caso de que sea se carga un dataset auxiliar y se busca la categoria en la que tiene mas reseñas
         
         distance = None
@@ -195,7 +195,7 @@ def recommendation(business_ids=None,user_id=None,category=None,distance=None,ta
             return 'Usuario no encontrado.'
         
     if category is not None and category != '': # para las categorias
-        df_categories = pd.read_parquet('./app/ml/datasets/locales_categories.parquet')
+        df_categories = pd.read_parquet('./datasets/processed/bd/locales_categories.parquet')
         business_ids = df_categories[df_categories['name'].str.lower().str.contains(category.lower())] # Encuentra negocios con esa categoria
         distance = None
         
@@ -209,7 +209,7 @@ def recommendation(business_ids=None,user_id=None,category=None,distance=None,ta
     business_cat = pd.DataFrame()
     
     for business_id in business_ids: # Para cada negocio encontrado se realiza la recomendación.
-        business_cat = pd.concat([get_recommendations(business_id,rang=distance),business_cat])    
+        business_cat = pd.concat([get_recommendation_business(business_id,rang=distance),business_cat])    
         
     if business_cat.shape[0] == 0:
         return 'Restaurante no encontrado.'
@@ -232,9 +232,10 @@ def recommendation(business_ids=None,user_id=None,category=None,distance=None,ta
 
     return business_cat.sort_values(by=['avg_stars'],ascending=[False]).iloc[0:10]
 
+    
+    
+print(recommendation(business_ids='0x88e6c1013c5ae48d:0xddb42499c3b3df55'))
 
-
-print(recommendation(user_id='qVc8ODYU5SZjKXVBgXdI7w'))
 
 
 
