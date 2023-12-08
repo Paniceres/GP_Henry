@@ -102,3 +102,25 @@ knn_model.fit(tfidf_matrix)
 # Guardo el modelo en un pkl
 with open('./app/ml/modelo_knn.pkl', 'wb') as file:
     pickle.dump(knn_model, file)
+    
+    
+    
+    
+#### Data frame para buscar al categoria mas recurrente en un usuario
+
+df_rg = pd.read_parquet('./datasets/processed/bd/9_reviews_google.parquet.gz',columns=['user_id','gmap_id','sentiment'])
+df_rg.rename(columns=({'gmap_id':'business_id'}),inplace=True)
+df_ry = pd.read_parquet('./datasets/processed/bd/10_reviews_yelp.parquet.gz',columns=['user_id','business_id','sentiment'])
+df = pd.concat([df_rg,df_ry])
+df_cg = pd.read_parquet('./datasets/processed/bd/7_categories_google.parquet.gz')
+df_cg.rename(columns={'gmap_id':'business_id'},inplace=True)
+df_cy = pd.read_parquet('./datasets/processed/bd/8_categories_yelp.parquet.gz')
+df_c = pd.concat([df_cg,df_cy])
+df = pd.merge(df_c,df,on='business_id',how='inner')
+cat = pd.read_parquet('./datasets/processed/bd/2_categories.parquet.gz')
+df = pd.merge(df,cat,on='categories_id',how='inner')
+df.groupby('user_id').agg({
+    'categories_id':'count',
+    'name':'first'
+    
+}).reset_index().to_parquet('.app/ml/datasets/user_categories.parquet')
