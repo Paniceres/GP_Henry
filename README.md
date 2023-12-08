@@ -223,6 +223,8 @@ La metodología empleada en este proyecto permitió la creación de un tablero c
 
 <p align="right">(<a href="#readme-top">Volver al principio</a>)</p>
 
+<img src="/src/PIPELINE.png" width="1000" height="520">
+
 <!-- CONCLUSION -->
 
 # Conclusión
