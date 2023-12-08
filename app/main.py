@@ -113,7 +113,7 @@ if selected=="Comercial":
     target_state = st.multiselect(label='Selecciona estado:',options=['California', 'Florida', 'New Jersey', 'Illinoais'],label_visibility='collapsed')
     target_group = st.multiselect('Selecciona un grupo:', options=unique_groups)
     
-    loc_select=st.radio('Type',['Análisis', 'Recomendación'],horizontal=True, label_visibility="collapsed")
+    loc_select=st.radio('Type',['Análisis', 'Mapa'],horizontal=True, label_visibility="collapsed")
     
     st.caption('Nota: Solo disponibilizados los estados criterio.')   
         
@@ -121,19 +121,22 @@ if selected=="Comercial":
     if loc_select=='Análisis':
         st.write('pass')
         
-    if loc_select=='Recomendación':
+    if loc_select=='Mapa':
         st.write('pass')           
+        
     with st.expander('Advanced Settings'):
         pass
     # Generar graficos interactivos
 
 
 # ------------------------------------ Donde comer ---------------------------------------
-
+if selected=='¿Dónde comer?':
+    
     target_state = st.multiselect(label='Selecciona estado:',options=['California', 'Florida', 'New Jersey', 'Illinoais'],label_visibility='collapsed')
     target_group = st.multiselect('Selecciona un grupo:', options=unique_groups)
 
     loc_select=st.radio('Type',['Análisis', 'Recomendación'],horizontal=True, label_visibility="collapsed")
+
 
 # ------------------------------------ Sobre nosotros ---------------------------------------
 
