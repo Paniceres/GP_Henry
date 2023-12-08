@@ -30,7 +30,7 @@ def read_config(file_path = "../.streamlit/secrets.toml"):
         
 
 # @st.cache_data
-def pull_clean():
+def pull_clean(db_route=None):
     # Construir la ruta relativa al dataset
     db_route = os.path.join(route, '..', '..', 'datasets', 'processed', 'bd')
     # db_route = '../../datasets/processed/bd/'
@@ -412,7 +412,7 @@ def get_recommendations_business(business_id,rang=None):
 
 
 #Funcion que recibe un business id, userid o categoria y recomienda locales, tambien puede agregarse el rango en metros de distancia.
-def get_recommendation(business_ids=None,user_id=None,category=None,distance=None,target_state=None):
+def get_recommendation(reviews_google, reviews_yelp, states, business_ids=None, user_id=None, category=None, distance=None, target_state=None):
     """
     Esta funcion a partir de un negocio usuario o categoria recomienda otros negocios, teniendo en cuenta la distancia de ser requerida.
     Para esto la funcion toma un negocio, o selecciona una lista de ellos usando user_id, y categorias, y aplica la funcion *get_recommendations_business*
@@ -433,9 +433,7 @@ def get_recommendation(business_ids=None,user_id=None,category=None,distance=Non
     if user_id:
         
         # Cambiar por la lectura a la BD
-        df_rg = pd.read_parquet('./datasets/processed/bd/9_reviews_google.parquet.gz',columns=['user_id','gmap_id','sentiment'])
-        df_ry = pd.read_parquet('./datasets/processed/bd/10_reviews_yelp.parquet.gz',columns=['user_id','business_id','sentiment'])
-        df = pd.concat([df_rg,df_ry])
+        df = pd.concat([reviews_google,reviews_yelp])
         business_ids = df[df['user_id']==user_id].iloc[:10]['business_id'].tolist()
         distance = None
         if len(business_ids) == 0:
@@ -457,7 +455,7 @@ def get_recommendation(business_ids=None,user_id=None,category=None,distance=Non
     if business_cat.shape[0] == 0:
         return 'Restaurante no encontrado.'
     
-    states = pd.read_parquet('./datasets/processed/bd/1_states.parquet.gz')
+
     business_cat = pd.merge(business_cat,states,on='state_id',how='inner')
     business_cat = business_cat[['business_id','name','category','state','latitude','longitude','avg_stars','distance']]
     if target_state:
