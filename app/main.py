@@ -3,7 +3,7 @@ from streamlit_option_menu import option_menu
 import pandas as pd
 import toml
 import plotly.express as px
-from utils.funcs import read_config, get_groups, pull_clean, get_kpi1_rating, get_kpi2_respuestas, get_kpi3_retencion, get_kpi4_influencia
+from utils.funcs import read_config, get_groups, pull_clean, get_kpi1_rating, get_kpi2_respuestas, get_kpi3_retencion, get_kpi4_influencia, get_recommendation, get_recommendation_business
 import os.path
 
 # Obtener la ruta del directorio del script actual
@@ -27,16 +27,16 @@ st.set_page_config(
 #Data Pull and Functions
 data_frames = pull_clean() 
 
-state = data_frames.get('1_states.parquet')
+states = data_frames.get('1_states.parquet')
 categories = data_frames.get('2_categories.parquet')
 # user_yelp = data_frames.get('3_user_yelp.parquet')
 user_google = data_frames.get('4_user_google.parquet')
 business_google = data_frames.get('5_business_google.parquet')
-# business_yelp = data_frames.get('6_business_yelp.parquet')
+business_yelp = data_frames.get('6_business_yelp.parquet')
 categories_google = data_frames.get('7_categories_google.parquet')
 # categories_yelp = data_frames.get('8_categories_yelp.parquet')
 reviews_google = data_frames.get('9_reviews_google.parquet')
-# reviews_yelp = data_frames.get('10_reviews_yelp.parquet')
+reviews_yelp = data_frames.get('10_reviews_yelp.parquet')
 
 print(type(business_google))
 
@@ -110,7 +110,7 @@ if selected=="Comercial":
 
 
     
-    target_state = st.multiselect(label='Selecciona estado:',options=['California', 'Florida', 'New Jersey', 'Illinoais'],label_visibility='collapsed')
+    target_state = st.multiselect(label='Selecciona estado:',options=states['state'].values.tolist(),label_visibility='collapsed')
     target_group = st.multiselect('Selecciona un grupo:', options=unique_groups)
     
     loc_select=st.radio('Type',['Análisis', 'Mapa'],horizontal=True, label_visibility="collapsed")
@@ -122,7 +122,31 @@ if selected=="Comercial":
         st.write('pass')
         
     if loc_select=='Mapa':
-        st.write('pass')           
+            
+        if target_group:
+            # Filtrar por categorías asociadas al grupo seleccionado
+            categories_options = groups[groups['group'].isin(target_group)]['name'].tolist()
+            target_category = st.multiselect('Selecciona una categoría:', options=categories_options)
+
+        if loc_select == 'Análisis':
+            # Aquí puedes realizar análisis adicional si es necesario
+            st.write("¡Realizando análisis!")
+
+        elif loc_select == 'Mapa':
+            # Realizar la recomendación según las opciones seleccionadas
+            # Puedes ajustar los parámetros según tu función get_recommendation
+            df_recommendation = get_recommendation(reviews_google, reviews_yelp, states, business_ids=None,
+                                                user_id=None, category=target_category,
+                                                distance=None, target_state=target_state)
+
+            # Crear el mapa de calor con Plotly Express
+            fig = px.density_mapbox(df_recommendation, lat='latitude', lon='longitude', z='avg_stars',
+                                    radius=10, center=dict(lat=37.0902, lon=-95.7129),
+                                    zoom=3, mapbox_style="stamen-terrain",
+                                    title="Mapa de Calor de Estrellas Promedio")
+
+            # Mostrar el mapa de calor
+            st.plotly_chart(fig)           
         
     with st.expander('Advanced Settings'):
         pass
@@ -132,12 +156,36 @@ if selected=="Comercial":
 # ------------------------------------ Donde comer ---------------------------------------
 if selected=='¿Dónde comer?':
     
-    target_state = st.multiselect(label='Selecciona estado:',options=['California', 'Florida', 'New Jersey', 'Illinoais'],label_visibility='collapsed')
+    target_state = st.multiselect(label='Selecciona estado:',options=states['state'].values.tolist(),label_visibility='collapsed')   
+     
     target_group = st.multiselect('Selecciona un grupo:', options=unique_groups)
+    if target_group:
+        # Filtrar por categorías asociadas al grupo seleccionado
+        categories_options = groups[groups['group'].isin(target_group)]['name'].tolist()
+        target_category = st.multiselect('Selecciona una categoría:', options=categories_options)
 
     loc_select=st.radio('Type',['Análisis', 'Recomendación'],horizontal=True, label_visibility="collapsed")
 
 
+    if loc_select == 'Análisis':
+        # Aquí puedes realizar análisis adicional si es necesario
+        st.write("¡Realizando análisis!")
+
+    elif loc_select == 'Recomendación':
+        # Realizar la recomendación según las opciones seleccionadas
+        # Puedes ajustar los parámetros según tu función get_recommendation
+        df_recommendation = get_recommendation(reviews_google, reviews_yelp, states, business_ids=None,
+                                               user_id=None, category=target_category,
+                                               distance=None, target_state=target_state)
+
+        # Crear el mapa de calor con Plotly Express
+        fig = px.density_mapbox(df_recommendation, lat='latitude', lon='longitude', z='avg_stars',
+                                radius=10, center=dict(lat=37.0902, lon=-95.7129),
+                                zoom=3, mapbox_style="stamen-terrain",
+                                title="Mapa de Calor de Estrellas Promedio")
+
+        # Mostrar el mapa de calor
+        st.plotly_chart(fig)
 # ------------------------------------ Sobre nosotros ---------------------------------------
 
 

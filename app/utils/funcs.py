@@ -355,7 +355,7 @@ def get_distance(business_id,business_id_list,rang=None):
 
 
 # Función para obtener recomendaciones
-def get_recommendations_business(business_id,rang=None):
+def get_recommendation_business(business_id,rang=None):
     
     """
     Funcion que a partir de un negocio, recomienda otros, en funcion de sus categorias usando el modelo KNN.
@@ -415,7 +415,7 @@ def get_recommendations_business(business_id,rang=None):
 def get_recommendation(reviews_google, reviews_yelp, states, business_ids=None, user_id=None, category=None, distance=None, target_state=None):
     """
     Esta funcion a partir de un negocio usuario o categoria recomienda otros negocios, teniendo en cuenta la distancia de ser requerida.
-    Para esto la funcion toma un negocio, o selecciona una lista de ellos usando user_id, y categorias, y aplica la funcion *get_recommendations_business*
+    Para esto la funcion toma un negocio, o selecciona una lista de ellos usando user_id, y categorias, y aplica la funcion *get_recommendation_business*
 
     Args:
         business_ids (str, optional): Id de un negocio.
@@ -441,7 +441,7 @@ def get_recommendation(reviews_google, reviews_yelp, states, business_ids=None, 
         
     if category:
         df_categories = pd.read_parquet('./app/ml/datasets/locales_categories.parquet')
-        business_ids = df_categories[df_categories['name'].str.lower().str.contains(category.lower())].sample(10).iloc[:10]['business_id'].tolist()
+        business_ids = df_categories[df_categories['name'].str.contains(category)].sample(10).iloc[:10]['business_id'].tolist()
         distance = None
         if len(business_ids) == 0:
             return 'Categoria no encontrada.'
@@ -450,7 +450,7 @@ def get_recommendation(reviews_google, reviews_yelp, states, business_ids=None, 
     business_cat = pd.DataFrame()
     
     for business_id in business_ids:
-        business_cat = pd.concat([get_recommendations_business(business_id,rang=distance),business_cat])    
+        business_cat = pd.concat([get_recommendation_business(business_id,rang=distance),business_cat])    
         
     if business_cat.shape[0] == 0:
         return 'Restaurante no encontrado.'
