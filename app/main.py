@@ -37,6 +37,8 @@ categories_google = data_frames.get('7_categories_google.parquet')
 # categories_yelp = data_frames.get('8_categories_yelp.parquet')
 reviews_google = data_frames.get('9_reviews_google.parquet')
 reviews_yelp = data_frames.get('10_reviews_yelp.parquet')
+df_user = data_frames.get('user_categories')
+df_categories = data_frames.get('locales_categories')
 
 print(type(business_google))
 
@@ -129,15 +131,14 @@ if selected=="Comercial":
             target_category = st.multiselect('Selecciona una categoría:', options=categories_options)
 
         if loc_select == 'Análisis':
-            # Aquí puedes realizar análisis adicional si es necesario
-            st.write("¡Realizando análisis!")
+            
+            st.write("¡Añadir KPIs!")
 
         elif loc_select == 'Mapa':
             # Realizar la recomendación según las opciones seleccionadas
-            # Puedes ajustar los parámetros según tu función get_recommendation
-            df_recommendation = get_recommendation(reviews_google, reviews_yelp, states, business_ids=None,
-                                                user_id=None, category=target_category,
-                                                distance=None, target_state=target_state)
+            df_recommendation = get_recommendation(business_google=business_google,business_yelp=business_yelp,
+                                                df_user=df_user,df_categories=df_categories,states=states,
+                                                df_rg=reviews_google,df_ry=reviews_yelp,category=target_category)
 
             # Crear el mapa de calor con Plotly Express
             fig = px.density_mapbox(df_recommendation, lat='latitude', lon='longitude', z='avg_stars',
@@ -174,9 +175,9 @@ if selected=='¿Dónde comer?':
     elif loc_select == 'Recomendación':
         # Realizar la recomendación según las opciones seleccionadas
         # Puedes ajustar los parámetros según tu función get_recommendation
-        df_recommendation = get_recommendation(reviews_google, reviews_yelp, states, business_ids=None,
-                                               user_id=None, category=target_category,
-                                               distance=None, target_state=target_state)
+        df_recommendation = get_recommendation(business_google=business_google,business_yelp=business_yelp,
+                                                df_user=df_user,df_categories=df_categories,states=states,
+                                                df_rg=reviews_google,df_ry=reviews_yelp,category=target_category)
 
         # Crear el mapa de calor con Plotly Express
         fig = px.density_mapbox(df_recommendation, lat='latitude', lon='longitude', z='avg_stars',

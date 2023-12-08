@@ -378,14 +378,14 @@ def get_recommendation_business(business_google,business_yelp,df_categories,busi
     """
     
     # Cargo el modelo
-    with open(r'../ml/modelo_knn.pkl', 'rb') as file: 
+    model_path = os.path.join(os.path.dirname(__file__), '..', 'ml', 'modelo_knn.pkl')
+    with open(model_path, 'rb') as file:
         knn_model = pickle.load(file)
-        
-    with open(r'../ml/tfidf_matrix.pkl', 'rb') as file:
-        categories_procceced = pickle.load(file)
-    
-    ######### categories_procceced podria ser un df importado  con todos los pasos anteriores.#########
-    #local_categories = pd.read_parquet('./app/ml/datasets/locales_categories.parquet')
+
+    tfidf_matrix_path = os.path.join(os.path.dirname(__file__), '..', 'ml', 'tfidf_matrix.pkl')
+    with open(tfidf_matrix_path, 'rb') as file:
+        categories_processed = pickle.load(file)
+
 
     
     idx = None  # Asigna un valor predeterminado
@@ -393,10 +393,8 @@ def get_recommendation_business(business_google,business_yelp,df_categories,busi
         idx = df_categories[df_categories['business_id'] == business_id].index[0]
     except IndexError:
         return pd.DataFrame()
-        # Puedes realizar acciones adicionales aquí si es necesario cuando no se encuentra una coincidencia.
     except Exception as e:
         return f"Ocurrió un error inesperado: {str(e)}"
-        # Aquí manejas cualquier otro tipo de excepción que pueda ocurrir.
 
     # Ahora puedes usar idx, que podría ser None si no se encontró ninguna coincidencia
     if idx is  None:
@@ -406,7 +404,7 @@ def get_recommendation_business(business_google,business_yelp,df_categories,busi
 
     #Genero las recomendaciones.
     
-    _, indices = knn_model.kneighbors(categories_procceced[idx])
+    _, indices = knn_model.kneighbors(categories_processed[idx])
 
     recommendations = df_categories['business_id'].iloc[indices[0,1:]]  # Excluye el propio restaurante
     
@@ -418,7 +416,7 @@ def get_recommendation_business(business_google,business_yelp,df_categories,busi
         business = get_distance(business_google,business_yelp,business_id,recommendations)
         
     business = business[business['distance']!=0.0] # Elimino al restaurante mismos.
-    #Uno las caractereisticas de los locales, con las categorias.
+    # Uno las caractereisticas de los locales, con las categorias.
     business_cat = pd.merge(df_categories,business,on='business_id')
     if business_cat.shape[0] == 0:
         return 'Restaurante no encontrado.'
@@ -468,9 +466,19 @@ def get_recommendation(df_user,df_categories,states,df_rg,df_ry,business_google,
         if pd.isna(category): # Si es nan retorna no encontrada.
             return 'Usuario no encontrado.'
         
-    if category is not None and category != '': # para las categorias
-        #df_categories = pd.read_parquet('./app/ml/datasets/locales_categories.parquet')
-        business_ids = df_categories[df_categories['name'].str.lower().str.contains(category.lower())] # Encuentra negocios con esa categoria
+    if category is not None and category != '':
+        # Convert lists to strings and use apply with lambda
+        business_ids = df_categories[df_categories['name'].apply(
+            lambda x: any(category.lower() in str(item).lower() for item in x) if isinstance(x, list) else (category.lower() in str(x).lower())
+        )]
+        if len(business_ids) > 1:
+            business_ids = business_ids.sample(min(10, len(business_ids)))['business_id'].tolist()
+        else:
+            return 'Categoria no encontrada'
+    
+
+
+# Encuentra negocios con esa categoria
         distance = None
         
         if len(business_ids) > 1:
