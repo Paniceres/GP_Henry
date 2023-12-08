@@ -4,54 +4,29 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import seaborn as sns
 import os.path
+from funcs import read_config, get_groups, pull_clean, get_kpi1_rating, get_kpi2_respuestas, get_kpi3_retencion, get_kpi4_influencia
 
 # Obtener la ruta del directorio del script actual
 route = os.path.dirname(__file__)
 
-
-def get_unique_names(dataframe):
-    if 'name' in dataframe.columns:
-        unique_names = dataframe['name'].unique().tolist()
-        return unique_names
-    else:
-        print("El DataFrame no contiene la columna 'name'. Verifica la estructura de tus datos.")
-        return []
-
-
-def pull_clean():
-    # Construir la ruta relativa al dataset
-    db_route = os.path.join(route, '..', '..', 'datasets', 'processed', 'bd')
-    print('db_route')
-    # db_route = '../../datasets/processed/bd/'
-    # Lista de nombres de archivos a leer
-    file_names = [
-        '1_states.parquet.gz',
-        # '3_user_yelp.parquet.gz',
-        # '2_categories.parquet.gz',
-        # '4_user_google.parquet.gz',
-        '5_business_google.parquet.gz',
-        # '6_business_yelp.parquet.gz',
-        # '7_categories_google.parquet.gz',
-        # '8_categories_yelp.parquet.gz',
-        # '9_reviews_google.parquet.gz',
-        # '10_reviews_yelp.parquet.gz',
-    ]
-
-    # Leer archivos Parquet y almacenar en un diccionario
-    data_frames = {}
-    for file_name in file_names:
-        full_path = os.path.abspath(os.path.join(db_route, file_name))
-        df_name = os.path.splitext(os.path.basename(file_name))[0]  # Nombre del DataFrame sin extensión
-        data_frames[df_name] = pd.read_parquet(full_path)
-        print(f"{df_name}: {data_frames[df_name].shape}")
-    return data_frames
-
 #Data Pull and Functions
-data_frames = pull_clean() 
-
+data_frames = pull_clean()
+ 
 state = data_frames.get('1_states.parquet')
+categories = data_frames.get('2_categories.parquet')
+# user_yelp = data_frames.get('3_user_yelp.parquet')
+user_google = data_frames.get('4_user_google.parquet')
 business_google = data_frames.get('5_business_google.parquet')
+# business_yelp = data_frames.get('6_business_yelp.parquet')
+categories_google = data_frames.get('7_categories_google.parquet')
+# categories_yelp = data_frames.get('8_categories_yelp.parquet')
+reviews_google = data_frames.get('9_reviews_google.parquet')
+# reviews_yelp = data_frames.get('10_reviews_yelp.parquet')
 
-unique_names = get_unique_names(business_google)
 
-print(type(unique_names))
+groups = get_groups(business_google)
+
+
+
+kpi2 = get_kpi2_respuestas(reviews_google, business_google, categories_google, state, categories, target_state='Florida', target_group='general')
+print(kpi2)

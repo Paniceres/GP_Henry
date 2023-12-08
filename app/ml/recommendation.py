@@ -218,7 +218,7 @@ def recommendation(business_ids=None,user_id=None,category=None,distance=None,ta
     business_cat = pd.merge(business_cat,states,on='state_id',how='inner')
     business_cat = business_cat[['business_id','name','category','state','latitude','longitude','avg_stars','distance']] # Se selccionan columnas a usar
     if target_state:
-        business_cat = business_cat[business_cat['state']==target_state] # Si se pasa un estado se filtra por este.
+        business_cat = business_cat[business_cat['state'].isin(target_state)] # Si se pasa un estado se filtra por este.
          
     if user_id: # se eliminan todas las recomendaciones de un usuario si son de un restaurante en el que haya estado.
         df_rg = pd.read_parquet('./datasets/processed/bd/9_reviews_google.parquet.gz',columns=['user_id','gmap_id','sentiment'])
@@ -230,7 +230,8 @@ def recommendation(business_ids=None,user_id=None,category=None,distance=None,ta
 
    
 
-    return business_cat.sort_values(by=['avg_stars'],ascending=[False]).iloc[0:10][['name','category']]
+    return business_cat.sort_values(by=['avg_stars'],ascending=[False]).iloc[0:10]
+
 
 
 print(recommendation(user_id='qVc8ODYU5SZjKXVBgXdI7w'))

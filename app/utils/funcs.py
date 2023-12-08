@@ -18,41 +18,31 @@ import os.path
 # Obtener la ruta del directorio del script actual
 route = os.path.dirname(__file__)
 
-@st.cache_data
-def read_config(file_path="config.toml"):
+
+def read_config(file_path = "../.streamlit/secrets.toml"):
     try:
         with open(file_path, "r") as file:
-            config_data = toml.load(file)
-            return config_data
+            secrets = toml.load(file)
+            return secrets      
+    # Sino, utilizar st.secrets para deploy
     except FileNotFoundError:
-        print(f"El archivo {file_path} no fue encontrado.")
-        return None
+        return st.secrets
+        
 
-
-@st.cache_data
-def get_unique_names(dataframe):
-    if 'name' in dataframe.columns:
-        unique_names = dataframe['name'].unique().tolist()
-        return unique_names
-    else:
-        print("El DataFrame no contiene la columna 'name'. Verifica la estructura de tus datos.")
-        return []
-
-@st.cache_data
+# @st.cache_data
 def pull_clean():
     # Construir la ruta relativa al dataset
     db_route = os.path.join(route, '..', '..', 'datasets', 'processed', 'bd')
-    print('db_route')
     # db_route = '../../datasets/processed/bd/'
     # Lista de nombres de archivos a leer
     file_names = [
         '1_states.parquet.gz',
-        # '3_user_yelp.parquet.gz',
         '2_categories.parquet.gz',
+        # '3_user_yelp.parquet.gz',
         '4_user_google.parquet.gz',
         '5_business_google.parquet.gz',
         '6_business_yelp.parquet.gz',
-        # '7_categories_google.parquet.gz',
+        '7_categories_google.parquet.gz',
         # '8_categories_yelp.parquet.gz',
         '9_reviews_google.parquet.gz',
         # '10_reviews_yelp.parquet.gz',
@@ -114,6 +104,7 @@ def get_groups(df):
 
 
 # ------------------------------------ KPI ------------------------------------------------
+
 # KPI 1
 # def get_restaurants_per_capita(df_bg, target_state, target_year):
 #     population_data = {
@@ -151,42 +142,83 @@ def get_groups(df):
     
 #     return df_businesses_per_capita
 
+# KPI 1
+def get_kpi1_rating(df, target_group, target_state):
+    """
+    Calcula el promedio de las estrellas para cada grupo único en un DataFrame.
+    """
+    # Filtrar el DataFrame por el estado objetivo
+    df_filtered = df[df['state'] == target_state]
+
+    # Calcular el promedio de estrellas por grupo
+    df_rating = df_filtered.groupby(target_group)['stars'].mean().reset_index()
+
+    return df_rating
+
 # KPI 2
+# Habria que separarla en partes, tarda 40mins y da error
+def get_kpi2_respuestas(reviews_google, business_google, categories_google, state, categories, target_state, target_group):
+    '''
+    Calcula la calidad de las respuestas
+    kpi_respuestas = (ratio respuestas/review * rango tiempo) + sentiment_resp promedio
+    '''
 
-
-
-# KPI 3
-def get_kpi2_respuestas(df_rg, df_bg):
     # Convertir 'date' y 'resp_date' al formato datetime
-    df_rg['date'] = pd.to_datetime(df_rg['date'], format='%Y-%m-%d %H:%M:%S.%f', errors='coerce')
-    df_rg['resp_date'] = pd.to_datetime(df_rg['resp_date'], format='%Y-%m-%d %H:%M:%S.%f', errors='coerce')
+    reviews_google['date'] = pd.to_datetime(reviews_google['date'], format='%Y-%m-%d %H:%M:%S.%f', errors='coerce')
+    reviews_google['resp_date'] = pd.to_datetime(reviews_google['resp_date'], format='%Y-%m-%d %H:%M:%S.%f', errors='coerce')
 
     # Fusionar los dataframes en 'gmap_id'
-    merged_df = pd.merge(df_rg, df_bg, on='gmap_id', how='inner')
+    merged_df = pd.merge(reviews_google, business_google, on='gmap_id', how='inner')
 
+    # Fusionar con el dataframe de estados para obtener el nombre del estado
+    merged_df = pd.merge(merged_df, state, on='state_id', how='inner')
+    
+    # Fusionar con el dataframe de categorías para obtener el nombre de la categoría
+    categories_df = pd.merge(categories, categories_google, on='categories_id', how='inner')
+
+    # Fusionar con el dataframe de categorías para obtener el nombre de la categoría
+    merged_df = pd.merge(merged_df, categories_df, on='gmap_id', how='inner')
+    
+    # Renombrar columnas
+    merged_df = merged_df.rename(columns={'name_x': 'name', 'name_y': 'category'})
+
+    # Borrar columnas residuales
+    merged_df.drop(columns=['categories_id', 'state_id'], inplace=True)
+    
+    # Filtrar las filas por estado y grupo
+    filtered_df = merged_df[(merged_df['state'] == target_state) & (merged_df['group'] == target_group)]
+    print(filtered_df)
+    
+    # Calcular el ratio de respuestas/comentarios
+    count_nonzero_resp = (filtered_df['resp_sentiment'] != 0.0).sum()
+    count_comments = len(filtered_df)
+    
     # Filtrar las filas donde 'resp_time' no es NaT
-    filtered_df = merged_df[~pd.isna(merged_df['resp_date'])]
-
-    # Calcular la ratio de respuesta/review
-    ratio_resp_review = filtered_df.groupby('name').size()
+    filtered_df = filtered_df[~pd.isna(filtered_df['resp_date'])]
 
     # Calcular la diferencia de tiempo en horas
     filtered_df['tiempo_diff'] = (filtered_df['resp_date'] - filtered_df['date']).dt.total_seconds() / 3600
 
     # Calcular el sentiment_resp promedio
-    sentiment_resp_promedio = filtered_df.groupby('name')['resp_sentiment'].mean()
+    sentiment_resp_promedio = filtered_df['resp_sentiment'].mean()
 
-    # Mostrar los resultados en un nuevo DataFrame
-    result_df = pd.DataFrame({
-        'ratio_resp': ratio_resp_review.values / filtered_df.groupby('name').size().values,
-        'tiempo_resp': filtered_df.groupby('name')['tiempo_diff'].mean(),
-        'sentiment_resp': sentiment_resp_promedio.values
-    })
+    print("Count Nonzero Resp:", count_nonzero_resp)
+    print("Count Comments:", count_comments)
+    
+    # Verificar si count_dates es diferente de cero antes de la división
+    ratio_resp_comentarios = count_nonzero_resp / count_comments if count_comments > 0 else 0
+    print("Ratio Respuestas/Comentarios:", ratio_resp_comentarios)
+    
+    print("tiempo_diff:", filtered_df['tiempo_diff'].mean())
+    # Calcular el KPI final
+    kpi_respuestas = (ratio_resp_comentarios * filtered_df['tiempo_diff'].mean()) + sentiment_resp_promedio
 
-    return result_df
+    return kpi_respuestas
 
 
-# KPI 4
+
+
+# KPI 3
 def get_kpi3_retencion(df_rg):
     # Convertir 'date' al formato datetime
     df_rg['date'] = pd.to_datetime(df_rg['date'], format='%Y-%m-%d %H:%M:%S.%f', errors='coerce')
@@ -208,7 +240,7 @@ def get_kpi3_retencion(df_rg):
 
     return tasa_retencion_actual, tasa_retencion_objetivo, usuarios_repetidos_necesarios
 
-# KPI 5
+# KPI 4
 def get_kpi4_influencia(df_uy):
     # Definir la función de rango de influencia
     def rango_influyente(cant_fans):
