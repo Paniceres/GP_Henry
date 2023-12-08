@@ -436,7 +436,7 @@ def get_recommendation_business(business_google,business_yelp,local_categories,b
 
 
 #Funcion que recibe un business id userid o categoria y recomienda locales, tambien puede agregarse el rango en metros de distancia.
-def get_recommendation(df_user,df_categories,states,df_rg,df_ry,local_categories,business_google,business_yelp,business_ids=None,user_id=None,category=None,distance=None,target_state=None):
+def get_recommendation(df_user,df_categories,states,df_rg,df_ry,business_google,business_yelp,business_ids=None,user_id=None,category=None,distance=None,target_state=None):
     
     
     """
@@ -481,7 +481,7 @@ def get_recommendation(df_user,df_categories,states,df_rg,df_ry,local_categories
     business_cat = pd.DataFrame()
     
     for business_id in business_ids: # Para cada negocio encontrado se realiza la recomendación.
-        business_cat = pd.concat([get_recommendation_business(business_google,business_yelp,local_categories,business_id,rang=distance),business_cat])    
+        business_cat = pd.concat([get_recommendation_business(business_google,business_yelp,df_categories,business_id,rang=distance),business_cat])    
         
     if business_cat.shape[0] == 0:
         return 'Restaurante no encontrado.'

@@ -38,7 +38,7 @@ local_categories = pd.read_parquet('./datasets/processed/bd/locales_categories.p
 business_google=pd.read_parquet('./datasets/processed/bd/5_business_google.parquet.gz') 
 business_yelp=pd.read_parquet('./datasets/processed/bd/6_business_yelp.parquet.gz') 
 
-print(get_recommendation(df_user,df_categories,states,df_rg,df_ry,local_categories,business_google,business_yelp,category='dart bar'))
+print(get_recommendation(df_user,df_categories,states,df_rg,df_ry,business_google,business_yelp,category='dart bar'))
 
 
 # kpi2 = get_kpi2_respuestas(reviews_google, business_google, categories_google, state, categories, target_state='Florida', target_group='general')
