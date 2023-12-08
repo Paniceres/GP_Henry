@@ -45,9 +45,9 @@ def pull_clean(db_route=None):
         '7_categories_google.parquet.gz',
         # '8_categories_yelp.parquet.gz',
         '9_reviews_google.parquet.gz',
-        '10_reviews_yelp.parquet.gz',
-        'locales_categories.parquet',
+        # '10_reviews_yelp.parquet.gz',
         'user_categories.parquet',
+        'locales_categories.parquet'
     ]
 
     # Leer archivos Parquet y almacenar en un diccionario
@@ -107,7 +107,7 @@ def get_groups(df):
 
 # ------------------------------------ KPI ------------------------------------------------
 
-# KPI 1
+# KPI 0
 # def get_restaurants_per_capita(df_bg, target_state, target_year):
 #     population_data = {
 #         'California': {2015: 39144818, 2016: 39250017, 2017: 39399349, 2018: 39538223, 2019: 39613506,
@@ -280,45 +280,7 @@ def get_kpi4_influencia(df_uy):
 #### Recomendations #####
 
 # Funcion que calcula la distancia entre dos punto en funcion de las coordenadas
-def haversine(lat1, lon1, lat2, lon2):
-    
-    """
-    Esta funcion aplica la distancia hervesine para encontrar la distancia entre dos puntos a partir de sus coordenaadas.
-    
-    Args:
-        lat1 (float): Latitud del primer punto.
-        lon1 (float): Longitud del primer punto
-        lat2 (float: Latitud del segundo punto.
-        lon2 (float): Longitud del segundo punto.
-        
-    Returns:
-        float:Distancia en metros entre dos coordeandas.
-    """
-    
-    # Radio de la Tierra en metros
-    R = 6371.0
-
-    # Convierte las coordenadas de grados a radianes
-    lat1, lon1, lat2, lon2 = map(radians, [lat1, lon1, lat2, lon2])
-
-    # Diferencia de latitud y longitud
-    dlat = lat2 - lat1
-    dlon = lon2 - lon1
-
-    # Fórmula haversine
-    a = sin(dlat / 2)**2 + cos(lat1) * cos(lat2) * sin(dlon / 2)**2
-    c = 2 * atan2(sqrt(a), sqrt(1 - a))
-
-    # Distancia en metros
-    distance = R * c
-
-    return distance
-
-
-
-
-# Funcion que calcula la distancia entre dos punto en funcion de las coordenadas
-def get_distance_coords(lat1, lon1, lat2, lon2):
+def get_distance_coord(lat1, lon1, lat2, lon2):
     
     """
     Esta funcion aplica la distancia hervesine para encontrar la distancia entre dos puntos a partir de sus coordenaadas.
@@ -356,7 +318,6 @@ def get_distance_coords(lat1, lon1, lat2, lon2):
 
 
 #Funcion que a partir de un id de negocio y una lista ids retorna la distancia entre ese negocio y cada uno de los demas
-
 def get_distance(business_google,business_yelp,business_id,business_id_list,rang=None):
     
     """
@@ -394,7 +355,7 @@ def get_distance(business_google,business_yelp,business_id,business_id_list,rang
     #Filtro solo por los restaurantes que pertenecen a las recomendaciones.
     business = business[business['business_id'].isin(business_id_list)]
     #Calculo la distancia de cada restuarante recomendado al inicial
-    business['distance'] = business.apply(lambda row: get_distance_coords(lat_origin, long_origin, row['latitude'], row['longitude']), axis=1)
+    business['distance'] = business.apply(lambda row: get_distance_coord(lat_origin, long_origin, row['latitude'], row['longitude']), axis=1)
     #Aplico el filtro de distancia.
     business = business[business['distance']<filtro_distance]
     return business
@@ -403,7 +364,7 @@ def get_distance(business_google,business_yelp,business_id,business_id_list,rang
     
     
 # Función para obtener recomendaciones
-def get_recommendation_business(business_google,business_yelp,local_categories,business_id,rang=None):
+def get_recommendation_business(business_google,business_yelp,df_categories,business_id,rang=None):
     
     """
     Funcion que a partir de un negocio, recomienda otros, en funcion de sus categorias usando el modelo KNN.
@@ -429,7 +390,7 @@ def get_recommendation_business(business_google,business_yelp,local_categories,b
     
     idx = None  # Asigna un valor predeterminado
     try:
-        idx = local_categories[local_categories['business_id'] == business_id].index[0]
+        idx = df_categories[df_categories['business_id'] == business_id].index[0]
     except IndexError:
         return pd.DataFrame()
         # Puedes realizar acciones adicionales aquí si es necesario cuando no se encuentra una coincidencia.
@@ -447,7 +408,7 @@ def get_recommendation_business(business_google,business_yelp,local_categories,b
     
     _, indices = knn_model.kneighbors(categories_procceced[idx])
 
-    recommendations = local_categories['business_id'].iloc[indices[0,1:]]  # Excluye el propio restaurante
+    recommendations = df_categories['business_id'].iloc[indices[0,1:]]  # Excluye el propio restaurante
     
     
     #Calcula las distancias entre las recomendaciones y el local.
@@ -458,7 +419,7 @@ def get_recommendation_business(business_google,business_yelp,local_categories,b
         
     business = business[business['distance']!=0.0] # Elimino al restaurante mismos.
     #Uno las caractereisticas de los locales, con las categorias.
-    business_cat = pd.merge(local_categories,business,on='business_id')
+    business_cat = pd.merge(df_categories,business,on='business_id')
     if business_cat.shape[0] == 0:
         return 'Restaurante no encontrado.'
     business_cat = business_cat.groupby('business_id').agg({
@@ -476,10 +437,10 @@ def get_recommendation_business(business_google,business_yelp,local_categories,b
     return business_cat
 
 
-
 #Funcion que recibe un business id userid o categoria y recomienda locales, tambien puede agregarse el rango en metros de distancia.
-
-def get_recommendation(business_google,business_yelp,df_user,df_categories,states,df_rg,df_ry,business_ids=None,user_id=None,category=None,distance=None,target_state=None):
+def get_recommendation(df_user,df_categories,states,df_rg,df_ry,business_google,business_yelp,business_ids=None,user_id=None,category=None,distance=None,target_state=None):
+    
+    
     """
     Esta funcion a partird e un negocio usuario o categoria recomienda otros negocios, teniendo en cuenta la distancia de ser requerida.
     Para esto la funcion toma un negocio, o selecciona una lista de ellos usando user_id, y categorias, y aplica la funcion *get_recommendations*
@@ -544,3 +505,4 @@ def get_recommendation(business_google,business_yelp,df_user,df_categories,state
    
 
     return business_cat.sort_values(by=['avg_stars'],ascending=[False]).iloc[0:10]
+

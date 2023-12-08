@@ -1,0 +1,517 @@
+[33mcommit 067fe38ba9037eb1e3f00d8b313460cd68f58da2[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mdev-B[m[33m, [m[1;31morigin/dev-B[m[33m)[m
+Author: Bruno Zenobio <brunozenobio4@gmail.com>
+Date:   Fri Dec 8 17:44:05 2023 -0300
+
+    feat : Función de recomendación agregada a funcs
+
+[33mcommit c572d765a7d4b7e3c88dd5b27d7b9f6e0e244db2[m[33m ([m[1;31morigin/test[m[33m)[m
+Author: Lucio Paniceres <paniceres73@gmail.com>
+Date:   Fri Dec 8 12:40:02 2023 -0300
+
+    feat(app/): Heat map logic added, not funcional yet, changes to funcs.py
+
+[33mcommit 7e9aae1a307656e9e17bfdd497a3b65d9e080e05[m
+Author: Lucio Paniceres <paniceres73@gmail.com>
+Date:   Fri Dec 8 12:15:58 2023 -0300
+
+    feat(app/utils): working on main.py with testing file
+
+[33mcommit 47525a7a6a9507bb10b8c2acb3b5685b8d975d8b[m
+Author: Lucio Paniceres <paniceres73@gmail.com>
+Date:   Fri Dec 8 12:01:19 2023 -0300
+
+    feat(app/utils): working on main.py with testing file
+
+[33mcommit 8448e4f2754308218f7f746c32d921a07883fd4d[m
+Merge: a190fd9 e1f61c0
+Author: Lucio Paniceres <paniceres73@gmail.com>
+Date:   Fri Dec 8 11:43:20 2023 -0300
+
+    Merge branch 'dev-B' of github.com:Paniceres/GP_Henry into test
+
+[33mcommit e1f61c06faf2ff269ca633bd478a8770b9312eb4[m
+Author: Bruno Zenobio <brunozenobio4@gmail.com>
+Date:   Fri Dec 8 11:42:06 2023 -0300
+
+    feat:Modelo de recomendación funcional
+
+[33mcommit a190fd9a96a2f5e5cdbe5fc6f0a1794244799331[m
+Merge: 89ed616 a49f028
+Author: Lucio Paniceres <paniceres73@gmail.com>
+Date:   Fri Dec 8 11:39:21 2023 -0300
+
+    Merge branch 'dev-B' of github.com:Paniceres/GP_Henry into test
+
+[33mcommit 89ed616ebb5271539bd82d4b20c27f16e8deb082[m
+Author: Lucio Paniceres <paniceres73@gmail.com>
+Date:   Fri Dec 8 11:38:54 2023 -0300
+
+    feat(app/utils): working on main.py
+
+[33mcommit bd1adc453fd69748b38b7aa9f923c072989179e9[m
+Merge: a49f028 719cd82
+Author: Bruno Zenobio <brunozenobio4@gmail.com>
+Date:   Fri Dec 8 09:31:54 2023 -0300
+
+    Merge branch 'test' of https://github.com/Paniceres/GP_Henry into dev-B
+
+[33mcommit a49f028d583cb8c3b435617d5f8547f9bb9bac00[m
+Author: Bruno Zenobio <brunozenobio4@gmail.com>
+Date:   Fri Dec 8 09:31:32 2023 -0300
+
+    feat:Modelo de recomendación funcional
+
+[33mcommit 719cd821cb5b9653f8508a7608dc2d16525ad95d[m
+Author: Lucio Paniceres <paniceres73@gmail.com>
+Date:   Thu Dec 7 18:58:29 2023 -0300
+
+    feat(app/utils): working on funcs.py
+
+[33mcommit 8ff307398849ef413d5e57cd19c58e02785852cd[m
+Author: Lucio Paniceres <paniceres73@gmail.com>
+Date:   Thu Dec 7 17:11:42 2023 -0300
+
+    feat(app/utils): working on funcs.py
+
+[33mcommit f69fb37e0edb2c0cb260ef0f4e5cfe0c7b7ad934[m
+Merge: cbf4ce7 fcf7b56
+Author: Lucio Paniceres <paniceres73@gmail.com>
+Date:   Thu Dec 7 16:29:45 2023 -0300
+
+    Merge branch 'dev-P' of github.com:Paniceres/GP_Henry into test
+
+[33mcommit fcf7b56f48fa33c7f390fe22c75e94d69673b519[m
+Merge: 16ded90 2b977b4
+Author: Lucio Paniceres <paniceres73@gmail.com>
+Date:   Thu Dec 7 16:27:25 2023 -0300
+
+    fix(~): minor fix to eda_kpi
+
+[33mcommit 16ded903c95c847da398aa569ae280a070d2881d[m
+Author: Lucio Paniceres <paniceres73@gmail.com>
+Date:   Thu Dec 7 16:25:23 2023 -0300
+
+    feat(~): working on kpis, main.py
+
+[33mcommit 2abbb889912950db885b4c7d3f1779e9b4be59c9[m
+Merge: 1a1c827 2b977b4
+Author: Bruno Zenobio <brunozenobio4@gmail.com>
+Date:   Thu Dec 7 13:11:39 2023 -0300
+
+    feat: Cambios y arreglo de errores en el modelo de recomendación
+
+[33mcommit 1a1c8272a7507792a4505b3b726b05bd3c4bbb0a[m
+Author: Bruno Zenobio <brunozenobio4@gmail.com>
+Date:   Thu Dec 7 12:55:39 2023 -0300
+
+    feat: Cambios y arreglo de errores en el modelo de recomendación
+
+[33mcommit 2b977b409c3e6ed74664a01c0f249d08bb2d2598[m
+Author: DamianAlbarino <damianalbarino@hotmail.com>
+Date:   Thu Dec 7 12:43:32 2023 -0300
+
+    Fix(~): etl user_google bd
+
+[33mcommit 7e2e92c589ff2334b3dbfee79e9f7ffe15a60968[m
+Author: DamianAlbarino <damianalbarino@hotmail.com>
+Date:   Thu Dec 7 12:01:08 2023 -0300
+
+    fix: syntax error
+
+[33mcommit 470318dbe118a47eebbd2fafc5a0b25163a8e6ae[m
+Merge: e9b0f24 7bf1bf6
+Author: DamianAlbarino <damianalbarino@hotmail.com>
+Date:   Thu Dec 7 11:58:19 2023 -0300
+
+    Merge branch 'dev-D' into test
+
+[33mcommit 7bf1bf657e374f5ec4983b3d2450098a79d4a0a4[m
+Author: DamianAlbarino <damianalbarino@hotmail.com>
+Date:   Thu Dec 7 11:57:33 2023 -0300
+
+    Fix(~): etl bd
+
+[33mcommit e9b0f24b87c27595cd0d22fa89f22c6850c9e4f0[m
+Merge: fc86532 4a17a0c
+Author: DamianAlbarino <damianalbarino@hotmail.com>
+Date:   Thu Dec 7 00:25:30 2023 -0300
+
+    Merge branch 'dev-D' into test
+
+[33mcommit 4a17a0c66ce37d599e8ba207e9dbd31f586187c9[m
+Author: DamianAlbarino <damianalbarino@hotmail.com>
+Date:   Thu Dec 7 00:21:54 2023 -0300
+
+    fix ml and local_categories
+
+[33mcommit cbf4ce7bd8d337698a6565ddeeb3a3a1d2511d6e[m
+Merge: 2dd3ff6 827d22b
+Author: Lucio Paniceres <paniceres73@gmail.com>
+Date:   Wed Dec 6 21:26:47 2023 -0300
+
+    Merge branch 'dev-P' of github.com:Paniceres/GP_Henry into test
+
+[33mcommit 827d22bb59279e0c912516e0919beb7b276c9ef8[m
+Author: Lucio Paniceres <paniceres73@gmail.com>
+Date:   Wed Dec 6 21:26:29 2023 -0300
+
+    feat(~): working on kpis, main.py, modified gitignore and fixed apis leak
+
+[33mcommit c66b3adb5f9709e24ea30380df337852b36a47ab[m
+Merge: 4e1cd03 7f00d95
+Author: Bruno Zenobio <brunozenobio4@gmail.com>
+Date:   Wed Dec 6 19:47:14 2023 -0300
+
+    Merge branch 'dev-P' of https://github.com/Paniceres/GP_Henry into dev-B
+
+[33mcommit fc86532f5f5e4b415218609c9b0f3dfd90a8842a[m
+Merge: 725c301 2fefe54
+Author: Bruno Zenobio <brunozenobio4@gmail.com>
+Date:   Wed Dec 6 19:45:31 2023 -0300
+
+    fix: Merge resolved
+
+[33mcommit 725c301798d7a5ea2fb19b469c1b6b924c805726[m
+Merge: 52ccf6b 388c243
+Author: Bruno Zenobio <brunozenobio4@gmail.com>
+Date:   Wed Dec 6 19:43:35 2023 -0300
+
+    fix: Merge resolved
+
+[33mcommit 52ccf6bd4214f152ce0745a9d7c86f1db2ce6b48[m
+Author: Bruno Zenobio <brunozenobio4@gmail.com>
+Date:   Wed Dec 6 19:35:52 2023 -0300
+
+    fix: Merge resolved
+
+[33mcommit 4e1cd03a0bb4a70f544d229d7de0ac12e40eea86[m
+Merge: 2fefe54 388c243
+Author: Bruno Zenobio <brunozenobio4@gmail.com>
+Date:   Wed Dec 6 19:06:20 2023 -0300
+
+    Merge branch 'test' of https://github.com/Paniceres/GP_Henry into dev-B
+
+[33mcommit 2fefe54890e51ddf86a78e29a7551ed4194d3ba4[m
+Author: Bruno Zenobio <brunozenobio4@gmail.com>
+Date:   Wed Dec 6 19:06:01 2023 -0300
+
+    feat:corrección modelo
+
+[33mcommit 2dd3ff6fb563ba2953ddaffa08f1f12fb6e10e7c[m
+Merge: c3ef50e 7f00d95
+Author: Lucio Paniceres <paniceres73@gmail.com>
+Date:   Wed Dec 6 18:48:19 2023 -0300
+
+    Merge branch 'dev-P' of github.com:Paniceres/GP_Henry into test
+
+[33mcommit 7f00d95296e00e40543b7f44527e4c4ed214d8b2[m[33m ([m[1;31morigin/dev-P[m[33m)[m
+Author: Lucio Paniceres <paniceres73@gmail.com>
+Date:   Wed Dec 6 18:47:29 2023 -0300
+
+    fix(~): import toml
+
+[33mcommit c3ef50e2bec745315a65c5b995387629da739620[m
+Merge: 388c243 23868cf
+Author: Lucio Paniceres <paniceres73@gmail.com>
+Date:   Wed Dec 6 18:45:38 2023 -0300
+
+    Merge branch 'dev-P' of github.com:Paniceres/GP_Henry into test
+
+[33mcommit 23868cf602e23b4f84bd8bee8e7c7b92a1515d58[m
+Author: Lucio Paniceres <paniceres73@gmail.com>
+Date:   Wed Dec 6 18:45:05 2023 -0300
+
+    feat(~): added group category func
+
+[33mcommit 388c2433af87846b129dc4ac4e821006485937f1[m
+Merge: 77cad3b 770695d
+Author: Lucio Paniceres <paniceres73@gmail.com>
+Date:   Wed Dec 6 18:24:55 2023 -0300
+
+    Merge branch 'dev-P' of github.com:Paniceres/GP_Henry into test
+
+[33mcommit 770695d5e549cd2a998b8c6c0c10bbd43fc3de1a[m
+Merge: 210ed6c c1ecee8
+Author: Lucio Paniceres <paniceres73@gmail.com>
+Date:   Wed Dec 6 18:24:19 2023 -0300
+
+    feat(~): resolved merge
+
+[33mcommit 210ed6cca242d7d00d538a9b71283d8d150634cd[m
+Author: Lucio Paniceres <paniceres73@gmail.com>
+Date:   Wed Dec 6 18:15:59 2023 -0300
+
+    feat(~): working on main.py
+
+[33mcommit c1ecee871a269221877e8e6a724c2964898c760e[m
+Author: jonathancastillo185 <jonathancastillo185@email.com>
+Date:   Wed Dec 6 18:11:27 2023 -0300
+
+    nuevos google
+
+[33mcommit 77cad3bb6c5c02fb2f3ce31a3282aec836519668[m
+Author: Lucio Paniceres <paniceres73@gmail.com>
+Date:   Wed Dec 6 17:53:47 2023 -0300
+
+    feat(~): working on requirements, main.py
+
+[33mcommit f5d456759813ed9de7ace296752c2764f3f4176f[m
+Merge: f67e9ae 101c75b
+Author: Lucio Paniceres <paniceres73@gmail.com>
+Date:   Wed Dec 6 17:44:53 2023 -0300
+
+    Merge branch 'dev-P' of github.com:Paniceres/GP_Henry
+
+[33mcommit 101c75b31f036c66a5e9eb6b669dc6011be5e4e3[m
+Author: Lucio Paniceres <paniceres73@gmail.com>
+Date:   Wed Dec 6 17:44:29 2023 -0300
+
+    feat(~): working on readme
+
+[33mcommit f67e9aed24bd5238d7b4f1ff1ad1db0a9463bd6d[m
+Author: Lucio Paniceres <paniceres73@gmail.com>
+Date:   Wed Dec 6 17:33:37 2023 -0300
+
+    feat(~): working on readme
+
+[33mcommit 190158d4be464e81e351d98cf01b9edd7d9443d9[m
+Merge: 6494423 0d94488
+Author: Lucio Paniceres <paniceres73@gmail.com>
+Date:   Wed Dec 6 17:29:41 2023 -0300
+
+    Merge branch 'dev-B' of github.com:Paniceres/GP_Henry into dev-P
+
+[33mcommit 64944231e46742e146f292251c9ef273a4ef2b15[m
+Author: Lucio Paniceres <paniceres73@gmail.com>
+Date:   Wed Dec 6 17:29:13 2023 -0300
+
+    feat(~): working on readme, remake of etl_business_google
+
+[33mcommit 8b14b6b84d932e60d4bb3c93372b6358ddd4ad0e[m
+Author: Lucio Paniceres <paniceres73@gmail.com>
+Date:   Wed Dec 6 17:22:05 2023 -0300
+
+    feat(~): working on readme
+
+[33mcommit 2a138f72a6e0219c684045b0110f4559d5acb01a[m
+Author: Lucio Paniceres <paniceres73@gmail.com>
+Date:   Wed Dec 6 17:16:44 2023 -0300
+
+    feat(~): working on readme
+
+[33mcommit 0d9448856bcf32fe9ffb980763027b7b6a1e94f5[m
+Merge: 0497b16 4f7342a
+Author: Bruno Zenobio <brunozenobio4@gmail.com>
+Date:   Wed Dec 6 17:08:02 2023 -0300
+
+    fix: Merge resolved
+
+[33mcommit 17c4b8b711845acc074a3df7d00d28a1b58fcae1[m
+Merge: b06c44a 4f7342a
+Author: Lucio Paniceres <paniceres73@gmail.com>
+Date:   Wed Dec 6 17:00:52 2023 -0300
+
+    Merge branch 'dev-P' of github.com:Paniceres/GP_Henry
+
+[33mcommit 0497b16ab43fc4a30e1bda96d0a7fa8b30fcacb6[m
+Author: Bruno Zenobio <brunozenobio4@gmail.com>
+Date:   Wed Dec 6 17:00:09 2023 -0300
+
+    feat: Modificaciones en el modelo
+
+[33mcommit 4f7342a4f5cf17ca203a426fb6c1f8dbfd83d777[m
+Merge: 202e34b 6bd6218
+Author: DamianAlbarino <damianalbarino@hotmail.com>
+Date:   Wed Dec 6 16:59:12 2023 -0300
+
+    Merge branch 'test' of https://github.com/Paniceres/GP_Henry into test
+
+[33mcommit b06c44a80a1fa61f96af7587292e42eb7b11876b[m
+Author: Lucio Paniceres <paniceres73@gmail.com>
+Date:   Wed Dec 6 16:59:00 2023 -0300
+
+    feat(~): working on readme
+
+[33mcommit 202e34b7d763d15c357c16320f2bf754f537f7d5[m
+Author: DamianAlbarino <damianalbarino@hotmail.com>
+Date:   Wed Dec 6 16:58:15 2023 -0300
+
+    fix: etl reviews, ds of db
+
+[33mcommit 753abd9f8239943d37e23169a440b285c2226e13[m
+Author: Lucio Paniceres <paniceres73@gmail.com>
+Date:   Wed Dec 6 16:28:03 2023 -0300
+
+    feat(~): working on readme
+
+[33mcommit 652a4c9214512cdfde4271e96cb937b649ba8309[m
+Merge: 35aaf96 6bd6218
+Author: Lucio Paniceres <paniceres73@gmail.com>
+Date:   Wed Dec 6 16:23:59 2023 -0300
+
+    feat(~): resolved conflicts, working on readme and main.py
+
+[33mcommit 6bd6218da88d22c90ac0a5b18d64838046e44fdb[m
+Merge: bf2809f 0a11697
+Author: Lucio Paniceres <paniceres73@gmail.com>
+Date:   Wed Dec 6 16:20:03 2023 -0300
+
+    feat(~): resolver various conflicts, deleted some csv files
+
+[33mcommit 0a1169731c60fff7adca49100c0b857fa6e879a7[m
+Author: DamianAlbarino <damianalbarino@hotmail.com>
+Date:   Wed Dec 6 15:57:47 2023 -0300
+
+    etl fix
+
+[33mcommit 35aaf96ee9182b319924418d37fcad9cdbf3434f[m
+Author: Lucio Paniceres <paniceres73@gmail.com>
+Date:   Wed Dec 6 15:56:04 2023 -0300
+
+    feat(~): working on deploy, requirements.txt
+
+[33mcommit dbf25323fc7e023bc8645492b3e010e3e27a9621[m
+Merge: 37adb26 bf2809f
+Author: Lucio Paniceres <paniceres73@gmail.com>
+Date:   Wed Dec 6 15:54:09 2023 -0300
+
+    feat(etl-eda): working on readme and main.py, remaked requirements onto minimal criterion
+
+[33mcommit bf2809fa4776fe03b1e9f231a6de8c79585be5dd[m
+Author: Lucio Paniceres <paniceres73@gmail.com>
+Date:   Wed Dec 6 15:53:29 2023 -0300
+
+    feat(etl-eda): working on readme and main.py, remaked requirements onto minimal criterion
+
+[33mcommit 37adb265655b5762c8d5515448630ff608c5179d[m
+Merge: 727eaac 173b142
+Author: Lucio Paniceres <paniceres73@gmail.com>
+Date:   Wed Dec 6 15:32:09 2023 -0300
+
+    feat(etl-eda): resolved conflict on eda_kpi
+
+[33mcommit a483a1679ae03c8464e4c4816c66fae177ae0daf[m
+Author: DamianAlbarino <damianalbarino@hotmail.com>
+Date:   Wed Dec 6 15:31:15 2023 -0300
+
+    fix etl bd
+
+[33mcommit 173b1426245e02d90a79372ff505a6f807b4b9a4[m
+Author: Lucio Paniceres <paniceres73@gmail.com>
+Date:   Wed Dec 6 15:29:17 2023 -0300
+
+    feat(~): working on readme.md and eda_kpi
+
+[33mcommit 7d15e5add2de05477f571425b924c22217ecdcc8[m
+Author: DamianAlbarino <damianalbarino@hotmail.com>
+Date:   Wed Dec 6 14:03:22 2023 -0300
+
+    Fix etl bd
+
+[33mcommit c58658e087528afc1332b49fc774c6a01ad9594d[m
+Author: DamianAlbarino <damianalbarino@hotmail.com>
+Date:   Wed Dec 6 14:00:35 2023 -0300
+
+    Fix etl business yelp
+
+[33mcommit 727eaacd7fb11d5b6fd38077c2eb82fd86f495bc[m
+Merge: 92fdc63 c6bfa13
+Author: DamianAlbarino <damianalbarino@hotmail.com>
+Date:   Wed Dec 6 12:54:59 2023 -0300
+
+    Merge branch 'test' into dev-D
+
+[33mcommit 92fdc63cb9ece4c6eb466b3f26a940d5cca93de6[m
+Author: DamianAlbarino <damianalbarino@hotmail.com>
+Date:   Wed Dec 6 12:54:28 2023 -0300
+
+    fix etl
+
+[33mcommit c6bfa13fb8b91e34cce5a4e8f3d0d90dccb07e0b[m
+Merge: 487ab88 eca7a24
+Author: Lucio Paniceres <paniceres73@gmail.com>
+Date:   Wed Dec 6 12:53:35 2023 -0300
+
+    Merge branch 'test' of github.com:Paniceres/GP_Henry into test
+
+[33mcommit 487ab889f267cbaae83489892a72c04e2420ac7a[m
+Author: Lucio Paniceres <paniceres73@gmail.com>
+Date:   Wed Dec 6 12:53:26 2023 -0300
+
+    fix(etl-eda): etl_reviews_google criterion fix
+
+[33mcommit eca7a2448731f4f5c4d69c3ec5c6ce46e6622009[m
+Author: DamianAlbarino <damianalbarino@hotmail.com>
+Date:   Wed Dec 6 12:41:18 2023 -0300
+
+    fix etl reviews yelp
+
+[33mcommit 16d6c4d418cb70fb1989968b5e0a28bcde08c250[m
+Merge: 15ab3dd 5f03029
+Author: jonathancastillo185 <jonathancastillo185@email.com>
+Date:   Wed Dec 6 12:29:56 2023 -0300
+
+    Merge branch 'test' into dev-Jc
+
+[33mcommit 15ab3dd7d6f7baebd579b0cd65387349acde5084[m
+Author: jonathancastillo185 <jonathancastillo185@email.com>
+Date:   Wed Dec 6 12:17:07 2023 -0300
+
+    ultimas
+
+[33mcommit 0374041a55bd9e509d6ed91dd21570db20d9ffc3[m
+Author: Bruno Zenobio <brunozenobio4@gmail.com>
+Date:   Wed Dec 6 11:56:55 2023 -0300
+
+    feat(app/utils) :  Agregadas funciones para el modelo de recomendación a funcs.py
+
+[33mcommit 5fb90f4a4f6d0ca8a75eb8311398ca3944be9d92[m
+Merge: df905a1 5f03029
+Author: Bruno Zenobio <brunozenobio4@gmail.com>
+Date:   Wed Dec 6 11:12:10 2023 -0300
+
+    Merge branch 'test' of https://github.com/Paniceres/GP_Henry into dev-B
+
+[33mcommit df905a18fe60a3c096e546f765461e1d965849ce[m
+Author: Bruno Zenobio <brunozenobio4@gmail.com>
+Date:   Wed Dec 6 11:08:46 2023 -0300
+
+    feat(app/ml) : Actualizacion del modelo de recomendación ya funcional
+
+[33mcommit 5f030294e93c1893145c9f0421494c1374884bd2[m
+Merge: 4b53e2b 33243db
+Author: Lucio Paniceres <paniceres73@gmail.com>
+Date:   Tue Dec 5 19:57:24 2023 -0300
+
+    Merge branch 'test' of github.com:Paniceres/GP_Henry into test
+
+[33mcommit 4b53e2bb3b521a046527d06a2ac33faad02ce1ab[m
+Author: Lucio Paniceres <paniceres73@gmail.com>
+Date:   Tue Dec 5 19:55:44 2023 -0300
+
+    fix(etl-eda): eda_kpi resolved
+
+[33mcommit 33243dbf6005c0f250e7bb888039b3673b36b7cf[m
+Merge: 5ad494b c6ea61e
+Author: jonathancastillo185 <jonathancastillo185@email.com>
+Date:   Tue Dec 5 19:18:51 2023 -0300
+
+    Merge branch 'test' of https://github.com/Paniceres/GP_Henry into test
+
+[33mcommit 5ad494bd1493cdc105ac2d58fc80ed1efd2bb1d2[m
+Author: jonathancastillo185 <jonathancastillo185@email.com>
+Date:   Tue Dec 5 19:18:49 2023 -0300
+
+    git ignore
+
+[33mcommit 593d7ac96f757e09475da7496644e21bbe15c0d1[m
+Author: jonathancastillo185 <jonathancastillo185@email.com>
+Date:   Tue Dec 5 19:12:33 2023 -0300
+
+    cambios
+
+[33mcommit 0da2a0831fac2f71c38d61cd52bc1895cf862d1c[m
+Author: Bruno Zenobio <brunozenobio4@gmail.com>
+Date:   Tue Dec 5 18:30:48 2023 -0300
+
+    feat(app/ml): Agregadas funciones para el sistema de recomendación
