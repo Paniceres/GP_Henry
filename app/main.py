@@ -3,7 +3,7 @@ from streamlit_option_menu import option_menu
 import pandas as pd
 import toml
 import plotly.express as px
-from utils.funcs import read_config, get_unique_names, pull_clean, get_kpi2_respuestas, get_kpi3_retencion, get_kpi4_influencia
+from utils.funcs import read_config, get_groups, pull_clean, get_kpi1_rating, get_kpi2_respuestas, get_kpi3_retencion, get_kpi4_influencia
 import os.path
 
 # Obtener la ruta del directorio del script actual
@@ -11,16 +11,10 @@ route = os.path.dirname(__file__)
 
 # Secrets
 # Intentar cargar la configuración desde el archivo local
-try:
-    config_path = os.path.join("..", "config.toml")
-    with open(config_path, "r") as file:
-        config = toml.load(file)
-        mapbox_token = config.get("mapbox_token")
-        
-# Sino, utilizar st.secrets para deploy
-except FileNotFoundError:
-    config = st.secrets
-    mapbox_token = config["mapbox_token"]
+secrets = read_config()
+
+mapbox_token = secrets.get("mapbox_token")  
+print(mapbox_token)
 
 
 #Layout
@@ -32,21 +26,22 @@ st.set_page_config(
 
 #Data Pull and Functions
 data_frames = pull_clean() 
-groups = get_groups()
 
-state = data_frames.get('1_states.parquet.gz')
-# categories = data_frames.get('2_categories.parquet.gz')
-# user_yelp = data_frames.get('3_user_yelp.parquet.gz')
-# user_google = data_frames.get('4_user_google.parquet.gz')
-business_google = data_frames.get('5_business_google.parquet.gz')
-# business_yelp = data_frames.get('6_business_yelp.parquet.gz')
-# categories_google = data_frames.get('7_categories_google.parquet.gz')
-# categories_yelp = data_frames.get('8_categories_yelp.parquet.gz')
-# reviews_google = data_frames.get('9_reviews_google.parquet.gz')
-# reviews_yelp = data_frames.get('10_reviews_yelp.parquet.gz')
+state = data_frames.get('1_states.parquet')
+categories = data_frames.get('2_categories.parquet')
+# user_yelp = data_frames.get('3_user_yelp.parquet')
+user_google = data_frames.get('4_user_google.parquet')
+business_google = data_frames.get('5_business_google.parquet')
+# business_yelp = data_frames.get('6_business_yelp.parquet')
+categories_google = data_frames.get('7_categories_google.parquet')
+# categories_yelp = data_frames.get('8_categories_yelp.parquet')
+reviews_google = data_frames.get('9_reviews_google.parquet')
+# reviews_yelp = data_frames.get('10_reviews_yelp.parquet')
 
+print(type(business_google))
 
-unique_names = get_unique_names(business_google)
+groups = get_groups(business_google)
+unique_groups = business_google['group'].unique()
 
 st.markdown("""
 <style>
@@ -116,18 +111,18 @@ if selected=="Comercial":
 
     
     target_state = st.multiselect(label='Selecciona estado:',options=['California', 'Florida', 'New Jersey', 'Illinoais'],label_visibility='collapsed')
-    target_year = st.multiselect('Selecciona un año', [2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023])
+    target_group = st.multiselect('Selecciona un grupo:', options=unique_groups)
     
-    
-    loc_select=st.radio('Type',['Restaurante', 'Business'],horizontal=True, label_visibility="collapsed")
+    loc_select=st.radio('Type',['Análisis', 'Recomendación'],horizontal=True, label_visibility="collapsed")
     
     st.caption('Nota: Solo disponibilizados los estados criterio.')   
         
         
-    if loc_select=='Restaurante':
-        zip_select = st.selectbox(label='Restaurante',options=[groups])
+    if loc_select=='Análisis':
+        st.write('pass')
         
-                
+    if loc_select=='Recomendación':
+        st.write('pass')           
     with st.expander('Advanced Settings'):
         pass
     # Generar graficos interactivos
@@ -135,6 +130,10 @@ if selected=="Comercial":
 
 # ------------------------------------ Donde comer ---------------------------------------
 
+    target_state = st.multiselect(label='Selecciona estado:',options=['California', 'Florida', 'New Jersey', 'Illinoais'],label_visibility='collapsed')
+    target_group = st.multiselect('Selecciona un grupo:', options=unique_groups)
+
+    loc_select=st.radio('Type',['Análisis', 'Recomendación'],horizontal=True, label_visibility="collapsed")
 
 # ------------------------------------ Sobre nosotros ---------------------------------------
 
