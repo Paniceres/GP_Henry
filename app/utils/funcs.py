@@ -378,10 +378,10 @@ def get_recommendation_business(business_google,business_yelp,df_categories,busi
     """
     
     # Cargo el modelo
-    with open('./app/ml/modelo_knn.pkl', 'rb') as file: 
+    with open(r'../ml/modelo_knn.pkl', 'rb') as file: 
         knn_model = pickle.load(file)
         
-    with open('./app/ml/tfidf_matrix.pkl', 'rb') as file:
+    with open(r'../ml/tfidf_matrix.pkl', 'rb') as file:
         categories_procceced = pickle.load(file)
     
     ######### categories_procceced podria ser un df importado  con todos los pasos anteriores.#########
