@@ -278,7 +278,7 @@ def get_kpi4_influencia(df_uy):
 #### Recomendations #####
 
 # Funcion que calcula la distancia entre dos punto en funcion de las coordenadas
-def haversine(lat1, lon1, lat2, lon2):
+def get_distance_coords(lat1, lon1, lat2, lon2):
     
     """
     Esta funcion aplica la distancia hervesine para encontrar la distancia entre dos puntos a partir de sus coordenaadas.
@@ -314,7 +314,7 @@ def haversine(lat1, lon1, lat2, lon2):
 
 
 #Funcion que a partir de un id de negocio y una lista ids retorna la distancia entre ese negocio y cada uno de los demas
-def distance(business_id,business_id_list,rang=None):
+def get_distance(business_id,business_id_list,rang=None):
     
     """
     Esta funcion calcula a partir de un negocio y una lista de negocios, la distancia entre los puntos.
@@ -348,14 +348,14 @@ def distance(business_id,business_id_list,rang=None):
     #Filtro solo por los restaurantes que pertenecen a las recomendaciones.
     business = business[business['business_id'].isin(business_id_list)]
     #Calculo la distancia de cada restuarante recomendado al inicial
-    business['distance'] = business.apply(lambda row: haversine(lat_origin, long_origin, row['latitude'], row['longitude']), axis=1)
+    business['distance'] = business.apply(lambda row: get_distance_coords(lat_origin, long_origin, row['latitude'], row['longitude']), axis=1)
     #Aplico el filtro de distancia.
     business = business[business['distance']<filtro_distance]
     return business
 
 
 # Función para obtener recomendaciones
-def get_recommendations(business_id,rang=None):
+def get_recommendations_business(business_id,rang=None):
     
     """
     Funcion que a partir de un negocio, recomienda otros, en funcion de sus categorias usando el modelo KNN.
@@ -389,9 +389,9 @@ def get_recommendations(business_id,rang=None):
     
     #Calcula las distancias entre las recomendaciones y el local.
     if rang:
-        business = distance(business_id,recommendations,rang)
+        business = get_distance(business_id,recommendations,rang)
     else:
-        business = distance(business_id,recommendations)
+        business = get_distance(business_id,recommendations)
         
     business = business[business['distance']!=0.0] # Elimino al restaurante mismos.
     #Uno las caractereisticas de los locales, con las categorias.
@@ -411,11 +411,11 @@ def get_recommendations(business_id,rang=None):
     return business_cat
 
 
-#Funcion que recibe un business id userid o categoria y recomienda locales, tambien puede agregarse el rango en metros de distancia.
-def recommendation(business_ids=None,user_id=None,category=None,distance=None,target_state=None):
+#Funcion que recibe un business id, userid o categoria y recomienda locales, tambien puede agregarse el rango en metros de distancia.
+def get_recommendation(business_ids=None,user_id=None,category=None,distance=None,target_state=None):
     """
-    Esta funcion a partird e un negocio usuario o categoria recomienda otros negocios, teniendo en cuenta la distancia de ser requerida.
-    Para esto la funcion toma un negocio, o selecciona una lista de ellos usando user_id, y categorias, y aplica la funcion *get_recommendations*
+    Esta funcion a partir de un negocio usuario o categoria recomienda otros negocios, teniendo en cuenta la distancia de ser requerida.
+    Para esto la funcion toma un negocio, o selecciona una lista de ellos usando user_id, y categorias, y aplica la funcion *get_recommendations_business*
 
     Args:
         business_ids (str, optional): Id de un negocio.
@@ -452,7 +452,7 @@ def recommendation(business_ids=None,user_id=None,category=None,distance=None,ta
     business_cat = pd.DataFrame()
     
     for business_id in business_ids:
-        business_cat = pd.concat([get_recommendations(business_id,rang=distance),business_cat])    
+        business_cat = pd.concat([get_recommendations_business(business_id,rang=distance),business_cat])    
         
     if business_cat.shape[0] == 0:
         return 'Restaurante no encontrado.'

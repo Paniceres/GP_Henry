@@ -4,10 +4,10 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import seaborn as sns
 import os.path
-from funcs import read_config, get_groups, pull_clean, get_kpi1_rating, get_kpi2_respuestas, get_kpi3_retencion, get_kpi4_influencia
+from funcs import read_config, get_groups, pull_clean, get_kpi1_rating, get_kpi2_respuestas, get_kpi3_retencion, get_kpi4_influencia, get_recommendation
 
 # Obtener la ruta del directorio del script actual
-route = os.path.dirname(__file__)
+# route = os.path.dirname(__file__)
 
 #Data Pull and Functions
 data_frames = pull_clean()
@@ -25,6 +25,11 @@ reviews_google = data_frames.get('9_reviews_google.parquet')
 
 
 groups = get_groups(business_google)
+secrets = read_config()
+
+# print(categories.head(100))
+
+recommendation = get_recommendation(category=('dart bar'), target_state=None)
 
 
 # kpi2 = get_kpi2_respuestas(reviews_google, business_google, categories_google, state, categories, target_state='Florida', target_group='general')
