@@ -216,6 +216,18 @@ Algunos aspectos destacados de la presentacion en Power BI interactiva incluyero
 - Personalización <br>
 - Compartición <br>
 
+# Pipeline
+
+Nuestro Pipeline nos permite ver una serie de pasos y herramientas utilizados para recopilar datos, procesarlos y presentar los resultados en un formato comprensible. <br>
+Nos permiten automatizar y optimizar el procesamiento de datos, lo que resulta en una mejor gestión de la información y un mayor valor para la empresa. <br>
+Algunos beneficios de utilizar nuestro pipeline de datos son:
+
+- **Eficiencia:** Los pipelines de datos permiten procesar datos en tiempo real, lo que facilita la toma de decisiones empresariales más rápidas y precisas. <br>
+
+- **Automatización:** La automatización de la canalización de datos permite ejecutar cualquier componente de la pipeline de manera repetitiva y tolerante a errores, lo que reduce la posibilidad de fallos y aumenta la calidad de los resultados. <br>
+
+- **Orquestación:** La orquestación de la canalización de datos permite ejecutar todos los componentes de la pipeline de manera coordinada y eficiente, lo que facilita la gestión y supervisión de los procesos de datos. <br>
+
 <p align="right">(<a href="#readme-top">Volver al principio</a>)</p>
 
 <img src="/src/PIPELINE.png" width="1000" height="520">
