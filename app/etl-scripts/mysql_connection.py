@@ -2,10 +2,22 @@ import pymysql as mysql
 import pandas as pd
 from dotenv import load_dotenv 
 import os
+import toml
+import streamlit as st
+def read_config(file_path = "../../.streamlit/secrets.toml"):
+    try:
+        with open(file_path, "r") as file:
+            secrets = toml.load(file)
+            return secrets      
+    # Sino, utilizar st.secrets para deploy
+    except FileNotFoundError:
+        return st.secrets
+secrets = read_config()
+    
+host = secrets.get('mysql')['host']
+user = secrets.get('mysql')['username']
+key = secrets.get('mysql')['key']
 
-## Cargo las variables de entorno 
-load_dotenv('.env') # Cargo la archivo donde esta la variable de entorno.
-##################  MYSQL   ##################
 def get_connection_mysql():
     """
     Esta funcion se conecta a la base de datos establecida en amazon, y coenca la base de datos QUANTYLE_ANALITICS
@@ -15,9 +27,9 @@ def get_connection_mysql():
     """
     
     try:
-        return mysql.connect(host = 'coloque su hostname de RDS o lo que corresponda.',
-                         user = 'usuario',
-                         password = 'coloque su clave para conectarse a su base de datos en mysql',
+        return mysql.connect(host = host,
+                         user = user,
+                         password = key,
                          port=3306,
                          database='coloque el nombre de su base de datos')
     except mysql.Error as e:

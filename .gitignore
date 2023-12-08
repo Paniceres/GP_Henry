@@ -1,20 +1,17 @@
-# datasets
+# extras
 datasets/extras/
 extras/
+
+# configs and secrets
 .vscode/
+.streamlit/
 
-# virtual env
+# virtual envs
 .env/
-.venv/
 .env
-venv
-
-.\venv
-./venv
-
-./venv/
-.\venv\
-
+.venv/
+.venv
+venv/
 venv
 
 # Python
