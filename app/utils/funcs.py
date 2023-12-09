@@ -61,7 +61,7 @@ def pull_clean(db_route=None):
     return data_frames
 
 
-
+# @st.cache_data
 def get_groups(df):
     # Reemplaza 'restaurant' por cadena vacía, excepto cuando el nombre es 'restaurant'
     df['name'] = df['name'].apply(lambda x: x.replace('restaurant', '') if x != 'restaurant' else x)
