@@ -90,7 +90,7 @@ if selected=="Introducción":
                 En Quantyle Analytics, nos comprometemos con la calidad de nuestros análisis, la precisión en nuestras recomendaciones y el respaldo a aquellos que buscan tomar decisiones informadas en la industria gastronómica. Nuestro objetivo es brindar soluciones innovadoras y datos confiables para mejorar la experiencia del usuario y promover el éxito en el sector alimentario."""
                         )
         with col2:
-            url_imagen_gif = os.path.join(route, '..', 'src', 'data-analysis.gif')
+            url_imagen_gif = os.path.join('..', 'src', 'data-analysis.gif')
             st.image(url_imagen_gif, use_column_width=True) 
     st.divider()
 
@@ -164,7 +164,7 @@ if selected=='¿Dónde comer?':
     target_group = st.multiselect('Selecciona un grupo:', options=unique_groups, default=unique_groups)
     if target_group:
         # Filtrar por categorías asociadas al grupo seleccionado
-        categories_options = groups[groups['group'].isin(target_group)]['name'].tolist()
+        categories_options = groups[groups['group'].isin(target_group)]['category'].tolist()
         target_category = st.multiselect('Selecciona una categoría:', options=categories_options)
 
     loc_select=st.radio('Type',['Análisis', 'Recomendación'],horizontal=True, label_visibility="collapsed")
