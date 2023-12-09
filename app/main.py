@@ -43,9 +43,15 @@ df_user = data_frames.get('user_categories')
 df_categories = data_frames.get('locales_categories')
 
 
-
+# Valores unicos
 unique_groups = groups_google['group'].unique()
-print(unique_groups) 
+
+unique_states = states['state'].unique().tolist()
+
+reviews_google['date'] = pd.to_datetime(reviews_google['date'])
+unique_years = reviews_google['date'].dt.year.unique()
+
+# groups = 
 
 st.markdown("""
 <style>
@@ -92,7 +98,7 @@ if selected=="Introducción":
                 En Quantyle Analytics, nos comprometemos con la calidad de nuestros análisis, la precisión en nuestras recomendaciones y el respaldo a aquellos que buscan tomar decisiones informadas en la industria gastronómica. Nuestro objetivo es brindar soluciones innovadoras y datos confiables para mejorar la experiencia del usuario y promover el éxito en el sector alimentario."""
                         )
         with col2:
-            url_imagen_gif = os.path.join('..', 'src', 'data-analysis.gif')
+            url_imagen_gif = os.path.join(route, '..', 'src', 'data-analysis.gif')
             st.image(url_imagen_gif, use_column_width=True) 
     st.divider()
 
@@ -114,9 +120,10 @@ if selected=="Comercial":
 
 
     
-    target_state = st.multiselect(label='Selecciona estado:',options=states['state'].values.tolist(),label_visibility='collapsed')
+    target_state = st.multiselect(label='Selecciona estado:',options=unique_states,label_visibility='collapsed')
     target_group = st.multiselect('Selecciona un grupo:', options=unique_groups)
-    target_year = st.multiselect('Selecciona un año:', options=['2015','2016','2017','2018','2019','2020','2021','2022','2023'])
+    target_year = st.multiselect('Selecciona un año:', options=unique_years)
+    
     loc_select=st.radio('Type',['Análisis', 'Mapa'],horizontal=True, label_visibility="collapsed")
     
     st.caption('Nota: Solo disponibilizados los estados criterio.')   
@@ -136,7 +143,11 @@ if selected=="Comercial":
 
     if loc_select == 'Mapa':
         # Crear el mapa de calor con Plotly Express
-        fig = px.density_mapbox(df_mapa, lat='latitude', lon='longitude', z='avg_stars',
+        df_rating = get_kpi1_rating(business_google, target_group, target_state, states)
+        
+        px.set_mapbox_access_token(mapbox_token)
+        map_style = "mapbox://styles/mapbox/light-v10" 
+        fig = px.density_mapbox(df_rating, lat='latitude', lon='longitude', z='avg_stars',
                                 radius=10, center=dict(lat=37.0902, lon=-95.7129),
                                 zoom=3, mapbox_style="stamen-terrain",
                                 title="Mapa de Calor de Estrellas Promedio")
@@ -150,40 +161,40 @@ if selected=="Comercial":
 
 
 # ------------------------------------ Donde comer ---------------------------------------
-if selected=='¿Dónde comer?':
+# if selected=='¿Dónde comer?':
     
-    target_state = st.multiselect(label='Selecciona estado:',options=states['state'].values.tolist(),label_visibility='collapsed', default=states['state'].values.tolist())   
+#     target_state = st.multiselect(label='Selecciona estado:',options=states['state'].values.tolist(),label_visibility='collapsed', default=states['state'].values.tolist())   
      
-    target_group = st.multiselect('Selecciona un grupo:', options=unique_groups, default=unique_groups)
-    if target_group:
-        # Filtrar por categorías asociadas al grupo seleccionado
-        categories_options = groups[groups['group'].isin(target_group)]['name'].tolist()
-        target_category = st.multiselect('Selecciona una categoría:', options=categories_options)
+#     target_group = st.multiselect('Selecciona un grupo:', options=unique_groups, default=unique_groups)
+#     if target_group:
+#         # Filtrar por categorías asociadas al grupo seleccionado
+#         categories_options = groups[groups['group'].isin(target_group)]['name'].tolist()
+#         target_category = st.multiselect('Selecciona una categoría:', options=categories_options)
 
-    loc_select=st.radio('Type',['Análisis', 'Recomendación'],horizontal=True, label_visibility="collapsed")
+#     loc_select=st.radio('Type',['Análisis', 'Recomendación'],horizontal=True, label_visibility="collapsed")
 
 
-    if loc_select == 'Análisis':
-        # Aquí puedes realizar análisis adicional si es necesario
-        st.write("¡Realizando análisis!")
+#     if loc_select == 'Análisis':
+#         # Aquí puedes realizar análisis adicional si es necesario
+#         st.write("¡Realizando análisis!")
 
-    elif loc_select == 'Recomendación':
-        # Realizar la recomendación según las opciones seleccionadas
-        # Puedes ajustar los parámetros según tu función get_recommendation
-        df_recommendation = get_recommendation(business_google=business_google, states=states, business_yelp=business_yelp,
-                                                df_user=df_user, df_categories=df_categories, target_state=target_state,
-                                                df_rg=reviews_google, df_ry=reviews_yelp, category='Subway')
+#     elif loc_select == 'Recomendación':
+#         # Realizar la recomendación según las opciones seleccionadas
+#         # Puedes ajustar los parámetros según tu función get_recommendation
+#         df_recommendation = get_recommendation(business_google=business_google, states=states, business_yelp=business_yelp,
+#                                                 df_user=df_user, df_categories=df_categories, target_state=target_state,
+#                                                 df_rg=reviews_google, df_ry=reviews_yelp, category='Subway')
 
-        # Crear el mapa de calor con Plotly Express
-        px.set_mapbox_access_token(mapbox_token)
-        map_style = "mapbox://styles/mapbox/light-v10" 
-        fig = px.density_mapbox(df_recommendation, lat='latitude', lon='longitude', z='avg_stars',
-                                radius=10, center=dict(lat=37.0902, lon=-95.7129),
-                                zoom=3, mapbox_style=map_style,
-                                title="Mapa de Calor de Estrellas Promedio")
+#         # Crear el mapa de calor con Plotly Express
+#         px.set_mapbox_access_token(mapbox_token)
+#         map_style = "mapbox://styles/mapbox/light-v10" 
+#         fig = px.density_mapbox(df_recommendation, lat='latitude', lon='longitude', z='avg_stars',
+#                                 radius=10, center=dict(lat=37.0902, lon=-95.7129),
+#                                 zoom=3, mapbox_style=map_style,
+#                                 title="Mapa de Calor de Estrellas Promedio")
 
-        # Mostrar el mapa de calor
-        st.plotly_chart(fig)
+#         # Mostrar el mapa de calor
+#         st.plotly_chart(fig)
 # ------------------------------------ Sobre nosotros ---------------------------------------
 
 

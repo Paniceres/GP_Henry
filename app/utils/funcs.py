@@ -148,17 +148,36 @@ def get_groups(df):
 #     return df_businesses_per_capita
 
 # KPI 1
-def get_kpi1_rating(df, target_group, target_state):
+
+
+def get_kpi1_rating(business_google, target_group, target_state, states):
     """
     Calcula el promedio de las estrellas para cada grupo único en un DataFrame.
+        Args:
+            df (pd.DataFrame): DataFrame principal.
+            target_group (str): Nombre de la columna para agrupar.
+            target_state (str or list): Estado o lista de estados objetivo.
+            states (pd.DataFrame): DataFrame de estados.
+
     """
-    # Filtrar el DataFrame por el estado objetivo
-    df_filtered = df[df['state'] == target_state]
+    # Realizar un merge entre df y states usando state_id como clave
+    df_merged = pd.merge(business_google, states, how='inner', on='state_id')
+    try:
+        # Convertir a lista si es un solo estado
+        target_state = [target_state] if isinstance(target_state, str) else target_state
 
-    # Calcular el promedio de estrellas por grupo
-    df_rating = df_filtered.groupby(target_group)['stars'].mean().reset_index()
+        # Filtrar el DataFrame por el estado objetivo
+        df_filtered = df_merged[df_merged['state'].isin(target_state)]
 
-    return df_rating
+        # Calcular el promedio de estrellas por grupo
+        df_rating = df_filtered.groupby(target_group)['stars'].mean().reset_index()
+
+        return df_rating
+
+    except TypeError as e:
+        print(f"Error: {e}")
+        return pd.DataFrame()
+
 
 # KPI 2
 def get_kpi2_respuestas(reviews_google, business_google, categories_groups, state, target_state, target_group, target_year):

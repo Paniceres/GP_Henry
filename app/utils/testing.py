@@ -34,10 +34,11 @@ print(unique_groups)
 
 target_state = 'California'
 target_group = 'fast food'
-target_year = '2019'
+target_year = '2018'
 
-kpi2_result = get_kpi2_respuestas(reviews_google, business_google, groups_google, states, target_state, target_group, target_year)
+# kpi2_result = get_kpi2_respuestas(reviews_google, business_google, groups_google, states, target_state, target_group, target_year)
 
+df_rating = get_kpi1_rating(business_google, target_group, target_state, states)
 
 # recommendation = print(get_recommendation(business_google=business_google,business_yelp=business_yelp,df_user=df_user,df_categories=df_categories,states=state,df_rg=reviews_google,df_ry=reviews_yelp,category='pizza',target_state=['California','Illinois','Florida','New Jersey','Mississippi']))
 
