@@ -29,7 +29,7 @@ def read_config(file_path = "../.streamlit/secrets.toml"):
         return st.secrets
         
 
-# @st.cache_data
+@st.cache_data
 def pull_clean(db_route=None):
     # Construir la ruta relativa al dataset
     db_route = os.path.join(route, '..', '..', 'datasets', 'processed', 'bd')
@@ -47,6 +47,8 @@ def pull_clean(db_route=None):
         # '8_categories_yelp.parquet.gz',
         '9_reviews_google.parquet.gz',
         # '10_reviews_yelp.parquet.gz',
+        '11_grupo_de_categorias_google.parquet.gz',
+        # '12_grupo_de_categorias_yelp.parquet.gz',
         'user_categories.parquet',
         'locales_categories.parquet'
     ]
@@ -159,7 +161,6 @@ def get_kpi1_rating(df, target_group, target_state):
     return df_rating
 
 # KPI 2
-# Habria que separarla en partes, tarda 40mins y da error
 def get_kpi2_respuestas(reviews_google, business_google, categories_groups, state, target_state, target_group, target_year):
     '''
     Calcula la calidad de las respuestas
@@ -432,7 +433,7 @@ def get_recommendation_business(business_google,business_yelp,df_categories,busi
 
 
 #Funcion que recibe un business id userid o categoria y recomienda locales, tambien puede agregarse el rango en metros de distancia.
-def get_recommendation(df_user,df_categories,states,df_rg,df_ry,business_google,business_yelp,business_ids=None,user_id=None,category=None,distance=None,target_state=None):
+def get_recommendation(df_user,states,df_categories,df_rg,df_ry,business_google,business_yelp,business_ids=None,user_id=None,category=None,distance=None,target_state=None):
     
     
     """
