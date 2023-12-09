@@ -57,6 +57,8 @@ reviews_google['date'] = pd.to_datetime(reviews_google['date'])
 unique_years = reviews_google['date'].dt.year.unique()
 
 # groups = 
+business_both = pd.concat((business_google[['gmap_id','name', 'latitude','longitude' ,'avg_stars','state_id']].rename(columns={'gmap_id':'business_id'}), business_yelp[['business_id','name', 'latitude','longitude' ,'avg_stars','state_id']]), ignore_index=True)
+groups_both = pd.concat((groups_google.rename(columns={'gmap_id':'business_id'}),groups_yelp), ignore_index=True)
 
 st.markdown("""
 <style>
@@ -148,7 +150,7 @@ if selected=="Comercial":
 
     if loc_select == 'Mapa':
         # Crear el mapa de calor con Plotly Express
-        df_rating = get_kpi1_rating(business_google, target_group, target_state, states)
+        df_rating = get_kpi1_rating(business_both, groups_both, target_group, target_state, states)
         
         px.set_mapbox_access_token(mapbox_token)
         map_style = "mapbox://styles/mapbox/light-v10" 

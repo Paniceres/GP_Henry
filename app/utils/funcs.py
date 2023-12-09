@@ -151,9 +151,9 @@ def get_groups(df):
 
 
 def get_kpi1_rating( ## RECORDAR CAMBIAR ESTO
-        business = pd.concat((business_google[['gmap_id','name', 'latitude','longitude' ,'avg_stars','state_id']].rename(columns={'gmap_id':'business_id'}), business_yelp[['business_id','name', 'latitude','longitude' ,'avg_stars','state_id']]), ignore_index=True), 
-        categories_groups = pd.concat((groups_google.rename(columns={'gmap_id':'business_id'}),groups_yelp), ignore_index=True), 
-        states = states, 
+        business, 
+        groups, 
+        states, 
         target_group = None,
         target_state = None 
         ):
@@ -173,10 +173,10 @@ def get_kpi1_rating( ## RECORDAR CAMBIAR ESTO
     business = business[business['state_id'].apply(lambda x: x in id_estado_elegidos)]
 
     #Filtramos por grupo de categorias
-    categories_groups = categories_groups[categories_groups['group'].apply(lambda x: x in target_group)]
+    groups = groups[groups['group'].apply(lambda x: x in target_group)]
 
     #Filtramos los restaurantes por categoria
-    business = pd.merge(business, categories_groups[['business_id']], on='business_id')
+    business = pd.merge(business, groups[['business_id']], on='business_id')
 
     return business[['name', 'latitude', 'longitude', 'avg_stars']]
 
