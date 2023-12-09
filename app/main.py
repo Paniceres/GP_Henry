@@ -158,28 +158,33 @@ if selected=="Comercial":
 # ------------------------------------ Donde comer ---------------------------------------
 if selected=='¿Dónde comer?':
     
-    target_state = st.multiselect(label='Selecciona estado:',options=states['state'].values.tolist(),label_visibility='collapsed', default=states['state'].values.tolist())   
+    target_state = st.multiselect(label='Selecciona estado:',options=states['state'].values.tolist(), default=states['state'].values.tolist())   
      
-    target_group = st.multiselect('Selecciona un grupo:', options=unique_groups, default=unique_groups)
+     
+    selection_type = st.radio('Selecciona tipo:', ['Categoría', 'Restaurante','Usuario'])
     
-    if target_group:
+    if selection_type == 'Categoría': 
+        target_group = st.multiselect('Selecciona un grupo:', options=unique_groups, default=unique_groups)
         # Filtrar por categorías asociadas al grupo seleccionado
-        categories_options = groups[groups['group'].isin(target_group)]['name'].tolist()
-        target_category = st.multiselect('Selecciona una categoría:', options=categories_options)
+        #categories_options = groups[groups['group'].isin(target_group)]['name'].tolist()
+        categories_options = set(categories['name'].tolist())
         
-    
-    options_with_none_1 = business_google['name'].tolist()
-    options_with_none_2 = business_yelp['name'].tolist()
-    options_with_none = options_with_none_1 + options_with_none_2
-    target_business_s = st.selectbox('Selecciona un restaurante:', options=options_with_none, index=0)
-    if target_business_s in options_with_none_1:
-        target_business = business_google[business_google['name']==target_business_s]['gmap_id'].iloc[0]
-    elif target_business_s in options_with_none_2:
-        target_business = business_yelp[business_yelp['name']==target_business_s]['business_id'].iloc[0]
-    if target_business:
-        target_category = None
-        target_distance = st.slider("Selecciona la distancia (kilometros):", min_value=1, max_value=5000, value=500, step=5)
-    loc_select=st.radio('Type',['Análisis', 'Recomendación'],horizontal=True, label_visibility="collapsed")
+        target_category = st.multiselect('Selecciona una categoría:', options=categories_options)
+        target_distance = None 
+        target_business = None  
+    else:
+        options_with_none_1 = business_google['name'].tolist()
+        options_with_none_2 = business_yelp['name'].tolist()
+        options_with_none = options_with_none_1 + options_with_none_2
+        target_business_s = st.selectbox('Selecciona un restaurante:', options=options_with_none, index=0)
+        if target_business_s in options_with_none_1:
+            target_business = business_google[business_google['name']==target_business_s]['gmap_id'].iloc[0]
+        elif target_business_s in options_with_none_2:
+            target_business = business_yelp[business_yelp['name']==target_business_s]['business_id'].iloc[0]
+        if target_business:
+            target_category = None
+            target_distance = st.slider("Selecciona la distancia (kilometros):", min_value=1, max_value=5000, value=500, step=5)
+    loc_select=st.radio('Type',['Recomendación'],horizontal=True, label_visibility="collapsed")
 
 
     if loc_select == 'Análisis':

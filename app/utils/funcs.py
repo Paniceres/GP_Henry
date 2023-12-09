@@ -475,10 +475,13 @@ def get_recommendation(df_user,df_categories,states,df_rg,df_ry,business_google,
         if category == '':
              return pd.DataFrame(columns=['business_id', 'name', 'category', 'state', 'latitude', 'longitude', 'avg_stars', 'distance'])
         else:
-            category = category[0]
+            try:
+                category = category[0]
+            except Exception as e:
+                return pd.DataFrame(columns=['business_id', 'name', 'category', 'state', 'latitude', 'longitude', 'avg_stars', 'distance'])
             # Manejo de listas
+            
             business_ids = df_categories[df_categories['name'].str.lower().str.contains(category.lower())] # Encuentra negocios con esa categoria
-        
         if len(business_ids) > 1:
             business_ids = business_ids.sample(min(10, len(business_ids)))['business_id'].tolist() # Toma 10 restaurantes en esa categoria 
 
@@ -493,6 +496,7 @@ def get_recommendation(df_user,df_categories,states,df_rg,df_ry,business_google,
     for business_id in business_ids: # Para cada negocio encontrado se realiza la recomendación.
         try:
             business_cat = pd.concat([get_recommendation_business(business_google=business_google,business_yelp=business_yelp,df_categories=df_categories,business_id=business_id,rang=distance),business_cat])    
+            
         except Exception as e:
             return pd.DataFrame(columns=['business_id', 'name', 'category', 'state', 'latitude', 'longitude', 'avg_stars', 'distance'])
     if business_cat.shape[0] == 0:
