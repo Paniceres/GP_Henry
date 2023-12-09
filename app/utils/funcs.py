@@ -34,6 +34,7 @@ def pull_clean(db_route=None):
     # Construir la ruta relativa al dataset
     db_route = os.path.join(route, '..', '..', 'datasets', 'processed', 'bd')
     # db_route = '../../datasets/processed/bd/'
+    
     # Lista de nombres de archivos a leer
     file_names = [
         '1_states.parquet.gz',
@@ -508,3 +509,29 @@ def get_recommendation(df_user,df_categories,states,df_rg,df_ry,business_google,
 
     return business_cat.sort_values(by=['avg_stars'],ascending=[False]).iloc[0:10]
 
+
+def get_recommendation_by_category(df_categories, target_state, category=None):
+    """
+    Obtiene recomendaciones por categoría y estado.
+
+    Args:
+        df_categories (pd.DataFrame): DataFrame de categorías.
+        target_state (str or list): Estado o lista de estados objetivo.
+        category (str, optional): Categoría a filtrar.
+
+    Returns:
+        pd.DataFrame: Data Frame con recomendaciones y características.
+    """
+    # Filtrar por estado
+    business_cat = df_categories[df_categories['state'].isin(target_state)]
+
+    if category:
+        # Filtrar por categoría
+        business_cat = business_cat[business_cat['name'].apply(
+            lambda x: any(category.lower() in str(item).lower() for item in x) if isinstance(x, list) else (category.lower() in str(x).lower())
+        )]
+
+    if business_cat.empty:
+        return 'No se encontraron negocios.'
+
+    return business_cat[['business_id', 'name', 'category', 'state', 'latitude', 'longitude', 'avg_stars']]
