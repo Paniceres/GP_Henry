@@ -150,7 +150,13 @@ def get_groups(df):
 # KPI 1
 
 
-def get_kpi1_rating(business_google, target_group, target_state, states):
+def get_kpi1_rating( ## RECORDAR CAMBIAR ESTO
+        business = pd.concat((business_google[['gmap_id','name', 'latitude','longitude' ,'avg_stars','state_id']].rename(columns={'gmap_id':'business_id'}), business_yelp[['business_id','name', 'latitude','longitude' ,'avg_stars','state_id']]), ignore_index=True), 
+        categories_groups = pd.concat((groups_google.rename(columns={'gmap_id':'business_id'}),groups_yelp), ignore_index=True), 
+        states = states, 
+        target_group = None,
+        target_state = None 
+        ):
     """
     Calcula el promedio de las estrellas para cada grupo único en un DataFrame.
         Args:
@@ -158,25 +164,21 @@ def get_kpi1_rating(business_google, target_group, target_state, states):
             target_group (str): Nombre de la columna para agrupar.
             target_state (str or list): Estado o lista de estados objetivo.
             states (pd.DataFrame): DataFrame de estados.
-
+            categories_groups deberia ser un concat del grupo de categorias de google y yelp pd.concat((df_cgg.rename(columns={'gmap_id':'business_id'}),df_cgy), ignore_index=True)
     """
-    # Realizar un merge entre df y states usando state_id como clave
-    df_merged = pd.merge(business_google, states, how='inner', on='state_id')
-    try:
-        # Convertir a lista si es un solo estado
-        target_state = [target_state] if isinstance(target_state, str) else target_state
+    # Elegimos el id del estado
+    id_estado_elegidos = states[states['state'].apply(lambda x: x in target_state)]['state_id'].to_list()
 
-        # Filtrar el DataFrame por el estado objetivo
-        df_filtered = df_merged[df_merged['state'].isin(target_state)]
+    #Filtramos los negocios por el estado elegido
+    business = business[business['state_id'].apply(lambda x: x in id_estado_elegidos)]
 
-        # Calcular el promedio de estrellas por grupo
-        df_rating = df_filtered.groupby(target_group)['stars'].mean().reset_index()
+    #Filtramos por grupo de categorias
+    categories_groups = categories_groups[categories_groups['group'].apply(lambda x: x in target_group)]
 
-        return df_rating
+    #Filtramos los restaurantes por categoria
+    business = pd.merge(business, categories_groups[['business_id']], on='business_id')
 
-    except TypeError as e:
-        print(f"Error: {e}")
-        return pd.DataFrame()
+    return business[['name', 'latitude', 'longitude', 'avg_stars']]
 
 
 # KPI 2
