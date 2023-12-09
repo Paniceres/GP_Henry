@@ -4,10 +4,12 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import seaborn as sns
 import os.path
-from funcs import read_config, get_groups, pull_clean, get_kpi1_rating, get_kpi2_respuestas, get_kpi3_retencion, get_kpi4_influencia, get_recommendation
+from funcs import read_config, pull_clean, get_kpi1_rating, get_kpi2_respuestas, get_kpi3_retencion, get_kpi4_influencia, get_recommendation
 
 # Obtener la ruta del directorio del script actual
 # route = os.path.dirname(__file__)
+
+secrets = read_config()
 
 #Data Pull and Functions
 data_frames = pull_clean()
@@ -22,11 +24,13 @@ categories_google = data_frames.get('7_categories_google.parquet')
 # categories_yelp = data_frames.get('8_categories_yelp.parquet')
 reviews_google = data_frames.get('9_reviews_google.parquet')
 reviews_yelp = data_frames.get('10_reviews_yelp.parquet')
+grupo_google = data_frames.get('11_grupo_de_categorias_google.parquet'),
+# grupo_yelp = data_frames.get('12_grupo_de_categorias_yelp.parquet'),
 df_user = data_frames.get('user_categories')
 df_categories = data_frames.get('locales_categories')
 
-groups = get_groups(business_google)
-secrets = read_config()
+print(grupo_google)
+
 
 # print(categories.head(100))
 
@@ -41,7 +45,7 @@ secrets = read_config()
 # df_user = pd.read_parquet('./datasets/processed/bd/user_categories.parquet')
 # df_categories = pd.read_parquet('./datasets/processed/bd/locales_categories.parquet')
 
-recommendation = print(get_recommendation(business_google=business_google,business_yelp=business_yelp,df_user=df_user,df_categories=df_categories,states=state,df_rg=reviews_google,df_ry=reviews_yelp,category='georgian'))
+# recommendation = print(get_recommendation(business_google=business_google,business_yelp=business_yelp,df_user=df_user,df_categories=df_categories,states=state,df_rg=reviews_google,df_ry=reviews_yelp,category='georgian'))
 
 
 

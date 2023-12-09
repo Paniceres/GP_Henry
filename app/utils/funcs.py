@@ -47,6 +47,8 @@ def pull_clean(db_route=None):
         # '8_categories_yelp.parquet.gz',
         '9_reviews_google.parquet.gz',
         # '10_reviews_yelp.parquet.gz',
+        '11_grupo_de_categorias_google.parquet.gz',
+        '12_grupo_de_categorias_yelp.parquet.gz',
         'user_categories.parquet',
         'locales_categories.parquet'
     ]
@@ -59,50 +61,6 @@ def pull_clean(db_route=None):
         data_frames[df_name] = pd.read_parquet(full_path)
         print(f"{df_name}: {data_frames[df_name].shape}")
     return data_frames
-
-
-
-def get_groups(df):
-    # Reemplaza 'restaurant' por cadena vacía, excepto cuando el nombre es 'restaurant'
-    df['name'] = df['name'].apply(lambda x: x.replace('restaurant', '') if x != 'restaurant' else x)
-
-    # Crea la columna 'group' y asigna el valor predeterminado 'general'
-    df['group'] = 'general'
-
-    # Asigna grupos basados en patrones en el nombre
-    df.loc[(df['name'].str.contains('caf')) | (df['name'].str.contains('cof')) | 
-           (df['name'].str.contains('brea')) | (df['name'].str.contains('tea')), 'group'] = 'coffess & breakfast'
-
-    df.loc[(df['name'].str.contains('bar')) & (~df['name'].str.contains('barb')) | 
-           (df['name'].str.contains('nigh')) | (df['name'].str.contains('pub')), 'group'] = 'bars & nightlife'
-
-    df.loc[
-        (df['name'].str.contains('burg') |
-         (df['name'].str.contains('fast') & ~df['name'].str.contains('break')) |
-         df['name'].str.contains('pizza') |
-         df['name'].str.contains('sandw') |
-         df['name'].str.contains('hot dog') |
-         df['name'].str.contains('takeou')),
-        'group'] = 'fast food'
-
-    df.loc[
-        (df['name'].str.contains('suhi') |
-         df['name'].str.contains('asian') |
-         df['name'].str.contains('japa') |
-         df['name'].str.contains('kore') |
-         df['name'].str.contains('mexi') |
-         df['name'].str.contains('eth') |
-         df['name'].str.contains('falafel') |
-         df['name'].str.contains('chilean') |
-         df['name'].str.contains('mongolian') |
-         df['name'].str.contains('polish') |
-         df['name'].str.contains('italian') |
-         df['name'].str.contains('british')),
-        'group'] = 'foreign'
-
-    df.loc[(df['name'].str.contains('veg')), 'group'] = 'veggie & vegetarian'
-
-    return df
 
 
 
@@ -319,6 +277,7 @@ def get_distance_coord(lat1, lon1, lat2, lon2):
 
 
 #Funcion que a partir de un id de negocio y una lista ids retorna la distancia entre ese negocio y cada uno de los demas
+@st.cache_data
 def get_distance(business_google,business_yelp,business_id,business_id_list,rang=None):
     
     """
@@ -431,12 +390,12 @@ def get_recommendation_business(business_google,business_yelp,df_categories,busi
         'state_id':'first'
         
     }).reset_index().rename(columns =({'name_x':'category','name_y':'name'}))
-        
-    
+
+
     return business_cat
 
 
-#Funcion que recibe un business id userid o categoria y recomienda locales, tambien puede agregarse el rango en metros de distancia.
+# Funcion que recibe un business id userid o categoria y recomienda locales, tambien puede agregarse el rango en metros de distancia.
 def get_recommendation(df_user,df_categories,states,df_rg,df_ry,business_google,business_yelp,business_ids=None,user_id=None,category=None,distance=None,target_state=None):
     
     

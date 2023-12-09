@@ -3,8 +3,13 @@ from streamlit_option_menu import option_menu
 import pandas as pd
 import toml
 import plotly.express as px
-from utils.funcs import read_config, get_groups, pull_clean, get_kpi1_rating, get_kpi2_respuestas, get_kpi3_retencion, get_kpi4_influencia, get_recommendation, get_recommendation_business
+from utils.funcs import read_config, pull_clean, get_kpi1_rating, get_kpi2_respuestas, get_kpi3_retencion, get_kpi4_influencia, get_recommendation, get_recommendation_business
 import os.path
+
+# Notas: Arreglar unique_groups, normalizar nombres de 11 y 12, 
+# Errores: Coordenadas, plotly express da error, en comercial
+
+
 
 # Obtener la ruta del directorio del script actual
 route = os.path.dirname(__file__)
@@ -37,13 +42,15 @@ categories_google = data_frames.get('7_categories_google.parquet')
 # categories_yelp = data_frames.get('8_categories_yelp.parquet')
 reviews_google = data_frames.get('9_reviews_google.parquet')
 reviews_yelp = data_frames.get('10_reviews_yelp.parquet')
+group_google = data_frames.get('11_grupo_de_categorias_google.parquet'),
+# group_yelp = data_frames.get('12_grupo_de_categorias_yelp.parquet'),
 df_user = data_frames.get('user_categories')
 df_categories = data_frames.get('locales_categories')
 
-print(type(business_google))
 
-groups = get_groups(business_google)
-unique_groups = business_google['group'].unique()
+
+# unique_groups = group_google['group'].unique().tolist()
+
 
 st.markdown("""
 <style>
@@ -90,7 +97,7 @@ if selected=="Introducción":
                 En Quantyle Analytics, nos comprometemos con la calidad de nuestros análisis, la precisión en nuestras recomendaciones y el respaldo a aquellos que buscan tomar decisiones informadas en la industria gastronómica. Nuestro objetivo es brindar soluciones innovadoras y datos confiables para mejorar la experiencia del usuario y promover el éxito en el sector alimentario."""
                         )
         with col2:
-            url_imagen_gif = os.path.join('..', 'src', 'data-analysis.gif')
+            url_imagen_gif = os.path.join(route, '..', 'src', 'data-analysis.gif')
             st.image(url_imagen_gif, use_column_width=True) 
     st.divider()
 
@@ -127,9 +134,9 @@ if selected=="Comercial":
             
         if target_group:
             # Filtrar por categorías asociadas al grupo seleccionado
-            categories_options = groups[groups['group'].isin(target_group)]['name'].tolist()
+            categories_options = group_google[group_google['group'].isin(target_group)]['category'].tolist()
             categories_options = set(categories_options)  # Convertir la lista a un conjunto para eliminar duplicados
-            target_category = st.multiselect('Selecciona una categoría:', options=categories_options)
+            target_category = st.selectbox('Selecciona una categoría:', options=categories_options)
 
 
         if loc_select == 'Análisis':
@@ -137,6 +144,8 @@ if selected=="Comercial":
             st.write("¡Añadir KPIs!")
 
         elif loc_select == 'Mapa':
+            # mapa de calor con restaurantes filtrados por target_state, target_group, con criterio en stars
+            
             # Realizar la recomendación según las opciones seleccionadas
             df_recommendation = get_recommendation(business_google=business_google,business_yelp=business_yelp,
                                                 df_user=df_user,df_categories=df_categories,states=states,
@@ -164,7 +173,7 @@ if selected=='¿Dónde comer?':
     target_group = st.multiselect('Selecciona un grupo:', options=unique_groups, default=unique_groups)
     if target_group:
         # Filtrar por categorías asociadas al grupo seleccionado
-        categories_options = groups[groups['group'].isin(target_group)]['category'].tolist()
+        categories_options = group_google[group_google['group'].isin(target_group)]['category'].tolist()
         target_category = st.multiselect('Selecciona una categoría:', options=categories_options)
 
     loc_select=st.radio('Type',['Análisis', 'Recomendación'],horizontal=True, label_visibility="collapsed")
