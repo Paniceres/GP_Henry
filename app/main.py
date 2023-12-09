@@ -6,10 +6,6 @@ import plotly.express as px
 from utils.funcs import read_config, pull_clean, get_kpi1_rating, get_kpi2_respuestas, get_kpi3_retencion, get_kpi4_influencia, get_recommendation, get_recommendation_business
 import os.path
 
-# Notas: Arreglar unique_groups, normalizar nombres de 11 y 12, 
-# Errores: Coordenadas, plotly express da error, en comercial
-
-
 
 # Obtener la ruta del directorio del script actual
 route = os.path.dirname(__file__)
@@ -168,40 +164,47 @@ if selected=="Comercial":
 
 
 # ------------------------------------ Donde comer ---------------------------------------
-# if selected=='¿Dónde comer?':
+if selected=='¿Dónde comer?':
     
 #     target_state = st.multiselect(label='Selecciona estado:',options=states['state'].values.tolist(),label_visibility='collapsed', default=states['state'].values.tolist())   
      
-#     target_group = st.multiselect('Selecciona un grupo:', options=unique_groups, default=unique_groups)
-#     if target_group:
-#         # Filtrar por categorías asociadas al grupo seleccionado
-#         categories_options = groups[groups['group'].isin(target_group)]['name'].tolist()
-#         target_category = st.multiselect('Selecciona una categoría:', options=categories_options)
+    target_group = st.multiselect('Selecciona un grupo:', options=unique_groups, default=unique_groups)
+    
+    if target_group:
+        # Filtrar por categorías asociadas al grupo seleccionado
+        categories_options = groups[groups['group'].isin(target_group)]['name'].tolist()
+        target_category = st.multiselect('Selecciona una categoría:', options=categories_options)
+        
+    
+    options_with_none_1 = business_google['name'].tolist()
+    options_with_none_2 = business_yelp['name'].tolist()
+    options_with_none = options_with_none_1 + options_with_none_2
+    target_business_s = st.selectbox('Selecciona un restaurante:', options=options_with_none, index=0)
+    if target_business_s in options_with_none_1:
+        target_business = business_google[business_google['name']==target_business_s]['gmap_id'].iloc[0]
+    elif target_business_s in options_with_none_2:
+        target_business = business_yelp[business_yelp['name']==target_business_s]['business_id'].iloc[0]
+    if target_business:
+        target_category = None
+        target_distance = st.slider("Selecciona la distancia (kilometros):", min_value=1, max_value=5000, value=500, step=5)
+    loc_select=st.radio('Type',['Análisis', 'Recomendación'],horizontal=True, label_visibility="collapsed")
 
-#     loc_select=st.radio('Type',['Análisis', 'Recomendación'],horizontal=True, label_visibility="collapsed")
 
 
-#     if loc_select == 'Análisis':
-#         # Aquí puedes realizar análisis adicional si es necesario
-#         st.write("¡Realizando análisis!")
 
-#     elif loc_select == 'Recomendación':
-#         # Realizar la recomendación según las opciones seleccionadas
-#         # Puedes ajustar los parámetros según tu función get_recommendation
-#         df_recommendation = get_recommendation(business_google=business_google, states=states, business_yelp=business_yelp,
-#                                                 df_user=df_user, df_categories=df_categories, target_state=target_state,
-#                                                 df_rg=reviews_google, df_ry=reviews_yelp, category='Subway')
+elif loc_select == 'Recomendación':
+    # Realizar la recomendación según las opciones seleccionadas
+    # Puedes ajustar los parámetros según tu función get_recommendation
+    df_recommendation = get_recommendation(business_google=business_google,states=states,business_yelp=business_yelp,
+                                            df_user=df_user,df_categories=df_categories,target_state=target_state,distance=target_distance,
+                                            df_rg=reviews_google,df_ry=reviews_yelp,category=target_category,business_ids=target_business)
 
-#         # Crear el mapa de calor con Plotly Express
-#         px.set_mapbox_access_token(mapbox_token)
-#         map_style = "mapbox://styles/mapbox/light-v10" 
-#         fig = px.density_mapbox(df_recommendation, lat='latitude', lon='longitude', z='avg_stars',
-#                                 radius=10, center=dict(lat=37.0902, lon=-95.7129),
-#                                 zoom=3, mapbox_style=map_style,
-#                                 title="Mapa de Calor de Estrellas Promedio")
-
-#         # Mostrar el mapa de calor
-#         st.plotly_chart(fig)
+    # Crear el mapa de calor con Plotly Express
+    fig = px.scatter_mapbox(df_recommendation, lat="latitude", lon="longitude", hover_name="name", hover_data=["avg_stars", "category"],
+                    color_discrete_sequence=["fuchsia"], zoom=3, height=300)
+    fig.update_layout(mapbox_style="open-street-map")
+    fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
+    st.plotly_chart(fig)
 # ------------------------------------ Sobre nosotros ---------------------------------------
 
 

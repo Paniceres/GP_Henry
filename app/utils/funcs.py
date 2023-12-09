@@ -63,7 +63,7 @@ def pull_clean(db_route=None):
     return data_frames
 
 
-# @st.cache_data
+
 def get_groups(df):
     # Reemplaza 'restaurant' por cadena vacía, excepto cuando el nombre es 'restaurant'
     df['name'] = df['name'].apply(lambda x: x.replace('restaurant', '') if x != 'restaurant' else x)
@@ -154,8 +154,8 @@ def get_kpi1_rating( ## RECORDAR CAMBIAR ESTO
         business, 
         groups, 
         states, 
-        target_group = None,
-        target_state = None 
+        target_group,
+        target_state 
         ):
     """
     Calcula el promedio de las estrellas para cada grupo único en un DataFrame.
@@ -186,54 +186,59 @@ def get_kpi2_respuestas(reviews_google, business_google, categories_groups, stat
     '''
     Calcula la calidad de las respuestas
     kpi_respuestas = (ratio respuestas/review * rango tiempo) + sentiment_resp promedio
-
-    target_state(lista de str) = lista de estados elegidos por el usuario 
-    target_group(lista de str) = lista de grupos de categorias elegidas por el usuario
-    target_year(lista de enteros) = lista de años elegidos para su analsis 
     '''
-    # Elegimos el id del estado
-    id_estado_elegidos = state[state['state'].apply(lambda x: x in target_state)]['state_id'].to_list()
 
-    #Filtramos los negocios por el estado elegido
-    business_google = business_google[business_google['state_id'].apply(lambda x: x in id_estado_elegidos)]
+    # Convertir 'date' y 'resp_date' al formato datetime
+    reviews_google['date'] = pd.to_datetime(reviews_google['date'], format='%Y-%m-%d %H:%M:%S.%f', errors='coerce')
+    reviews_google['resp_date'] = pd.to_datetime(reviews_google['resp_date'], format='%Y-%m-%d %H:%M:%S.%f', errors='coerce')
 
-    #Filtramos por grupo de categorias
-    categories_groups = categories_groups[categories_groups['group'] .apply(lambda x: x in target_group)]
+    # Fusionar los dataframes en 'gmap_id'
+    merged_df = pd.merge(reviews_google, business_google, on='gmap_id', how='inner')
 
-    #Filtramos los restaurantes por categoria
-    business_google = pd.merge(business_google, categories_groups[['gmap_id']], on='gmap_id')
+    # Fusionar con el dataframe de estados para obtener el nombre del estado
+    merged_df = pd.merge(merged_df, state, on='state_id', how='inner')
+    
+    # Fusionar con el dataframe de categorías para obtener el nombre de la categoría
+    categories_df = pd.merge(categories, categories_google, on='categories_id', how='inner')
 
-    #Filtramos las reviews
-    reviews_google = pd.merge(reviews_google, business_google[['gmap_id']], on='gmap_id')
+    # Fusionar con el dataframe de categorías para obtener el nombre de la categoría
+    merged_df = pd.merge(merged_df, categories_df, on='gmap_id', how='inner')
+    
+    # Renombrar columnas
+    merged_df = merged_df.rename(columns={'name_x': 'name', 'name_y': 'category'})
 
-    #Cambiamos el tipo de dato de las fechas
-    reviews_google['date'] = pd.to_datetime(reviews_google['date'])
-    reviews_google['resp_date'] = pd.to_datetime(reviews_google['resp_date'])
+    # Borrar columnas residuales
+    merged_df.drop(columns=['categories_id', 'state_id'], inplace=True)
+    
+    # Filtrar las filas por estado y grupo
+    filtered_df = merged_df[(merged_df['state'] == target_state) & (merged_df['group'] == target_group)]
+    print(filtered_df)
+    
+    # Calcular el ratio de respuestas/comentarios
+    count_nonzero_resp = (filtered_df['resp_sentiment'] != 0.0).sum()
+    count_comments = len(filtered_df)
+    
+    # Filtrar las filas donde 'resp_time' no es NaT
+    filtered_df = filtered_df[~pd.isna(filtered_df['resp_date'])]
 
-    #Filtramos por año
-    reviews_google = reviews_google[reviews_google['date'].dt.year.apply(lambda x: x in target_year)]
+    # Calcular la diferencia de tiempo en horas
+    filtered_df['tiempo_diff'] = (filtered_df['resp_date'] - filtered_df['date']).dt.total_seconds() / 3600
 
-    #Vemos los que tienen respuesta
-    try:
-        con_respuesta = reviews_google['resp_sentiment'].value_counts().drop('0.0').sum()
-    except KeyError:
-        con_respuesta = len(reviews_google)
+    # Calcular el sentiment_resp promedio
+    sentiment_resp_promedio = filtered_df['resp_sentiment'].mean()
 
-    #Promedio de cuantas tienen respuesta
-    try:
-        ratio_resp_rev = con_respuesta / len(reviews_google) ########################
-    except ZeroDivisionError:
-        return print('No existe el año pedido')
+    print("Count Nonzero Resp:", count_nonzero_resp)
+    print("Count Comments:", count_comments)
+    
+    # Verificar si count_dates es diferente de cero antes de la división
+    ratio_resp_comentarios = count_nonzero_resp / count_comments if count_comments > 0 else 0
+    print("Ratio Respuestas/Comentarios:", ratio_resp_comentarios)
+    
+    print("tiempo_diff:", filtered_df['tiempo_diff'].mean())
+    # Calcular el KPI final
+    kpi_respuestas = (ratio_resp_comentarios * filtered_df['tiempo_diff'].mean()) + sentiment_resp_promedio
 
-    #Diferencia de tiempo
-    rango_de_tiempo = (reviews_google[reviews_google['resp_sentiment']!= '0.0']['resp_date'] - reviews_google[reviews_google['resp_sentiment']!= '0.0']['date']).dt.total_seconds() / 3600
-    rango_de_tiempo = rango_de_tiempo.apply(lambda x: abs(x)) ####################
-
-    #Sacamos el promedio del resp_sentiment
-    reviews_google['resp_sentiment'] = reviews_google['resp_sentiment'].astype(float)
-    promedio_resp_sent = reviews_google[reviews_google['resp_sentiment'] != 0.0]['resp_sentiment'].mean() #######################
-
-    return round((ratio_resp_rev * rango_de_tiempo.mean()/100) + promedio_resp_sent, 2)
+    return kpi_respuestas
 
 
 
@@ -437,6 +442,7 @@ def get_recommendation_business(business_google,business_yelp,df_categories,busi
     business = business[business['distance']!=0.0] # Elimino al restaurante mismos.
     # Uno las caractereisticas de los locales, con las categorias.
     business_cat = pd.merge(df_categories,business,on='business_id')
+    
     if business_cat.shape[0] == 0:
         return 'Restaurante no encontrado.'
     business_cat = business_cat.groupby('business_id').agg({
@@ -507,10 +513,11 @@ def get_recommendation(df_user,states,df_categories,df_rg,df_ry,business_google,
     
     
     business_cat = pd.DataFrame()
-    
     for business_id in business_ids: # Para cada negocio encontrado se realiza la recomendación.
-        business_cat = pd.concat([get_recommendation_business(business_google,business_yelp,df_categories,business_id,rang=distance),business_cat])    
-        
+        try:
+            business_cat = pd.concat([get_recommendation_business(business_google=business_google,business_yelp=business_yelp,df_categories=df_categories,business_id=business_id,rang=distance),business_cat])    
+        except Exception as e:
+            return pd.DataFrame(columns=['business_id', 'name', 'category', 'state', 'latitude', 'longitude', 'avg_stars', 'distance'])
     if business_cat.shape[0] == 0:
         return pd.DataFrame(columns=['business_id', 'name', 'category', 'state', 'latitude', 'longitude', 'avg_stars', 'distance'])
     
