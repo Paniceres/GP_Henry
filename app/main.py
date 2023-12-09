@@ -188,28 +188,110 @@ if selected=='¿Dónde comer?':
 
 
 if selected=='Sobre nosotros':
+     
+    with st.container():
+        st.markdown("<h1 style='text-align: center;'>Desarrolladores</h1>", unsafe_allow_html=True)
+    
+
+    def mostrar_imagen_con_estilo(imagen_path, width=150):
+        estilo = f"""
+            <style>
+                .imagen-container {{
+                    display: flex;
+                    justify-content: center;
+                    padding: 20px; /* Ajusta el espacio alrededor de la imagen */
+                }}
+                .imagen-container img {{
+                    width: {width}px; /* Establece el ancho deseado para la imagen */
+                    height: auto;
+                    border-radius: 10px; /* Agrega bordes redondeados */
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Agrega sombra */
+                }}
+            </style>
+            <div class="imagen-container">
+                <img src="{imagen_path}">
+            </div>
+        """
+        st.markdown(estilo, unsafe_allow_html=True)
     
     with st.container():
-        col1,col2,col3,col4,col5 = st.columns(5)
-        col2.markdown("<h1 style='text-align: center;'>Desarrolladores</h1>", unsafe_allow_html=True)
-    
+        col1,col2,col3=st.columns(3)
+        
+        col1.write('')
+        col2.write('')
+        col3.write('')
+        col1.write('')
+        col2.write('')
+        col3.write('')
+        col1.write('')
+        col2.write('')
+        col3.write('')
+        
+        
+        
+        # Bruno
+        col1.write('')
+        col1.image(r'../src/logo.png')
+        col1.write('')
+        col1.markdown('<span style="font-size: larger;">**Nombre:** &nbsp;&nbsp;&nbsp; Bruno Zenobio</span>', unsafe_allow_html=True)
+        col1.markdown('<span style="font-size: larger;">**Rol:** &nbsp;&nbsp;&nbsp; Data engineer</span>', unsafe_allow_html=True)
+        col1.markdown('<span style="font-size: larger;">**Contacto:** &nbsp;&nbsp;&nbsp; brunozenobio4@gmail.com</span>', unsafe_allow_html=True)
+        col1.markdown('<span style="font-size: larger;">**LinkedIn:** &nbsp;&nbsp;&nbsp; [link](https://www.linkedin.com/in/brunozenobio/)</span>', unsafe_allow_html=True)
+        # Damian
+        col2.write('')
+        col2.image(r'../src/logo.png')
+        col2.write('')
+        col2.markdown('<span style="font-size: larger;">**Nombre:** &nbsp;&nbsp;&nbsp; Damián Nicolás Albariño</span>', unsafe_allow_html=True)
+        col2.markdown('<span style="font-size: larger;">**Rol:** &nbsp;&nbsp;&nbsp; Data science</span>', unsafe_allow_html=True)
+        col2.markdown('<span style="font-size: larger;">**Contacto:** &nbsp;&nbsp;&nbsp; dami_colocar_mail@gmail.com</span>', unsafe_allow_html=True)
+        col2.markdown('<span style="font-size: larger;">**LinkedIn:** &nbsp;&nbsp;&nbsp; [link](https://www.linkedin.com/in/dami%C3%A1n-nicol%C3%A1s-albari%C3%B1o-b03b9a1ab/)</span>', unsafe_allow_html=True)
+        # Lucio
+        col3.write('')
+        col3.image(r'../src/logo.png')
+        col3.write('')
+        col3.markdown('<span style="font-size: larger;">**Nombre:** &nbsp;&nbsp;&nbsp; Lucio Paniceres</span>', unsafe_allow_html=True)
+        col3.markdown('<span style="font-size: larger;">**Rol:** &nbsp;&nbsp;&nbsp; Data science</span>', unsafe_allow_html=True)
+        col3.markdown('<span style="font-size: larger;">**Contacto:** &nbsp;&nbsp;&nbsp; paniceres73@gmail.com</span>', unsafe_allow_html=True)
+        col3.markdown('<span style="font-size: larger;">**LinkedIn:** &nbsp;&nbsp;&nbsp; [link](https://www.linkedin.com/in/paniceres-lucio/)</span>', unsafe_allow_html=True)
+ 
+        col1.write('')
+        col2.write('')
+        col3.write('')
+        col1.write('')
+        col2.write('')
+        col3.write('')
+        col1.write('')
+        col2.write('')
+        col3.write('')
+        
+    with st.container():
+        col1,col2,col3=st.columns(3)
+
+        col1.write('')
+        col1.image(r'../src/logo.png')
+        col1.write('')
+        col1.markdown('<span style="font-size: larger;">**Nombre:** &nbsp;&nbsp;&nbsp; Jeferson Tonetto</span>', unsafe_allow_html=True)
+        col1.markdown('<span style="font-size: larger;">**Rol:** &nbsp;&nbsp;&nbsp; Data analyst</span>', unsafe_allow_html=True)
+        col1.markdown('<span style="font-size: larger;">**Contacto:** &nbsp;&nbsp;&nbsp; jeff_mail@gmail.com</span>', unsafe_allow_html=True)
+        col1.markdown('<span style="font-size: larger;">**LinkedIn:** &nbsp;&nbsp;&nbsp; [link](https://www.linkedin.com/in/jeferson-tonetto-mogollon-09ba311b0/)</span>', unsafe_allow_html=True)
+        
+        col3.write('')
+        col3.image(r'../src/logo.png')
+        col3.write('')
+        col3.markdown('<span style="font-size: larger;">**Nombre:** &nbsp;&nbsp;&nbsp; Jonathan Castillo</span>', unsafe_allow_html=True)
+        col3.markdown('<span style="font-size: larger;">**Rol:** &nbsp;&nbsp;&nbsp; Data engineer</span>', unsafe_allow_html=True)
+        col3.markdown('<span style="font-size: larger;">**Contacto:** &nbsp;&nbsp;&nbsp; jonathancastillo185@gmail.com</span>', unsafe_allow_html=True)
+        col3.markdown('<span style="font-size: larger;">**LinkedIn:** &nbsp;&nbsp;&nbsp; [link](https://www.linkedin.com/in/jonathan-castillo-7962b7163/)</span>', unsafe_allow_html=True)
+
+
 
     with st.container():
-        col2,col2,col3,col4,col5=st.columns(5)
-
-        col2.write('### Nombre:')
-        col3.write('### Bruno')
-        col2.write('**Rol:**    Data engineer')
+        col1,col2,col3=st.columns(3)
+        col2.write('')
+        col2.write('')
+        col2.write('')
+        col2.write('')
         
-        col2.write('**Contacto:**    brunozenobio4@gmail.com or [linkedin](https://www.linkedin.com/in/brunozenobio/)')
-        
-        
-        col4.image(r'../src/logo.png')
-
-
-
-
-
     st.divider()
     
     st.title('Data')
@@ -217,6 +299,8 @@ if selected=='Sobre nosotros':
     col1,col2=st.columns(2)
     col1.subheader('Fuentes')
     col2.subheader('Enlaces')
+    
+    
     with st.container():
         col1,col2=st.columns(2)
         #col1.image('census_graphic.png',width=150)
