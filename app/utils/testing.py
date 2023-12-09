@@ -41,7 +41,7 @@ secrets = read_config()
 # df_user = pd.read_parquet('./datasets/processed/bd/user_categories.parquet')
 # df_categories = pd.read_parquet('./datasets/processed/bd/locales_categories.parquet')
 
-recommendation = print(get_recommendation(business_google=business_google,business_yelp=business_yelp,df_user=df_user,df_categories=df_categories,states=state,df_rg=reviews_google,df_ry=reviews_yelp,category='pizza',target_state=['California','Illinois','Florida','New Jersey','Mississippi']))
+recommendation = print(get_recommendation(business_google=business_google, business_yelp=business_yelp, states=state, df_user=df_user, df_categories=df_categories, df_rg=reviews_google, df_ry=reviews_yelp, business_ids='0x88e7746b43fd35fb:0xcdf54b983cf4df07',distance=565,target_state=['California','Illinois','Florida','New Jersey']))
 
 
 
