@@ -422,9 +422,18 @@ def get_recommendation_business(business_google,business_yelp,df_categories,busi
 
     #Genero las recomendaciones.
     
-    _, indices = knn_model.kneighbors(categories_processed[idx])
+    distances, indices = knn_model.kneighbors(categories_processed[idx])
 
-    recommendations = df_categories['business_id'].iloc[indices[0,1:]]  # Excluye el propio restaurante
+    # Excluye el propio restaurante y ordena las recomendaciones por distancia (invierte el orden)
+    sorted_indices = indices[0, 1:]
+    sorted_distances = distances[0, 1:]
+    sorted_recommendations = sorted(zip(sorted_indices, sorted_distances), key=lambda x: x[1])
+
+    # Extrae los índices ordenados
+    sorted_indices = [index for index, distance in sorted_recommendations]
+
+    # Obtén las recomendaciones ordenadas por score
+    recommendations = df_categories['business_id'].iloc[sorted_indices]
     
     
     #Calcula las distancias entre las recomendaciones y el local.
@@ -535,7 +544,7 @@ def get_recommendation(df_user,states,df_categories,df_rg,df_ry,business_google,
 
    
 
-    return business_cat.sort_values(by=['avg_stars'],ascending=[False]).iloc[0:10]
+    return business_cat.iloc[0:20]
 
 
 def get_recommendation_by_category(df_categories, target_state, category=None):
