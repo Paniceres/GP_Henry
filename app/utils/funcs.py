@@ -29,7 +29,7 @@ def read_config(file_path = "../.streamlit/secrets.toml"):
         return st.secrets
         
 
-# @st.cache_data
+@st.cache_data
 def pull_clean(db_route=None):
     # Construir la ruta relativa al dataset
     db_route = os.path.join(route, '..', '..', 'datasets', 'processed', 'bd')
@@ -48,7 +48,7 @@ def pull_clean(db_route=None):
         '9_reviews_google.parquet.gz',
         # '10_reviews_yelp.parquet.gz',
         '11_grupo_de_categorias_google.parquet.gz',
-        '12_grupo_de_categorias_yelp.parquet.gz',
+        # '12_grupo_de_categorias_yelp.parquet.gz',
         'user_categories.parquet',
         'locales_categories.parquet'
     ]
@@ -61,6 +61,50 @@ def pull_clean(db_route=None):
         data_frames[df_name] = pd.read_parquet(full_path)
         print(f"{df_name}: {data_frames[df_name].shape}")
     return data_frames
+
+
+# @st.cache_data
+def get_groups(df):
+    # Reemplaza 'restaurant' por cadena vacía, excepto cuando el nombre es 'restaurant'
+    df['name'] = df['name'].apply(lambda x: x.replace('restaurant', '') if x != 'restaurant' else x)
+
+    # Crea la columna 'group' y asigna el valor predeterminado 'general'
+    df['group'] = 'general'
+
+    # Asigna grupos basados en patrones en el nombre
+    df.loc[(df['name'].str.contains('caf')) | (df['name'].str.contains('cof')) | 
+           (df['name'].str.contains('brea')) | (df['name'].str.contains('tea')), 'group'] = 'coffess & breakfast'
+
+    df.loc[(df['name'].str.contains('bar')) & (~df['name'].str.contains('barb')) | 
+           (df['name'].str.contains('nigh')) | (df['name'].str.contains('pub')), 'group'] = 'bars & nightlife'
+
+    df.loc[
+        (df['name'].str.contains('burg') |
+         (df['name'].str.contains('fast') & ~df['name'].str.contains('break')) |
+         df['name'].str.contains('pizza') |
+         df['name'].str.contains('sandw') |
+         df['name'].str.contains('hot dog') |
+         df['name'].str.contains('takeou')),
+        'group'] = 'fast food'
+
+    df.loc[
+        (df['name'].str.contains('suhi') |
+         df['name'].str.contains('asian') |
+         df['name'].str.contains('japa') |
+         df['name'].str.contains('kore') |
+         df['name'].str.contains('mexi') |
+         df['name'].str.contains('eth') |
+         df['name'].str.contains('falafel') |
+         df['name'].str.contains('chilean') |
+         df['name'].str.contains('mongolian') |
+         df['name'].str.contains('polish') |
+         df['name'].str.contains('italian') |
+         df['name'].str.contains('british')),
+        'group'] = 'foreign'
+
+    df.loc[(df['name'].str.contains('veg')), 'group'] = 'veggie & vegetarian'
+
+    return df
 
 
 
@@ -104,20 +148,38 @@ def pull_clean(db_route=None):
 #     return df_businesses_per_capita
 
 # KPI 1
-def get_kpi1_rating(df, target_group, target_state):
+
+
+def get_kpi1_rating(business_google, target_group, target_state, states):
     """
     Calcula el promedio de las estrellas para cada grupo único en un DataFrame.
+        Args:
+            df (pd.DataFrame): DataFrame principal.
+            target_group (str): Nombre de la columna para agrupar.
+            target_state (str or list): Estado o lista de estados objetivo.
+            states (pd.DataFrame): DataFrame de estados.
+
     """
-    # Filtrar el DataFrame por el estado objetivo
-    df_filtered = df[df['state'] == target_state]
+    # Realizar un merge entre df y states usando state_id como clave
+    df_merged = pd.merge(business_google, states, how='inner', on='state_id')
+    try:
+        # Convertir a lista si es un solo estado
+        target_state = [target_state] if isinstance(target_state, str) else target_state
 
-    # Calcular el promedio de estrellas por grupo
-    df_rating = df_filtered.groupby(target_group)['stars'].mean().reset_index()
+        # Filtrar el DataFrame por el estado objetivo
+        df_filtered = df_merged[df_merged['state'].isin(target_state)]
 
-    return df_rating
+        # Calcular el promedio de estrellas por grupo
+        df_rating = df_filtered.groupby(target_group)['stars'].mean().reset_index()
+
+        return df_rating
+
+    except TypeError as e:
+        print(f"Error: {e}")
+        return pd.DataFrame()
+
 
 # KPI 2
-# Habria que separarla en partes, tarda 40mins y da error
 def get_kpi2_respuestas(reviews_google, business_google, categories_groups, state, target_state, target_group, target_year):
     '''
     Calcula la calidad de las respuestas
@@ -390,8 +452,8 @@ def get_recommendation_business(business_google,business_yelp,df_categories,busi
     return business_cat
 
 
-# Funcion que recibe un business id userid o categoria y recomienda locales, tambien puede agregarse el rango en metros de distancia.
-def get_recommendation(df_user,df_categories,states,df_rg,df_ry,business_google,business_yelp,business_ids=None,user_id=None,category=None,distance=None,target_state=None):
+#Funcion que recibe un business id userid o categoria y recomienda locales, tambien puede agregarse el rango en metros de distancia.
+def get_recommendation(df_user,states,df_categories,df_rg,df_ry,business_google,business_yelp,business_ids=None,user_id=None,category=None,distance=None,target_state=None):
     
     
     """
@@ -421,23 +483,24 @@ def get_recommendation(df_user,df_categories,states,df_rg,df_ry,business_google,
         distance = None
         
         if pd.isna(category): # Si es nan retorna no encontrada.
-            return 'Usuario no encontrado.'
-    
-    
+            return pd.DataFrame(columns=['business_id', 'name', 'category', 'state', 'latitude', 'longitude', 'avg_stars', 'distance'])
         
     # Encuentra negocios con esa categoria   
-    if category is not None and category != '':
-        # Manejo de listas
-        for categor in category:
-            businesses = df_categories[df_categories['name'].str.lower().str.contains(categor.lower())]
-            business_ids = []  # Inicializar como una lista vacía
-            for business_id in business_ids:
-                business_ids.append(businesses)
+    if category is not None:
+        if category == '':
+             return pd.DataFrame(columns=['business_id', 'name', 'category', 'state', 'latitude', 'longitude', 'avg_stars', 'distance'])
+        else:
+            category = category[0]
+            # Manejo de listas
+            business_ids = df_categories[df_categories['name'].str.lower().str.contains(category.lower())] # Encuentra negocios con esa categoria
         
         if len(business_ids) > 1:
-            business_ids = business_ids.sample(min(10, len(business_ids)))['business_id'].tolist()
+            business_ids = business_ids.sample(min(10, len(business_ids)))['business_id'].tolist() # Toma 10 restaurantes en esa categoria 
+
+            
+        
         else:
-            return 'Categoria no encontrada'
+            return pd.DataFrame(columns=['business_id', 'name', 'category', 'state', 'latitude', 'longitude', 'avg_stars', 'distance'])
     
     
     
@@ -447,7 +510,7 @@ def get_recommendation(df_user,df_categories,states,df_rg,df_ry,business_google,
         business_cat = pd.concat([get_recommendation_business(business_google,business_yelp,df_categories,business_id,rang=distance),business_cat])    
         
     if business_cat.shape[0] == 0:
-        return 'Restaurante no encontrado.'
+        return pd.DataFrame(columns=['business_id', 'name', 'category', 'state', 'latitude', 'longitude', 'avg_stars', 'distance'])
     
     #states = pd.read_parquet('./datasets/processed/bd/1_states.parquet.gz')
     business_cat = pd.merge(business_cat,states,on='state_id',how='inner')

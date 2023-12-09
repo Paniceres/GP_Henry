@@ -42,15 +42,21 @@ categories_google = data_frames.get('7_categories_google.parquet')
 # categories_yelp = data_frames.get('8_categories_yelp.parquet')
 reviews_google = data_frames.get('9_reviews_google.parquet')
 reviews_yelp = data_frames.get('10_reviews_yelp.parquet')
-group_google = data_frames.get('11_grupo_de_categorias_google.parquet'),
-# group_yelp = data_frames.get('12_grupo_de_categorias_yelp.parquet'),
+groups_google = data_frames.get('11_grupo_de_categorias_google.parquet')
+groups_yelp = data_frames.get('12_grupo_de_categorias_yelp.parquet')
 df_user = data_frames.get('user_categories')
 df_categories = data_frames.get('locales_categories')
 
 
+# Valores unicos
+unique_groups = groups_google['group'].unique()
 
-# unique_groups = group_google['group'].unique().tolist()
+unique_states = states['state'].unique().tolist()
 
+reviews_google['date'] = pd.to_datetime(reviews_google['date'])
+unique_years = reviews_google['date'].dt.year.unique()
+
+# groups = 
 
 st.markdown("""
 <style>
@@ -119,8 +125,9 @@ if selected=="Comercial":
 
 
     
-    target_state = st.multiselect(label='Selecciona estado:',options=states['state'].values.tolist(),label_visibility='collapsed')
+    target_state = st.multiselect(label='Selecciona estado:',options=unique_states,label_visibility='collapsed')
     target_group = st.multiselect('Selecciona un grupo:', options=unique_groups)
+    target_year = st.multiselect('Selecciona un año:', options=unique_years)
     
     loc_select=st.radio('Type',['Análisis', 'Mapa'],horizontal=True, label_visibility="collapsed")
     
@@ -128,37 +135,30 @@ if selected=="Comercial":
         
         
     if loc_select=='Análisis':
-        st.write('pass')
         
-    if loc_select=='Mapa':
-            
-        if target_group:
-            # Filtrar por categorías asociadas al grupo seleccionado
-            categories_options = group_google[group_google['group'].isin(target_group)]['category'].tolist()
-            categories_options = set(categories_options)  # Convertir la lista a un conjunto para eliminar duplicados
-            target_category = st.selectbox('Selecciona una categoría:', options=categories_options)
+        # Storytelling KPI 2
+        st.subheader('Analizando la Calidad de las Respuestas')
+
+        # KPI 2
+        kpi2_result = get_kpi2_respuestas(reviews_google, business_google, groups_google, states, target_state, target_group, target_year)
 
 
-        if loc_select == 'Análisis':
-            
-            st.write("¡Añadir KPIs!")
+        st.write(f'El resultado del KPI 2 es: {kpi2_result}')
 
-        elif loc_select == 'Mapa':
-            # mapa de calor con restaurantes filtrados por target_state, target_group, con criterio en stars
-            
-            # Realizar la recomendación según las opciones seleccionadas
-            df_recommendation = get_recommendation(business_google=business_google,business_yelp=business_yelp,
-                                                df_user=df_user,df_categories=df_categories,states=states,
-                                                df_rg=reviews_google,df_ry=reviews_yelp,category=target_category)
 
-            # Crear el mapa de calor con Plotly Express
-            fig = px.density_mapbox(df_recommendation, lat='latitude', lon='longitude', z='avg_stars',
-                                    radius=10, center=dict(lat=37.0902, lon=-95.7129),
-                                    zoom=3, mapbox_style="stamen-terrain",
-                                    title="Mapa de Calor de Estrellas Promedio")
+    if loc_select == 'Mapa':
+        # Crear el mapa de calor con Plotly Express
+        df_rating = get_kpi1_rating(business_google, target_group, target_state, states)
+        
+        px.set_mapbox_access_token(mapbox_token)
+        map_style = "mapbox://styles/mapbox/light-v10" 
+        fig = px.density_mapbox(df_rating, lat='latitude', lon='longitude', z='avg_stars',
+                                radius=10, center=dict(lat=37.0902, lon=-95.7129),
+                                zoom=3, mapbox_style="stamen-terrain",
+                                title="Mapa de Calor de Estrellas Promedio")
 
-            # Mostrar el mapa de calor
-            st.plotly_chart(fig)           
+        # Mostrar el mapa de calor
+        st.plotly_chart(fig)           
         
     with st.expander('Advanced Settings'):
         pass
@@ -166,38 +166,40 @@ if selected=="Comercial":
 
 
 # ------------------------------------ Donde comer ---------------------------------------
-if selected=='¿Dónde comer?':
+# if selected=='¿Dónde comer?':
     
-    target_state = st.multiselect(label='Selecciona estado:',options=states['state'].values.tolist(),label_visibility='collapsed', default=states['state'].values.tolist())   
+#     target_state = st.multiselect(label='Selecciona estado:',options=states['state'].values.tolist(),label_visibility='collapsed', default=states['state'].values.tolist())   
      
-    target_group = st.multiselect('Selecciona un grupo:', options=unique_groups, default=unique_groups)
-    if target_group:
-        # Filtrar por categorías asociadas al grupo seleccionado
-        categories_options = group_google[group_google['group'].isin(target_group)]['category'].tolist()
-        target_category = st.multiselect('Selecciona una categoría:', options=categories_options)
+#     target_group = st.multiselect('Selecciona un grupo:', options=unique_groups, default=unique_groups)
+#     if target_group:
+#         # Filtrar por categorías asociadas al grupo seleccionado
+#         categories_options = groups[groups['group'].isin(target_group)]['name'].tolist()
+#         target_category = st.multiselect('Selecciona una categoría:', options=categories_options)
 
-    loc_select=st.radio('Type',['Análisis', 'Recomendación'],horizontal=True, label_visibility="collapsed")
+#     loc_select=st.radio('Type',['Análisis', 'Recomendación'],horizontal=True, label_visibility="collapsed")
 
 
-    if loc_select == 'Análisis':
-        # Aquí puedes realizar análisis adicional si es necesario
-        st.write("¡Realizando análisis!")
+#     if loc_select == 'Análisis':
+#         # Aquí puedes realizar análisis adicional si es necesario
+#         st.write("¡Realizando análisis!")
 
-    elif loc_select == 'Recomendación':
-        # Realizar la recomendación según las opciones seleccionadas
-        # Puedes ajustar los parámetros según tu función get_recommendation
-        df_recommendation = get_recommendation(business_google=business_google,business_yelp=business_yelp,
-                                                df_user=df_user,df_categories=df_categories,states=target_state,
-                                                df_rg=reviews_google,df_ry=reviews_yelp,category=target_category)
+#     elif loc_select == 'Recomendación':
+#         # Realizar la recomendación según las opciones seleccionadas
+#         # Puedes ajustar los parámetros según tu función get_recommendation
+#         df_recommendation = get_recommendation(business_google=business_google, states=states, business_yelp=business_yelp,
+#                                                 df_user=df_user, df_categories=df_categories, target_state=target_state,
+#                                                 df_rg=reviews_google, df_ry=reviews_yelp, category='Subway')
 
-        # Crear el mapa de calor con Plotly Express
-        fig = px.density_mapbox(df_recommendation, lat='latitude', lon='longitude', z='avg_stars',
-                                radius=10, center=dict(lat=37.0902, lon=-95.7129),
-                                zoom=3, mapbox_style="stamen-terrain",
-                                title="Mapa de Calor de Estrellas Promedio")
+#         # Crear el mapa de calor con Plotly Express
+#         px.set_mapbox_access_token(mapbox_token)
+#         map_style = "mapbox://styles/mapbox/light-v10" 
+#         fig = px.density_mapbox(df_recommendation, lat='latitude', lon='longitude', z='avg_stars',
+#                                 radius=10, center=dict(lat=37.0902, lon=-95.7129),
+#                                 zoom=3, mapbox_style=map_style,
+#                                 title="Mapa de Calor de Estrellas Promedio")
 
-        # Mostrar el mapa de calor
-        st.plotly_chart(fig)
+#         # Mostrar el mapa de calor
+#         st.plotly_chart(fig)
 # ------------------------------------ Sobre nosotros ---------------------------------------
 
 
