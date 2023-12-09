@@ -1,6 +1,7 @@
 # extras
 datasets/extras/
 extras/
+app/utils/probandofunciones.ipynb
 
 # configs and secrets
 .vscode/

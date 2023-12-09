@@ -13,8 +13,6 @@ route = os.path.dirname(__file__)
 # Intentar cargar la configuración desde el archivo local
 secrets = read_config()
 
-mapbox_token = secrets.get("mapbox_token")  
-print(mapbox_token)
 
 
 #Layout
@@ -63,7 +61,7 @@ with st.sidebar:
     )
 
     # Mostrar la imagen GIF en el sidebar
-    url_imagen_gif = os.path.join(route, '..', 'src', 'location-maps.gif')
+    url_imagen_gif = os.path.join('..', 'src', 'location-maps.gif')
     st.sidebar.image(url_imagen_gif, use_column_width=True)
     
 #Introduccion
@@ -88,7 +86,7 @@ if selected=="Introducción":
                 En Quantyle Analytics, nos comprometemos con la calidad de nuestros análisis, la precisión en nuestras recomendaciones y el respaldo a aquellos que buscan tomar decisiones informadas en la industria gastronómica. Nuestro objetivo es brindar soluciones innovadoras y datos confiables para mejorar la experiencia del usuario y promover el éxito en el sector alimentario."""
                         )
         with col2:
-            url_imagen_gif = os.path.join(route, '..', 'src', 'data-analysis.gif')
+            url_imagen_gif = os.path.join('..', 'src', 'data-analysis.gif')
             st.image(url_imagen_gif, use_column_width=True) 
     st.divider()
 
