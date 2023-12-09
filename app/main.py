@@ -153,7 +153,7 @@ if selected=="Comercial":
         fig = px.density_mapbox(df_rating, lat='latitude', lon='longitude', z='avg_stars',
                                 radius=10, center=dict(lat=37.0902, lon=-95.7129),
                                 zoom=3, mapbox_style="open-street-map",
-                                title="Mapa de Calor de Estrellas Promedio", color_continuous_scale='reds', opacity=100)
+                                title="Mapa de Calor de Estrellas Promedio", color_continuous_scale='reds', opacity=1)
 
         # Mostrar el mapa de calor
         st.plotly_chart(fig)           
