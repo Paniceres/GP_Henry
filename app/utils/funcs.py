@@ -467,21 +467,24 @@ def get_recommendation(df_user,df_categories,states,df_rg,df_ry,business_google,
         distance = None
         
         if pd.isna(category): # Si es nan retorna no encontrada.
-            return 'Usuario no encontrado.'
+            return pd.DataFrame(columns=['business_id', 'name', 'category', 'state', 'latitude', 'longitude', 'avg_stars', 'distance'])
         
     # Encuentra negocios con esa categoria   
-    if category is not None and category != '':
-        category = category[0]
-        # Manejo de listas
-        business_ids = df_categories[df_categories['name'].str.lower().str.contains(category.lower())] # Encuentra negocios con esa categoria
+    if category is not None:
+        if category == '':
+             return pd.DataFrame(columns=['business_id', 'name', 'category', 'state', 'latitude', 'longitude', 'avg_stars', 'distance'])
+        else:
+            category = category[0]
+            # Manejo de listas
+            business_ids = df_categories[df_categories['name'].str.lower().str.contains(category.lower())] # Encuentra negocios con esa categoria
         
         if len(business_ids) > 1:
             business_ids = business_ids.sample(min(10, len(business_ids)))['business_id'].tolist() # Toma 10 restaurantes en esa categoria 
 
             
         
-    else:
-        return 'Categoria no encontrada'
+        else:
+            return pd.DataFrame(columns=['business_id', 'name', 'category', 'state', 'latitude', 'longitude', 'avg_stars', 'distance'])
     
     
     
@@ -491,7 +494,7 @@ def get_recommendation(df_user,df_categories,states,df_rg,df_ry,business_google,
         business_cat = pd.concat([get_recommendation_business(business_google,business_yelp,df_categories,business_id,rang=distance),business_cat])    
         
     if business_cat.shape[0] == 0:
-        return 'Restaurante no encontrado.'
+        return pd.DataFrame(columns=['business_id', 'name', 'category', 'state', 'latitude', 'longitude', 'avg_stars', 'distance'])
     
     #states = pd.read_parquet('./datasets/processed/bd/1_states.parquet.gz')
     business_cat = pd.merge(business_cat,states,on='state_id',how='inner')
