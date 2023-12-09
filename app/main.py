@@ -128,7 +128,9 @@ if selected=="Comercial":
         if target_group:
             # Filtrar por categorías asociadas al grupo seleccionado
             categories_options = groups[groups['group'].isin(target_group)]['name'].tolist()
+            categories_options = set(categories_options)  # Convertir la lista a un conjunto para eliminar duplicados
             target_category = st.multiselect('Selecciona una categoría:', options=categories_options)
+
 
         if loc_select == 'Análisis':
             

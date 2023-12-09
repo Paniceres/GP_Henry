@@ -468,13 +468,17 @@ def get_recommendation(df_user,df_categories,states,df_rg,df_ry,business_google,
         
         if pd.isna(category): # Si es nan retorna no encontrada.
             return 'Usuario no encontrado.'
+    
+    
         
     # Encuentra negocios con esa categoria   
     if category is not None and category != '':
         # Manejo de listas
-        business_ids = df_categories[df_categories['name'].apply(
-            lambda x: any(category.lower() in str(item).lower() for item in x) if isinstance(x, list) else (category.lower() in str(x).lower())
-        )]
+        for categor in category:
+            businesses = df_categories[df_categories['name'].str.lower().str.contains(categor.lower())]
+            business_ids = []  # Inicializar como una lista vacía
+            for business_id in business_ids:
+                business_ids.append(businesses)
         
         if len(business_ids) > 1:
             business_ids = business_ids.sample(min(10, len(business_ids)))['business_id'].tolist()
