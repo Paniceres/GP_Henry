@@ -437,7 +437,7 @@ def get_recommendation_business(business_google,business_yelp,df_categories,busi
 
 
 #Funcion que recibe un business id userid o categoria y recomienda locales, tambien puede agregarse el rango en metros de distancia.
-def get_recommendation(df_user,df_categories,states,df_rg,df_ry,business_google,business_yelp,business_ids=None,user_id=None,category=None,distance=None,target_state=None):
+def get_recommendation(df_user,df_categories,df_rg,df_ry,business_google,business_yelp,business_ids=None,user_id=None,category=None,distance=None,target_state=None):
     
     
     """
@@ -497,7 +497,7 @@ def get_recommendation(df_user,df_categories,states,df_rg,df_ry,business_google,
         return pd.DataFrame(columns=['business_id', 'name', 'category', 'state', 'latitude', 'longitude', 'avg_stars', 'distance'])
     
     #states = pd.read_parquet('./datasets/processed/bd/1_states.parquet.gz')
-    business_cat = pd.merge(business_cat,states,on='state_id',how='inner')
+    business_cat = pd.merge(business_cat,target_state,on='state_id',how='inner')
     business_cat = business_cat[['business_id','name','category','state','latitude','longitude','avg_stars','distance']] # Se selccionan columnas a usar
     if target_state:
         business_cat = business_cat[business_cat['state'].isin(target_state)] # Si se pasa un estado se filtra por este.
