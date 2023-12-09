@@ -471,15 +471,17 @@ def get_recommendation(df_user,df_categories,states,df_rg,df_ry,business_google,
         
     # Encuentra negocios con esa categoria   
     if category is not None and category != '':
+        category = category[0]
         # Manejo de listas
-        business_ids = df_categories[df_categories['name'].apply(
-            lambda x: any(category.lower() in str(item).lower() for item in x) if isinstance(x, list) else (category.lower() in str(x).lower())
-        )]
+        business_ids = df_categories[df_categories['name'].str.lower().str.contains(category.lower())] # Encuentra negocios con esa categoria
         
         if len(business_ids) > 1:
-            business_ids = business_ids.sample(min(10, len(business_ids)))['business_id'].tolist()
-        else:
-            return 'Categoria no encontrada'
+            business_ids = business_ids.sample(min(10, len(business_ids)))['business_id'].tolist() # Toma 10 restaurantes en esa categoria 
+
+            
+        
+    else:
+        return 'Categoria no encontrada'
     
     
     
