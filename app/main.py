@@ -146,14 +146,14 @@ if selected=="Comercial":
 
     if loc_select == 'Mapa':
         # Crear el mapa de calor con Plotly Express
-        df_rating = get_kpi1_rating(business_both, groups_both, target_group, target_state, states)
+        df_rating = get_kpi1_rating(business_both, groups_both, states, target_group, target_state)
         
         px.set_mapbox_access_token(mapbox_token)
         map_style = "mapbox://styles/mapbox/light-v10" 
         fig = px.density_mapbox(df_rating, lat='latitude', lon='longitude', z='avg_stars',
                                 radius=10, center=dict(lat=37.0902, lon=-95.7129),
-                                zoom=3, mapbox_style="stamen-terrain",
-                                title="Mapa de Calor de Estrellas Promedio")
+                                zoom=3, mapbox_style="open-street-map",
+                                title="Mapa de Calor de Estrellas Promedio", color_continuous_scale='reds', opacity=100)
 
         # Mostrar el mapa de calor
         st.plotly_chart(fig)           
