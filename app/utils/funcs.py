@@ -64,6 +64,7 @@ def pull_clean(db_route=None):
 
 
 
+
 def get_groups(df):
     # Reemplaza 'restaurant' por cadena vacía, excepto cuando el nombre es 'restaurant'
     df['name'] = df['name'].apply(lambda x: x.replace('restaurant', '') if x != 'restaurant' else x)
@@ -105,8 +106,6 @@ def get_groups(df):
     df.loc[(df['name'].str.contains('veg')), 'group'] = 'veggie & vegetarian'
 
     return df
-
-
 
 # ------------------------------------ KPI ------------------------------------------------
 
@@ -182,7 +181,7 @@ def get_kpi1_rating( ## RECORDAR CAMBIAR ESTO
 
 
 # KPI 2
-def get_kpi2_respuestas(reviews_google, business_google, categories_groups, state, target_state, target_group, target_year):
+def get_kpi2_respuestas(reviews_google, business_google, categories_groups, state, target_state, target_group, target_year, target_objetive):
     '''
     Calcula la calidad de las respuestas
     kpi_respuestas = (ratio respuestas/review * rango tiempo) + sentiment_resp promedio
@@ -190,77 +189,136 @@ def get_kpi2_respuestas(reviews_google, business_google, categories_groups, stat
     target_state(lista de str) = lista de estados elegidos por el usuario 
     target_group(lista de str) = lista de grupos de categorias elegidas por el usuario
     target_year(lista de enteros) = lista de años elegidos para su analsis 
+    target_objetive(float) = objetivo de aumento para aplicar a la variable 'kpi2_valor'
     '''
     # Elegimos el id del estado
     id_estado_elegidos = state[state['state'].apply(lambda x: x in target_state)]['state_id'].to_list()
 
-    #Filtramos los negocios por el estado elegido
+    # Filtramos los negocios por el estado elegido
     business_google = business_google[business_google['state_id'].apply(lambda x: x in id_estado_elegidos)]
 
-    #Filtramos por grupo de categorias
+    # Filtramos por grupo de categorías
     categories_groups = categories_groups[categories_groups['group'].apply(lambda x: x in target_group)]
 
-    #Filtramos los restaurantes por categoria
+    # Filtramos los restaurantes por categoría
     business_google = pd.merge(business_google, categories_groups[['gmap_id']], on='gmap_id')
 
-    #Filtramos las reviews
+    # Filtramos las reviews
     reviews_google = pd.merge(reviews_google, business_google[['gmap_id']], on='gmap_id')
 
-    #Cambiamos el tipo de dato de las fechas
+    # Cambiamos el tipo de dato de las fechas
     reviews_google['date'] = pd.to_datetime(reviews_google['date'])
     reviews_google['resp_date'] = pd.to_datetime(reviews_google['resp_date'])
 
-    #Filtramos por año
+    # Filtramos por año
     reviews_google = reviews_google[reviews_google['date'].dt.year.apply(lambda x: x in target_year)]
 
-    #Vemos los que tienen respuesta
+    # Vemos los que tienen respuesta
     try:
         con_respuesta = reviews_google['resp_sentiment'].value_counts().drop('0.0').sum()
     except KeyError:
         con_respuesta = len(reviews_google)
 
-    #Promedio de cuantas tienen respuesta
+    # Promedio de cuántas tienen respuesta
     try:
         ratio_resp_rev = con_respuesta / len(reviews_google) ########################
     except ZeroDivisionError:
         return print('No existe el año pedido')
 
-    #Diferencia de tiempo
-    rango_de_tiempo = (reviews_google[reviews_google['resp_sentiment']!= '0.0']['resp_date'] - reviews_google[reviews_google['resp_sentiment']!= '0.0']['date']).dt.total_seconds() / 3600
+    # Diferencia de tiempo
+    rango_de_tiempo = (reviews_google[reviews_google['resp_sentiment'] != '0.0']['resp_date'] - reviews_google[
+        reviews_google['resp_sentiment'] != '0.0']['date']).dt.total_seconds() / 3600
     rango_de_tiempo = rango_de_tiempo.apply(lambda x: abs(x)) ####################
 
-    #Sacamos el promedio del resp_sentiment
+    # Sacamos el promedio del resp_sentiment
     reviews_google['resp_sentiment'] = reviews_google['resp_sentiment'].astype(float)
     promedio_resp_sent = reviews_google[reviews_google['resp_sentiment'] != 0.0]['resp_sentiment'].mean() #######################
 
-    return round((ratio_resp_rev * rango_de_tiempo.mean()/100) + promedio_resp_sent, 2)
+    # Calcular el objetivo aplicado solo a kpi2_valor
+    objetivo_kpi2_valor = round((ratio_resp_rev * rango_de_tiempo.mean() / 100) + promedio_resp_sent, 2) * (1 + target_objetive)
+
+    # Crear el diccionario con los resultados
+    kpi2 = {
+        'kpi2_valor': round((ratio_resp_rev * rango_de_tiempo.mean() / 100) + promedio_resp_sent, 2),
+        'ratio_resp_rev': round(ratio_resp_rev, 2),
+        'rango_de_tiempo': round(rango_de_tiempo.mean(), 2),
+        'promedio_resp_sent': round(promedio_resp_sent, 2),
+        'objetivo_kpi2_valor': round(objetivo_kpi2_valor, 2)
+    }
+
+    return kpi2    
 
 
 
-# KPI 3
-def get_kpi3_retencion(df_rg):
+def get_kpi3_retencion(reviews_google, target_group, target_year, target_state, target_objetive):
     # Convertir 'date' al formato datetime
-    df_rg['date'] = pd.to_datetime(df_rg['date'], format='%Y-%m-%d %H:%M:%S.%f', errors='coerce')
+    reviews_google['date'] = pd.to_datetime(reviews_google['date'], format='%Y-%m-%d %H:%M:%S.%f', errors='coerce')
+
+    # Filtrar usuarios por el estado elegido
+    id_estado_elegidos = target_state[target_state['state'].apply(lambda x: x in target_state)]['state_id'].to_list()
+    reviews_google = reviews_google[reviews_google['state_id'].apply(lambda x: x in id_estado_elegidos)]
+
+    # Filtrar usuarios por el año elegido
+    reviews_google = reviews_google[reviews_google['date'].dt.year.apply(lambda x: x in target_year)]
 
     # Filtrar usuarios con más de 1 review
-    usuarios_repetidos = df_rg['user_id'][df_rg.groupby('user_id')['date'].transform('count') > 1].nunique()
+    usuarios_repetidos_before = reviews_google['user_id'][reviews_google.groupby('user_id')['date'].transform('count') > 1].nunique()
 
-    # Número total de usuarios distintos
-    usuarios_totales = df_rg['user_id'].nunique()
+    # Número total de usuarios distintos antes del objetivo
+    usuarios_totales_before = reviews_google['user_id'].nunique()
 
-    # Calcular la tasa de retención actual
-    tasa_retencion_actual = usuarios_repetidos / usuarios_totales
+    # Calcular la tasa de retención actual antes del objetivo
+    tasa_retencion_actual_before = usuarios_repetidos_before / usuarios_totales_before
 
-    # Calcular la tasa de retención objetivo (aumento del 5%)
-    tasa_retencion_objetivo = tasa_retencion_actual * 1.05
+    # Calcular la tasa de retención objetivo antes del cambio (aumento del target_objetive%)
+    tasa_retencion_objetivo_before = tasa_retencion_actual_before * (1 + target_objetive)
 
-    # Calcular el número adicional de usuarios repetidos necesarios para alcanzar el objetivo
-    usuarios_repetidos_necesarios = int(usuarios_totales * tasa_retencion_objetivo) - usuarios_repetidos
+    # Calcular el número adicional de usuarios repetidos necesarios antes del objetivo
+    usuarios_repetidos_necesarios_before = int(usuarios_totales_before * tasa_retencion_objetivo_before) - usuarios_repetidos_before
 
-    return tasa_retencion_actual, tasa_retencion_objetivo, usuarios_repetidos_necesarios
+    # Aplicar el aumento de objetivo
+    reviews_google['user_id'] += reviews_google['user_id'] * target_objetive
 
-# KPI 4
-def get_kpi4_influencia(df_uy):
+    # Filtrar usuarios con más de 1 review después del cambio
+    usuarios_repetidos_after = reviews_google['user_id'][reviews_google.groupby('user_id')['date'].transform('count') > 1].nunique()
+
+    # Número total de usuarios distintos después del cambio
+    usuarios_totales_after = reviews_google['user_id'].nunique()
+
+    # Calcular la tasa de retención actual después del cambio
+    tasa_retencion_actual_after = usuarios_repetidos_after / usuarios_totales_after
+
+    # Calcular la tasa de retención objetivo después del cambio (aumento del target_objetive%)
+    tasa_retencion_objetivo_after = tasa_retencion_actual_after * (1 + target_objetive)
+
+    # Calcular el número adicional de usuarios repetidos necesarios después del cambio
+    usuarios_repetidos_necesarios_after = int(usuarios_totales_after * tasa_retencion_objetivo_after) - usuarios_repetidos_after
+
+    # Crear un diccionario con los resultados
+    kpi3 = {
+        'tasa_retencion_actual_before': tasa_retencion_actual_before,
+        'tasa_retencion_objetivo_before': tasa_retencion_objetivo_before,
+        'usuarios_repetidos_necesarios_before': usuarios_repetidos_necesarios_before,
+        'tasa_retencion_actual_after': tasa_retencion_actual_after,
+        'tasa_retencion_objetivo_after': tasa_retencion_objetivo_after,
+        'usuarios_repetidos_necesarios_after': usuarios_repetidos_necesarios_after
+    }
+
+    return kpi3
+
+
+
+def get_kpi4_influencia(user_yelp, target_group, target_year, target_state, target_objetive):
+    # Filtrar usuarios por el grupo de categorías elegido
+    user_yelp = user_yelp[user_yelp['group'].apply(lambda x: x in target_group)]
+
+    # Filtrar usuarios por el estado elegido
+    id_estado_elegidos = target_state[target_state['state'].apply(lambda x: x in target_state)]['state_id'].to_list()
+    user_yelp = user_yelp[user_yelp['state_id'].apply(lambda x: x in id_estado_elegidos)]
+
+    # Filtrar usuarios por el año elegido
+    user_yelp = user_yelp[user_yelp['year'].apply(lambda x: x in target_year)]
+
     # Definir la función de rango de influencia
     def rango_influyente(cant_fans):
         if cant_fans < 10:
@@ -271,30 +329,63 @@ def get_kpi4_influencia(df_uy):
             return 2  # Alta influencia
 
     # Aplicar la función de influencia para crear la columna 'influence'
-    df_uy['influence'] = df_uy['review_count'].apply(rango_influyente)
+    user_yelp['influence'] = user_yelp['review_count'].apply(rango_influyente)
 
-    # Calcular la cantidad de usuarios en cada rango de influencia
-    usuarios_por_influencia = df_uy.groupby('influence').size().to_dict()
+    # Calcular la cantidad de usuarios en cada rango de influencia antes del objetivo
+    usuarios_por_influencia_before = user_yelp.groupby('influence').size().to_dict()
 
-    # Calcular los objetivos de aumento
-    objetivo_aumento_bajo = int(usuarios_por_influencia.get(0, 0) * 0.10)
-    objetivo_aumento_medio = int(usuarios_por_influencia.get(1, 0) * 0.01)
+    # Calcular los objetivos de aumento antes del cambio
+    objetivo_aumento_bajo_before = int(usuarios_por_influencia_before.get(0, 0) * target_objetive)
+    objetivo_aumento_medio_before = int(usuarios_por_influencia_before.get(1, 0) * target_objetive)
+
+    # Aplicar el aumento de objetivo
+    user_yelp['review_count'] += user_yelp['review_count'] * target_objetive
+
+    # Calcular la cantidad de usuarios en cada rango de influencia después del objetivo
+    usuarios_por_influencia_after = user_yelp.groupby('influence').size().to_dict()
+
+    # Calcular los objetivos de aumento después del cambio
+    objetivo_aumento_bajo_after = int(usuarios_por_influencia_after.get(0, 0) * target_objetive)
+    objetivo_aumento_medio_after = int(usuarios_por_influencia_after.get(1, 0) * target_objetive)
 
     # Mostrar los resultados en un diccionario
-    kpi5_metrics = {
-        'Usuarios por influencia': usuarios_por_influencia,
-        'Objetivo usuarios influyentes': objetivo_aumento_bajo,
-        'Objetivo usuarios muy influyentes': objetivo_aumento_medio
+    kpi4 = {
+        'Usuarios por influencia Before': usuarios_por_influencia_before,
+        'Objetivo usuarios influyentes Before': objetivo_aumento_bajo_before,
+        'Objetivo usuarios muy influyentes Before': objetivo_aumento_medio_before,
+        'Usuarios por influencia After': usuarios_por_influencia_after,
+        'Objetivo usuarios influyentes After': objetivo_aumento_bajo_after,
+        'Objetivo usuarios muy influyentes After': objetivo_aumento_medio_after
     }
 
-    return kpi5_metrics
+    return kpi4
 
 
 
 
 
 
-#### Recomendations #####
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+########################################################## Recomendations ##############################################################
+
 
 # Funcion que calcula la distancia entre dos punto en funcion de las coordenadas
 def get_distance_coord(lat1, lon1, lat2, lon2):
@@ -573,45 +664,3 @@ def get_recommendation_by_category(df_categories, target_state, category=None):
 
     return business_cat[['business_id', 'name', 'category', 'state', 'latitude', 'longitude', 'avg_stars']]
 
-
-def get_groups(df):
-    # Reemplaza 'restaurant' por cadena vacía, excepto cuando el nombre es 'restaurant'
-    df['name'] = df['name'].apply(lambda x: x.replace('restaurant', '') if x != 'restaurant' else x)
-
-    # Crea la columna 'group' y asigna el valor predeterminado 'general'
-    df['group'] = 'general'
-
-    # Asigna grupos basados en patrones en el nombre
-    df.loc[(df['name'].str.contains('caf')) | (df['name'].str.contains('cof')) | 
-           (df['name'].str.contains('brea')) | (df['name'].str.contains('tea')), 'group'] = 'coffess & breakfast'
-
-    df.loc[(df['name'].str.contains('bar')) & (~df['name'].str.contains('barb')) | 
-           (df['name'].str.contains('nigh')) | (df['name'].str.contains('pub')), 'group'] = 'bars & nightlife'
-
-    df.loc[
-        (df['name'].str.contains('burg') |
-         (df['name'].str.contains('fast') & ~df['name'].str.contains('break')) |
-         df['name'].str.contains('pizza') |
-         df['name'].str.contains('sandw') |
-         df['name'].str.contains('hot dog') |
-         df['name'].str.contains('takeou')),
-        'group'] = 'fast food'
-
-    df.loc[
-        (df['name'].str.contains('suhi') |
-         df['name'].str.contains('asian') |
-         df['name'].str.contains('japa') |
-         df['name'].str.contains('kore') |
-         df['name'].str.contains('mexi') |
-         df['name'].str.contains('eth') |
-         df['name'].str.contains('falafel') |
-         df['name'].str.contains('chilean') |
-         df['name'].str.contains('mongolian') |
-         df['name'].str.contains('polish') |
-         df['name'].str.contains('italian') |
-         df['name'].str.contains('british')),
-        'group'] = 'foreign'
-
-    df.loc[(df['name'].str.contains('veg')), 'group'] = 'veggie & vegetarian'
-
-    return df
