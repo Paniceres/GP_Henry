@@ -370,7 +370,7 @@ if selected=='Sobre nosotros':
         # Bruno
         col1.write('')
         if 'bruno_after_round.png' in files_content:
-            col1.image(files_content['bruno_after_round.png'])
+            col1.image(files_content['bruno_after_round.png'], width=250)
         col1.write('')
         col1.markdown('<span style="font-size: larger;">**Nombre:** Bruno Zenobio</span>', unsafe_allow_html=True)
         col1.markdown('<span style="font-size: larger;">**Rol:** Data engineer</span>', unsafe_allow_html=True)
@@ -380,7 +380,7 @@ if selected=='Sobre nosotros':
         # Damian
         col2.write('')
         if 'dami_after_round.png' in files_content:
-            col1.image(files_content['dami_after_round.png']) 
+            col2.image(files_content['dami_after_round.png'],width=250) 
         col2.write('')
         col2.markdown('<span style="font-size: larger;">**Nombre:** Damián Nicolás Albariño</span>', unsafe_allow_html=True)
         col2.markdown('<span style="font-size: larger;">**Rol:** Data science</span>', unsafe_allow_html=True)
@@ -390,7 +390,7 @@ if selected=='Sobre nosotros':
         # Lucio
         col3.write('')
         if 'lucio_after_round.png' in files_content:
-            col1.image(files_content['lucio_after_round.png']) 
+            col3.image(files_content['lucio_after_round.png'],width=250) 
         col3.write('')
         col3.markdown('<span style="font-size: larger;">**Nombre:** Lucio Paniceres</span>', unsafe_allow_html=True)
         col3.markdown('<span style="font-size: larger;">**Rol:** Data science</span>', unsafe_allow_html=True)
@@ -412,7 +412,7 @@ if selected=='Sobre nosotros':
 
         col2.write('')
         if 'jef_after_round.png' in files_content:
-            col1.image(files_content['jef_after_round.png']) 
+            col2.image(files_content['jef_after_round.png'],width=250)
         col2.write('')
         col2.markdown('<span style="font-size: larger;">**Nombre:** Jeferson Tonetto</span>', unsafe_allow_html=True)
         col2.markdown('<span style="font-size: larger;">**Rol:** Data analyst</span>', unsafe_allow_html=True)
@@ -421,7 +421,7 @@ if selected=='Sobre nosotros':
         
         col4.write('')
         if 'joni_after_round.png' in files_content:
-            col1.image(files_content['joni_after_round.png']) 
+            col4.image(files_content['joni_after_round.png'],width=250) 
         col4.write('')
         col4.markdown('<span style="font-size: larger;">**Nombre:** Jonathan Castillo</span>', unsafe_allow_html=True)
         col4.markdown('<span style="font-size: larger;">**Rol:** Data engineer</span>', unsafe_allow_html=True)
