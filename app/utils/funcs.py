@@ -19,6 +19,10 @@ import os.path
 route = os.path.dirname(__file__)
 
 
+
+
+
+
 def read_config(file_path = "../.streamlit/secrets.toml"):
     try:
         with open(file_path, "r") as file:
@@ -28,6 +32,10 @@ def read_config(file_path = "../.streamlit/secrets.toml"):
     except FileNotFoundError:
         return st.secrets
         
+
+
+
+
 
 @st.cache_data
 def read_dataset(db_route=None):
@@ -62,6 +70,15 @@ def read_dataset(db_route=None):
         print(f"{df_name}: {data_frames[df_name].shape}")
     return data_frames
 
+
+
+
+
+
+
+
+
+
 @st.cache_data
 def read_src(route):
     # Construct the path to the ~/src directory
@@ -88,6 +105,11 @@ def read_src(route):
 
     # Return the dictionary of file content
     return files_content
+
+
+
+
+
 
 def get_groups(df):
     # Reemplaza 'restaurant' por cadena vacía, excepto cuando el nombre es 'restaurant'
@@ -131,6 +153,18 @@ def get_groups(df):
 
     return df
 
+
+
+
+
+
+
+
+
+
+
+
+
 # ------------------------------------ KPI ------------------------------------------------
 
 # KPI 0
@@ -173,6 +207,13 @@ def get_groups(df):
 # KPI 1
 
 
+
+
+
+
+
+
+
 def get_kpi1_rating( ## RECORDAR CAMBIAR ESTO
         business, 
         groups, 
@@ -202,6 +243,16 @@ def get_kpi1_rating( ## RECORDAR CAMBIAR ESTO
     business = pd.merge(business, groups[['business_id']], on='business_id')
 
     return business[['name', 'latitude', 'longitude', 'avg_stars']]
+
+
+
+
+
+
+
+
+
+
 
 
 # KPI 2
@@ -274,6 +325,15 @@ def get_kpi2_respuestas(reviews_google, business_google, categories_groups, stat
 
 
 
+
+
+
+
+
+
+
+
+
 def get_kpi3_retencion(reviews_google, target_group, target_year, target_state, target_objetive):
     # Convertir 'date' al formato datetime
     reviews_google['date'] = pd.to_datetime(reviews_google['date'], format='%Y-%m-%d %H:%M:%S.%f', errors='coerce')
@@ -329,6 +389,14 @@ def get_kpi3_retencion(reviews_google, target_group, target_year, target_state, 
     }
 
     return kpi3
+
+
+
+
+
+
+
+
 
 
 def get_kpi4_influencia(user_yelp, target_group, target_year, target_state, target_objetive):
@@ -448,6 +516,13 @@ def get_distance_coord(lat1, lon1, lat2, lon2):
 
 
 
+
+
+
+
+
+
+
 #Funcion que a partir de un id de negocio y una lista ids retorna la distancia entre ese negocio y cada uno de los demas
 @st.cache_data
 def get_distance(business_google,business_yelp,business_id,business_id_list,rang=None):
@@ -491,6 +566,12 @@ def get_distance(business_google,business_yelp,business_id,business_id_list,rang
     #Aplico el filtro de distancia.
     business = business[business['distance']<filtro_distance]
     return business
+    
+    
+    
+    
+    
+    
     
     
     
@@ -577,6 +658,15 @@ def get_recommendation_business(business_google,business_yelp,df_categories,busi
     return business_cat
 
 
+
+
+
+
+
+
+
+
+
 #Funcion que recibe un business id userid o categoria y recomienda locales, tambien puede agregarse el rango en metros de distancia.
 def get_recommendation(df_user,states,df_categories,df_rg,df_ry,business_google,business_yelp,business_ids=None,user_id=None,category=None,distance=None,target_state=None):
     
@@ -659,6 +749,13 @@ def get_recommendation(df_user,states,df_categories,df_rg,df_ry,business_google,
    
 
     return business_cat.iloc[0:20]
+
+
+
+
+
+
+
 
 
 def get_recommendation_by_category(df_categories, target_state, category=None):
