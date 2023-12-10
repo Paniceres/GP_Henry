@@ -3,7 +3,7 @@ from streamlit_option_menu import option_menu
 import pandas as pd
 import toml
 import plotly.express as px
-from utils.funcs import read_config, pull_clean, get_kpi1_rating, get_kpi2_respuestas, get_kpi3_retencion, get_kpi4_influencia, get_recommendation, get_recommendation_business, get_groups
+from utils.funcs import read_config, read_dataset, read_src, get_kpi1_rating, get_kpi2_respuestas, get_kpi3_retencion, get_kpi4_influencia, get_recommendation, get_recommendation_business, get_groups
 import os.path
 
 
@@ -25,8 +25,8 @@ st.set_page_config(
     initial_sidebar_state="expanded")
 
 
-#Data Pull and Functions
-data_frames = pull_clean() 
+# Lectura de datasets
+data_frames = read_dataset() 
 
 states = data_frames.get('1_states.parquet')
 categories = data_frames.get('2_categories.parquet')
@@ -44,15 +44,18 @@ df_user = data_frames.get('user_categories')
 df_categories = data_frames.get('locales_categories')
 
 
-# Valores unicos
-unique_groups = groups_google['group'].unique()
+# Lectura de archivos
+files_content = read_src(route)
 
-unique_states = states['state'].unique().tolist()
+# Valores unicos
+unique_groups = groups_google['group'].unique() # grupos únicos
+
+unique_states = states['state'].unique().tolist() # estados únicos
 
 reviews_google['date'] = pd.to_datetime(reviews_google['date'])
-unique_years = reviews_google['date'].dt.year.unique()
+unique_years = reviews_google['date'].dt.year.unique() # años únicos
 
-categories_options = get_groups(categories)
+unique_categories = get_groups(categories) # categoría únicos
 
 # Concatenacion 
 business_both = pd.concat((business_google[['gmap_id','name', 'latitude','longitude' ,'avg_stars','state_id']].rename(columns={'gmap_id':'business_id'}), business_yelp[['business_id','name', 'latitude','longitude' ,'avg_stars','state_id']]), ignore_index=True)
@@ -80,8 +83,9 @@ with st.sidebar:
     )
 
     # Mostrar la imagen GIF en el sidebar
-    url_imagen_gif = os.path.join('..', 'src', 'location-maps.gif')
-    st.sidebar.image(url_imagen_gif, use_column_width=True)
+    if 'location-maps.gif' in files_content:
+        st.image(files_content['location-maps.gif'])
+
     
 #Introduccion
 if selected=="Introducción":
@@ -105,8 +109,9 @@ if selected=="Introducción":
                 En Quantyle Analytics, nos comprometemos con la calidad de nuestros análisis, la precisión en nuestras recomendaciones y el respaldo a aquellos que buscan tomar decisiones informadas en la industria gastronómica. Nuestro objetivo es brindar soluciones innovadoras y datos confiables para mejorar la experiencia del usuario y promover el éxito en el sector alimentario."""
                         )
         with col2:
-            url_imagen_gif = os.path.join( '..', 'src', 'data-analysis.gif')
-            st.image(url_imagen_gif, use_column_width=True) 
+                if 'data-analysis.gif' in files_content:
+                    st.image(files_content['data-analysis.gif'])
+
     st.divider()
 
     #Tutorial Video

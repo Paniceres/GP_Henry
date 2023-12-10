@@ -30,7 +30,7 @@ def read_config(file_path = "../.streamlit/secrets.toml"):
         
 
 @st.cache_data
-def pull_clean(db_route=None):
+def read_dataset(db_route=None):
     # Construir la ruta relativa al dataset
     db_route = os.path.join(route, '..', '..', 'datasets', 'processed', 'bd')
     # db_route = '../../datasets/processed/bd/'
@@ -62,8 +62,32 @@ def pull_clean(db_route=None):
         print(f"{df_name}: {data_frames[df_name].shape}")
     return data_frames
 
+@st.cache_data
+def read_src(route):
+    # Construct the path to the ~/src directory
+    src_directory = os.path.abspath(os.path.join(route, '..', 'src'))
 
+    # List all files in the ~/src directory
+    file_names = os.listdir(src_directory)
 
+    # Initialize an empty dictionary to store file content based on file names
+    files_content = {}
+
+    # Filter files based on allowed extensions (png, mp4, gif)
+    allowed_extensions = {'.png', '.mp4', '.gif'}
+    for file_name in file_names:
+        extension = os.path.splitext(file_name)[1]
+        if extension in allowed_extensions:
+            # Read the content of the file
+            file_path = os.path.join(src_directory, file_name)
+            with open(file_path, 'rb') as file:
+                content = file.read()
+
+            # Store the content in the dictionary
+            files_content[file_name] = content
+
+    # Return the dictionary of file content
+    return files_content
 
 def get_groups(df):
     # Reemplaza 'restaurant' por cadena vacía, excepto cuando el nombre es 'restaurant'
