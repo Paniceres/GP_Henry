@@ -365,28 +365,32 @@ if selected=='Sobre nosotros':
         col1.write('')
         col2.write('')
         col3.write('')
-        
-        
+               
         
         # Bruno
         col1.write('')
-        col1.image(os.path.join( '..', 'src', 'bruno_after_round.png'),width=250)
+        if 'bruno_after_round.png' in files_content:
+            col1.image(files_content['bruno_after_round.png'])
         col1.write('')
         col1.markdown('<span style="font-size: larger;">**Nombre:** Bruno Zenobio</span>', unsafe_allow_html=True)
         col1.markdown('<span style="font-size: larger;">**Rol:** Data engineer</span>', unsafe_allow_html=True)
         col1.markdown('<span style="font-size: larger;">**Contacto:** brunozenobio4@gmail.com</span>', unsafe_allow_html=True)
         col1.markdown('<span style="font-size: larger;">**LinkedIn:** [link](https://www.linkedin.com/in/brunozenobio/)</span>', unsafe_allow_html=True)
+        
         # Damian
         col2.write('')
-        col2.image(os.path.join( '..', 'src', 'dami_after_round.png'),width=250)
+        if 'dami_after_round.png' in files_content:
+            col1.image(files_content['dami_after_round.png']) 
         col2.write('')
         col2.markdown('<span style="font-size: larger;">**Nombre:** Damián Nicolás Albariño</span>', unsafe_allow_html=True)
         col2.markdown('<span style="font-size: larger;">**Rol:** Data science</span>', unsafe_allow_html=True)
         col2.markdown('<span style="font-size: larger;">**Contacto:** dami_colocar_mail@gmail.com</span>', unsafe_allow_html=True)
         col2.markdown('<span style="font-size: larger;">**LinkedIn:** [link](https://www.linkedin.com/in/dami%C3%A1n-nicol%C3%A1s-albari%C3%B1o-b03b9a1ab/)</span>', unsafe_allow_html=True)
+        
         # Lucio
         col3.write('')
-        col3.image(os.path.join( '..', 'src', 'lucio_after_round.png'),width=250)
+        if 'lucio_after_round.png' in files_content:
+            col1.image(files_content['lucio_after_round.png']) 
         col3.write('')
         col3.markdown('<span style="font-size: larger;">**Nombre:** Lucio Paniceres</span>', unsafe_allow_html=True)
         col3.markdown('<span style="font-size: larger;">**Rol:** Data science</span>', unsafe_allow_html=True)
@@ -407,7 +411,8 @@ if selected=='Sobre nosotros':
         col1,col2,col3,col4,col5,col6=st.columns(6)
 
         col2.write('')
-        col2.image(os.path.join( '..', 'src', 'jef_after_round.png'),width=250)
+        if 'jef_after_round.png' in files_content:
+            col1.image(files_content['jef_after_round.png']) 
         col2.write('')
         col2.markdown('<span style="font-size: larger;">**Nombre:** Jeferson Tonetto</span>', unsafe_allow_html=True)
         col2.markdown('<span style="font-size: larger;">**Rol:** Data analyst</span>', unsafe_allow_html=True)
@@ -415,7 +420,8 @@ if selected=='Sobre nosotros':
         col2.markdown('<span style="font-size: larger;">**LinkedIn:** [link](https://www.linkedin.com/in/jeferson-tonetto-mogollon-09ba311b0/)</span>', unsafe_allow_html=True)
         
         col4.write('')
-        col4.image(os.path.join( '..', 'src', 'joni_after_round.png'),width=250)
+        if 'joni_after_round.png' in files_content:
+            col1.image(files_content['joni_after_round.png']) 
         col4.write('')
         col4.markdown('<span style="font-size: larger;">**Nombre:** Jonathan Castillo</span>', unsafe_allow_html=True)
         col4.markdown('<span style="font-size: larger;">**Rol:** Data engineer</span>', unsafe_allow_html=True)
