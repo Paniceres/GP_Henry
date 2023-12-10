@@ -412,7 +412,7 @@ if selected=='Sobre nosotros':
 
         col2.write('')
         if 'jef_after_round.png' in files_content:
-            col2.image(files_content['jef_after_round.png'],width=250) 
+            col2.image(files_content['jef_after_round.png'],width=250)
         col2.write('')
         col2.markdown('<span style="font-size: larger;">**Nombre:** Jeferson Tonetto</span>', unsafe_allow_html=True)
         col2.markdown('<span style="font-size: larger;">**Rol:** Data analyst</span>', unsafe_allow_html=True)
