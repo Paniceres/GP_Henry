@@ -4,7 +4,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import seaborn as sns
 import os.path
-from funcs import read_config, pull_clean, get_kpi1_rating, get_kpi2_respuestas, get_kpi3_retencion, get_kpi4_influencia, get_recommendation
+from funcs import read_config, read_dataset, get_kpi1_rating, get_kpi2_respuestas, get_kpi3_retencion, get_kpi4_influencia, get_recommendation
 
 # Obtener la ruta del directorio del script actual
 # route = os.path.dirname(__file__)
@@ -12,7 +12,7 @@ from funcs import read_config, pull_clean, get_kpi1_rating, get_kpi2_respuestas,
 secrets = read_config()
 
 #Data Pull and Functions
-data_frames = pull_clean()
+data_frames = read_dataset()
  
 states = data_frames.get('1_states.parquet')
 categories = data_frames.get('2_categories.parquet')

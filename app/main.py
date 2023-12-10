@@ -3,7 +3,7 @@ from streamlit_option_menu import option_menu
 import pandas as pd
 import toml
 import plotly.express as px
-from utils.funcs import read_config, pull_clean, get_kpi1_rating, get_kpi2_respuestas, get_kpi3_retencion, get_kpi4_influencia, get_recommendation, get_recommendation_business, get_groups
+from utils.funcs import read_config, read_dataset, read_src, get_kpi1_rating, get_kpi2_respuestas, get_kpi3_retencion, get_kpi4_influencia, get_recommendation, get_recommendation_business, get_groups
 import os.path
 
 
@@ -25,8 +25,8 @@ st.set_page_config(
     initial_sidebar_state="expanded")
 
 
-#Data Pull and Functions
-data_frames = pull_clean() 
+# Lectura de datasets
+data_frames = read_dataset() 
 
 states = data_frames.get('1_states.parquet')
 categories = data_frames.get('2_categories.parquet')
@@ -44,17 +44,24 @@ df_user = data_frames.get('user_categories')
 df_categories = data_frames.get('locales_categories')
 
 
-# Valores unicos
-unique_groups = groups_google['group'].unique()
+# Lectura de archivos
+files_content = read_src(route)
 
-unique_states = states['state'].unique().tolist()
+# Valores unicos
+unique_groups = groups_google['group'].unique() # grupos únicos
+
+unique_states = states['state'].unique().tolist() # estados únicos
 
 reviews_google['date'] = pd.to_datetime(reviews_google['date'])
-unique_years = reviews_google['date'].dt.year.unique()
+unique_years = reviews_google['date'].dt.year.unique() # años únicos
 
-# groups = 
+unique_categories = get_groups(categories) # categoría únicos
+
+# Concatenacion 
 business_both = pd.concat((business_google[['gmap_id','name', 'latitude','longitude' ,'avg_stars','state_id']].rename(columns={'gmap_id':'business_id'}), business_yelp[['business_id','name', 'latitude','longitude' ,'avg_stars','state_id']]), ignore_index=True)
 groups_both = pd.concat((groups_google.rename(columns={'gmap_id':'business_id'}),groups_yelp), ignore_index=True)
+
+
 
 st.markdown("""
 <style>
@@ -76,8 +83,9 @@ with st.sidebar:
     )
 
     # Mostrar la imagen GIF en el sidebar
-    url_imagen_gif = os.path.join('..', 'src', 'location-maps.gif')
-    st.sidebar.image(url_imagen_gif, use_column_width=True)
+    if 'location-maps.gif' in files_content:
+        st.image(files_content['location-maps.gif'])
+
     
 #Introduccion
 if selected=="Introducción":
@@ -101,8 +109,9 @@ if selected=="Introducción":
                 En Quantyle Analytics, nos comprometemos con la calidad de nuestros análisis, la precisión en nuestras recomendaciones y el respaldo a aquellos que buscan tomar decisiones informadas en la industria gastronómica. Nuestro objetivo es brindar soluciones innovadoras y datos confiables para mejorar la experiencia del usuario y promover el éxito en el sector alimentario."""
                         )
         with col2:
-            url_imagen_gif = os.path.join( '..', 'src', 'data-analysis.gif')
-            st.image(url_imagen_gif, use_column_width=True) 
+                if 'data-analysis.gif' in files_content:
+                    st.image(files_content['data-analysis.gif'])
+
     st.divider()
 
     #Tutorial Video
@@ -115,34 +124,133 @@ if selected=="Introducción":
     
     
     
-    
+            
 # ------------------------------------ Comercial ---------------------------------------
-
-if selected=="Comercial":
+if selected == "Comercial":
     st.subheader('Seleccione su Criterio:')
-
-
     
-    target_state = st.multiselect(label='Selecciona estado:',options=unique_states,label_visibility='collapsed')
+    target_state = st.multiselect(label='Selecciona estado:', options=unique_states, label_visibility='collapsed')
     target_group = st.multiselect('Selecciona un grupo:', options=unique_groups)
     target_year = st.multiselect('Selecciona un año:', options=unique_years)
-    
-    loc_select=st.radio('Type',['Análisis', 'Mapa'],horizontal=True, label_visibility="collapsed")
-    
-    st.caption('Nota: Solo disponibilizados los estados criterio.')   
-        
-        
-    if loc_select=='Análisis':
-        
-        # Storytelling KPI 2
+    target_objetive = st.slider('Seleccione el objetivo de aumento:', min_value=0, max_value=20, value=5, step=1)
+
+    loc_select = st.radio('Type', ['Análisis', 'Mapa'], horizontal=True, label_visibility="collapsed")
+
+    st.caption('Nota: Solo disponibilizados los estados criterio.')
+
+    if loc_select == 'Análisis':
+
         st.subheader('Analizando la Calidad de las Respuestas')
 
-        # KPI 2
-        kpi2_result = get_kpi2_respuestas(reviews_google, business_google, groups_google, states, target_state, target_group, target_year)
+        # ----------------------------------------- KPI 2
 
+        # kpi2_result = get_kpi2_respuestas(reviews_google, business_google, groups_google, states, target_state, target_group, target_year, target_objetive)
+        kpi2_result = {'kpi2_valor': 1.6}  
 
-        st.write(f'El resultado del KPI 2 es: {kpi2_result}')
+        # Obtener el valor del KPI 2
+        kpi2_valor = kpi2_result.get('kpi2_valor', 0)
 
+        # Definir los cuartiles
+        quartiles = [0.49, 0.99, 1.49, float('inf')]
+
+        # Obtener el cuartil del valor actual
+        current_quartile = sum(kpi2_valor > q for q in quartiles)
+
+        # Definir colores para cada cuartil
+        colors = ["red", "yellow", "green", "darkgreen"]
+
+        # Obtener el color según el cuartil
+        color_value = colors[current_quartile]
+
+        # Crear un contenedor colapsable con estilo
+        with st.expander("Calidad de respuestas:", expanded=True):
+            # Establecer el fondo del contenedor según el color elegido
+            st.markdown(
+                f"""
+                <style>
+                    div.st-expander > div.st-expander-content {{
+                        background: {color_value};
+                        padding: 10px;
+                        border-radius: 5px;
+                    }}
+                </style>
+                """,
+                unsafe_allow_html=True,
+            )
+            card_style = f"background: {color_value}; padding: 15px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);"
+
+            # Establecer el estilo del texto dentro de la tarjeta
+            text_style = f"font-size: 32px; color: white; text-align: center;"
+
+            # Crear la tarjeta con el estilo
+            st.markdown(
+                f"""
+                <div style="{card_style}">
+                    <p style="{text_style}">El resultado del KPI 2 es: {kpi2_valor}</p>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+
+        # ----------------------------------------- KPI 3
+
+        # Obtener métricas para KPI 3
+        tasa_retencion_actual_before, tasa_retencion_objetivo_before, usuarios_repetidos_necesarios_before, \
+        tasa_retencion_actual_after, tasa_retencion_objetivo_after, usuarios_repetidos_necesarios_after = get_kpi3_retencion(
+            reviews_google, target_group, target_year, target_state, target_objetive)
+
+        # Crear un contenedor colapsable con estilo para KPI 3
+        with st.expander("Tasa de Retención (KPI 3):", expanded=True):
+            # Establecer el estilo del texto dentro de la tarjeta
+            text_style_kpi3 = f"font-size: 20px; color: black; text-align: left;"
+
+            # Crear la tarjeta con el estilo para KPI 3
+            st.markdown(
+                f"""
+                <div style="padding: 15px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+                    <p style="{text_style_kpi3}">
+                        Tasa de retención actual antes del cambio: {tasa_retencion_actual_before:.2%}<br>
+                        Tasa de retención objetivo antes del cambio: {tasa_retencion_objetivo_before:.2%}<br>
+                        Usuarios repetidos necesarios antes del cambio: {usuarios_repetidos_necesarios_before}<br>
+                        Tasa de retención actual después del cambio: {tasa_retencion_actual_after:.2%}<br>
+                        Tasa de retención objetivo después del cambio: {tasa_retencion_objetivo_after:.2%}<br>
+                        Usuarios repetidos necesarios después del cambio: {usuarios_repetidos_necesarios_after}
+                    </p>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )            
+
+        # ----------------------------------------- KPI 4
+        
+        
+        
+        # Obtener métricas para KPI 4
+        kpi4_metrics = get_kpi4_influencia(user_yelp)
+
+        # Crear un contenedor colapsable con estilo para KPI 4
+        with st.expander("Influencia de Usuarios (KPI 4):", expanded=True):
+            # Establecer el estilo del texto dentro de la tarjeta
+            text_style_kpi4 = f"font-size: 20px; color: black; text-align: left;"
+
+            # Crear la tarjeta con el estilo para KPI 4
+            st.markdown(
+                f"""
+                <div style="padding: 15px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+                    <p style="{text_style_kpi4}">
+                        Usuarios por influencia: {kpi4_metrics['Usuarios por influencia']}<br>
+                        Objetivo usuarios influyentes: {kpi4_metrics['Objetivo usuarios influyentes']}<br>
+                        Objetivo usuarios muy influyentes: {kpi4_metrics['Objetivo usuarios muy influyentes']}
+                    </p>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )        
+            
+            
+            
+            
+            
 
     if loc_select == 'Mapa':
         # Crear el mapa de calor con Plotly Express
@@ -259,28 +367,32 @@ if selected=='Sobre nosotros':
         col1.write('')
         col2.write('')
         col3.write('')
-        
-        
+               
         
         # Bruno
         col1.write('')
-        col1.image(os.path.join( '..', 'src', 'bruno_after_round.png'),width=250)
+        if 'bruno_after_round.png' in files_content:
+            col1.image(files_content['bruno_after_round.png'], width=250)
         col1.write('')
         col1.markdown('<span style="font-size: larger;">**Nombre:** Bruno Zenobio</span>', unsafe_allow_html=True)
         col1.markdown('<span style="font-size: larger;">**Rol:** Data engineer</span>', unsafe_allow_html=True)
         col1.markdown('<span style="font-size: larger;">**Contacto:** brunozenobio4@gmail.com</span>', unsafe_allow_html=True)
         col1.markdown('<span style="font-size: larger;">**LinkedIn:** [link](https://www.linkedin.com/in/brunozenobio/)</span>', unsafe_allow_html=True)
+        
         # Damian
         col2.write('')
-        col2.image(os.path.join( '..', 'src', 'dami_after_round.png'),width=250)
+        if 'dami_after_round.png' in files_content:
+            col2.image(files_content['dami_after_round.png'],width=250) 
         col2.write('')
         col2.markdown('<span style="font-size: larger;">**Nombre:** Damián Nicolás Albariño</span>', unsafe_allow_html=True)
         col2.markdown('<span style="font-size: larger;">**Rol:** Data science</span>', unsafe_allow_html=True)
         col2.markdown('<span style="font-size: larger;">**Contacto:** dami_colocar_mail@gmail.com</span>', unsafe_allow_html=True)
         col2.markdown('<span style="font-size: larger;">**LinkedIn:** [link](https://www.linkedin.com/in/dami%C3%A1n-nicol%C3%A1s-albari%C3%B1o-b03b9a1ab/)</span>', unsafe_allow_html=True)
+        
         # Lucio
         col3.write('')
-        col3.image(os.path.join( '..', 'src', 'lucio_after_round.png'),width=250)
+        if 'lucio_after_round.png' in files_content:
+            col3.image(files_content['lucio_after_round.png'],width=250) 
         col3.write('')
         col3.markdown('<span style="font-size: larger;">**Nombre:** Lucio Paniceres</span>', unsafe_allow_html=True)
         col3.markdown('<span style="font-size: larger;">**Rol:** Data science</span>', unsafe_allow_html=True)
@@ -301,7 +413,8 @@ if selected=='Sobre nosotros':
         col1,col2,col3,col4,col5,col6=st.columns(6)
 
         col2.write('')
-        col2.image(os.path.join( '..', 'src', 'jef_after_round.png'),width=250)
+        if 'jef_after_round.png' in files_content:
+            col2.image(files_content['jef_after_round.png'],width=250)
         col2.write('')
         col2.markdown('<span style="font-size: larger;">**Nombre:** Jeferson Tonetto</span>', unsafe_allow_html=True)
         col2.markdown('<span style="font-size: larger;">**Rol:** Data analyst</span>', unsafe_allow_html=True)
@@ -309,7 +422,8 @@ if selected=='Sobre nosotros':
         col2.markdown('<span style="font-size: larger;">**LinkedIn:** [link](https://www.linkedin.com/in/jeferson-tonetto-mogollon-09ba311b0/)</span>', unsafe_allow_html=True)
         
         col4.write('')
-        col4.image(os.path.join( '..', 'src', 'joni_after_round.png'),width=250)
+        if 'joni_after_round.png' in files_content:
+            col4.image(files_content['joni_after_round.png'],width=250) 
         col4.write('')
         col4.markdown('<span style="font-size: larger;">**Nombre:** Jonathan Castillo</span>', unsafe_allow_html=True)
         col4.markdown('<span style="font-size: larger;">**Rol:** Data engineer</span>', unsafe_allow_html=True)
