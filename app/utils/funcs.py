@@ -279,8 +279,8 @@ def get_kpi3_retencion(reviews_google, target_group, target_year, target_state, 
     reviews_google['date'] = pd.to_datetime(reviews_google['date'], format='%Y-%m-%d %H:%M:%S.%f', errors='coerce')
 
     # Filtrar usuarios por el estado elegido
-    id_estado_elegidos = target_state[target_state['state'].apply(lambda x: x in target_state)]['state_id'].to_list()
-    reviews_google = reviews_google[reviews_google['state_id'].apply(lambda x: x in id_estado_elegidos)]
+    id_estado_elegidos = [state_id for state_id in target_state if state_id in reviews_google['state_id'].unique()]
+    reviews_google = reviews_google[reviews_google['state_id'].isin(id_estado_elegidos)]
 
     # Filtrar usuarios por el año elegido
     reviews_google = reviews_google[reviews_google['date'].dt.year.apply(lambda x: x in target_year)]
@@ -329,7 +329,6 @@ def get_kpi3_retencion(reviews_google, target_group, target_year, target_state, 
     }
 
     return kpi3
-
 
 
 def get_kpi4_influencia(user_yelp, target_group, target_year, target_state, target_objetive):
