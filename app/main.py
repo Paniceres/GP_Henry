@@ -76,7 +76,7 @@ st.markdown("""
 with st.sidebar:
     selected = option_menu(
         'Quantyle analytics',
-        ["Introducción", 'Comercial', '¿Dónde comer?', 'Sobre nosotros'],
+        ["Introducción", 'Comercial', 'Nuestras sugerencias',  'Sobre nosotros'],
         icons=['play-btn', 'search', 'search', 'info-circle'],
         menu_icon='intersect',
         default_index=0
@@ -272,51 +272,38 @@ if selected == "Comercial":
 
 
 # ------------------------------------ Donde comer ---------------------------------------
-if selected=='¿Dónde comer?':
+if selected=='Nuestras sugerencias':
+    st.title("Descubre tus opciones ")
     
-    target_state = st.multiselect(label='Selecciona estado:',options=states['state'].values.tolist())  ########, default=states['state'].values.tolist())   
+    target_state = st.multiselect(label='Seleccione estado:',options=states['state'].values.tolist())  ########, default=states['state'].values.tolist())   
      
-     
-    selection_type = st.radio('Selecciona tipo:', ['Categoría', 'Restaurante','Usuario'])
+    
+    selection_type = st.radio('Seleccione tipo de busuqeda:', ['Restaurante', 'Categoría'])
     
     if selection_type == 'Categoría': 
-        target_group = st.multiselect('Selecciona un grupo:', options=unique_groups)  ##, default=unique_groups)
+        target_group = st.multiselect('Seleccione un grupo:', options=unique_groups)  ##, default=unique_groups)
         # Filtrar por categorías asociadas al grupo seleccionado
         #categories_options = groups[groups['group'].isin(target_group)]['name'].tolist()
         # categories_options = set(categories['name'].tolist())
 
         categories_options = categories_options[categories_options['group'].apply(lambda x: x in target_group)]['name'].to_list()
         
-        target_category = st.multiselect('Selecciona una categoría:', options=categories_options)
+        target_category = st.multiselect('Seleccione una categoría:', options=categories_options)
         target_distance = None 
         target_business = None  
-        user_id = None
     elif selection_type == 'Restaurante' :
-        user_id = None
         options_with_none_1 = business_google['name'].tolist()
         options_with_none_2 = business_yelp['name'].tolist()
         options_with_none = options_with_none_1 + options_with_none_2
-        target_business_s = st.selectbox('Selecciona un restaurante:', options=options_with_none, index=0)
+        target_business_s = st.selectbox('Seleccione un restaurante:', options=options_with_none)
         if target_business_s in options_with_none_1:
             target_business = business_google[business_google['name']==target_business_s]['gmap_id'].iloc[0]
         elif target_business_s in options_with_none_2:
             target_business = business_yelp[business_yelp['name']==target_business_s]['business_id'].iloc[0]
         if target_business:
             target_category = None
-            target_distance = st.slider("Selecciona la distancia (kilometros):", min_value=1, max_value=5000, value=500, step=5)
-            
-    """else:
-        target_distance = None 
-        target_business = None
-        target_category = None
-        options_with_none_1 = user_google['name'].tolist()
-        options_with_none_2 = user_yelp['name'].tolist()
-        options_with_none = options_with_none_1
-        target_user = st.selectbox('Selecciona un restaurante:', options=options_with_none, index=0)
-        if target_user in options_with_none_1:
-            user_id = user_google[user_google['name']==target_user]['user_id'].iloc[0]
-        elif target_user in options_with_none_2:
-            user_id = user_yelp[user_yelp['name']==target_user]['user_id'].iloc[0]"""
+            target_distance = st.slider("Seleccione la distancia (kilometros):", min_value=1, max_value=500, value=500, step=5)
+
     loc_select=st.radio('Type',['Recomendación'],horizontal=True, label_visibility="collapsed")
     
     if loc_select == 'Recomendación':
@@ -324,11 +311,12 @@ if selected=='¿Dónde comer?':
         # Puedes ajustar los parámetros según tu función get_recommendation
         df_recommendation = get_recommendation(business_google=business_google,states=states,business_yelp=business_yelp,
                                                 df_user=df_user,df_categories=df_categories,target_state=target_state,distance=target_distance,
-                                                df_rg=reviews_google,df_ry=reviews_yelp,category=target_category,business_ids=target_business,user_id=user_id)
+                                                df_rg=reviews_google,df_ry=reviews_yelp,category=target_category,business_ids=target_business)
 
         # Crear el mapa de calor con Plotly Express
-        fig = px.scatter_mapbox(df_recommendation, lat="latitude", lon="longitude", hover_name="name", hover_data=["avg_stars", "category"],
-                        color_discrete_sequence=["fuchsia"], zoom=3, height=300)
+       
+        fig = px.scatter_mapbox(df_recommendation, lat="latitude", lon="longitude",     color="avg_stars",hover_name='name'
+                  ,hover_data={'category': True},color_continuous_scale=px.colors.cyclical.IceFire, size_max=15, zoom=10)
         fig.update_layout(mapbox_style="open-street-map")
         fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
         st.plotly_chart(fig)
