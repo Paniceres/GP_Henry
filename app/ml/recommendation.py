@@ -133,9 +133,18 @@ def get_recommendation_business(business_id,rang=None):
 
     #Genero las recomendaciones.
     
-    _, indices = knn_model.kneighbors(categories_procceced[idx])
+    distances, indices = knn_model.kneighbors(categories_procceced[idx])
 
-    recommendations = local_categories['business_id'].iloc[indices[0,1:]]  # Excluye el propio restaurante
+    # Excluye el propio restaurante y ordena las recomendaciones por distancia (invierte el orden)
+    sorted_indices = indices[0, 1:]
+    sorted_distances = distances[0, 1:]
+    sorted_recommendations = sorted(zip(sorted_indices, sorted_distances), key=lambda x: x[1])
+
+    # Extrae los índices ordenados
+    sorted_indices = [index for index, distance in sorted_recommendations]
+
+    # Obtén las recomendaciones ordenadas por score
+    recommendations = local_categories['business_id'].iloc[sorted_indices]
     
     
     #Calcula las distancias entre las recomendaciones y el local.
@@ -234,7 +243,7 @@ def recommendation(business_ids=None,user_id=None,category=None,distance=None,ta
 
     
     
-print(recommendation(business_ids='0x88e6c1013c5ae48d:0xddb42499c3b3df55'))
+print(recommendation(category='seafood')[['name','category']])
 
 
 

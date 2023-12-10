@@ -30,7 +30,7 @@ data_frames = pull_clean()
 
 states = data_frames.get('1_states.parquet')
 categories = data_frames.get('2_categories.parquet')
-# user_yelp = data_frames.get('3_user_yelp.parquet')
+user_yelp = data_frames.get('3_user_yelp.parquet')
 user_google = data_frames.get('4_user_google.parquet')
 business_google = data_frames.get('5_business_google.parquet')
 business_yelp = data_frames.get('6_business_yelp.parquet')
@@ -182,7 +182,9 @@ if selected=='¿Dónde comer?':
         target_category = st.multiselect('Selecciona una categoría:', options=categories_options)
         target_distance = None 
         target_business = None  
-    else:
+        user_id = None
+    elif selection_type == 'Restaurante' :
+        user_id = None
         options_with_none_1 = business_google['name'].tolist()
         options_with_none_2 = business_yelp['name'].tolist()
         options_with_none = options_with_none_1 + options_with_none_2
@@ -194,14 +196,27 @@ if selected=='¿Dónde comer?':
         if target_business:
             target_category = None
             target_distance = st.slider("Selecciona la distancia (kilometros):", min_value=1, max_value=5000, value=500, step=5)
+            
+    """else:
+        target_distance = None 
+        target_business = None
+        target_category = None
+        options_with_none_1 = user_google['name'].tolist()
+        options_with_none_2 = user_yelp['name'].tolist()
+        options_with_none = options_with_none_1
+        target_user = st.selectbox('Selecciona un restaurante:', options=options_with_none, index=0)
+        if target_user in options_with_none_1:
+            user_id = user_google[user_google['name']==target_user]['user_id'].iloc[0]
+        elif target_user in options_with_none_2:
+            user_id = user_yelp[user_yelp['name']==target_user]['user_id'].iloc[0]"""
     loc_select=st.radio('Type',['Recomendación'],horizontal=True, label_visibility="collapsed")
-
+    
     if loc_select == 'Recomendación':
         # Realizar la recomendación según las opciones seleccionadas
         # Puedes ajustar los parámetros según tu función get_recommendation
         df_recommendation = get_recommendation(business_google=business_google,states=states,business_yelp=business_yelp,
                                                 df_user=df_user,df_categories=df_categories,target_state=target_state,distance=target_distance,
-                                                df_rg=reviews_google,df_ry=reviews_yelp,category=target_category,business_ids=target_business)
+                                                df_rg=reviews_google,df_ry=reviews_yelp,category=target_category,business_ids=target_business,user_id=user_id)
 
         # Crear el mapa de calor con Plotly Express
         fig = px.scatter_mapbox(df_recommendation, lat="latitude", lon="longitude", hover_name="name", hover_data=["avg_stars", "category"],
