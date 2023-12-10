@@ -76,7 +76,7 @@ with st.sidebar:
     )
 
     # Mostrar la imagen GIF en el sidebar
-    url_imagen_gif = os.path.join(route, '..', 'src', 'location-maps.gif')
+    url_imagen_gif = os.path.join('..', 'src', 'location-maps.gif')
     st.sidebar.image(url_imagen_gif, use_column_width=True)
     
 #Introduccion
@@ -101,7 +101,7 @@ if selected=="Introducción":
                 En Quantyle Analytics, nos comprometemos con la calidad de nuestros análisis, la precisión en nuestras recomendaciones y el respaldo a aquellos que buscan tomar decisiones informadas en la industria gastronómica. Nuestro objetivo es brindar soluciones innovadoras y datos confiables para mejorar la experiencia del usuario y promover el éxito en el sector alimentario."""
                         )
         with col2:
-            url_imagen_gif = os.path.join(route, '..', 'src', 'data-analysis.gif')
+            url_imagen_gif = os.path.join( '..', 'src', 'data-analysis.gif')
             st.image(url_imagen_gif, use_column_width=True) 
     st.divider()
 
@@ -213,38 +213,128 @@ if selected=='Nuestras sugerencias':
         fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
         st.plotly_chart(fig)
 
+
+
+
 # ------------------------------------ Sobre nosotros ---------------------------------------
 
 if selected=='Sobre nosotros':
     
     with st.container():
-        col1,col2,col3,col4,col5 = st.columns(5)
-        col2.markdown("<h1 style='text-align: center;'>Desarrolladores</h1>", unsafe_allow_html=True)
+        st.markdown("<h1 style='text-align: center;'>Desarrolladores</h1>", unsafe_allow_html=True)
     
+
+    def mostrar_imagen_con_estilo(imagen_path, width=150):
+        estilo = f"""
+            <style>
+                .imagen-container {{
+                    display: flex;
+                    justify-content: center;
+                    padding: 20px; /* Ajusta el espacio alrededor de la imagen */
+                }}
+                .imagen-container img {{
+                    width: {width}px; /* Establece el ancho deseado para la imagen */
+                    height: auto;
+                    border-radius: 10px; /* Agrega bordes redondeados */
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Agrega sombra */
+                }}
+            </style>
+            <div class="imagen-container">
+                <img src="{imagen_path}">
+            </div>
+        """
+        st.markdown(estilo, unsafe_allow_html=True)
+    
+    with st.container():
+        col1,col2,col3=st.columns(3)
+        
+        col1.write('')
+        col2.write('')
+        col3.write('')
+        col1.write('')
+        col2.write('')
+        col3.write('')
+        col1.write('')
+        col2.write('')
+        col3.write('')
+        
+        
+        
+        # Bruno
+        col1.write('')
+        col1.image(os.path.join( '..', 'src', 'bruno_after_round.png'),width=250)
+        col1.write('')
+        col1.markdown('<span style="font-size: larger;">**Nombre:** Bruno Zenobio</span>', unsafe_allow_html=True)
+        col1.markdown('<span style="font-size: larger;">**Rol:** Data engineer</span>', unsafe_allow_html=True)
+        col1.markdown('<span style="font-size: larger;">**Contacto:** brunozenobio4@gmail.com</span>', unsafe_allow_html=True)
+        col1.markdown('<span style="font-size: larger;">**LinkedIn:** [link](https://www.linkedin.com/in/brunozenobio/)</span>', unsafe_allow_html=True)
+        # Damian
+        col2.write('')
+        col2.image(os.path.join( '..', 'src', 'dami_after_round.png'),width=250)
+        col2.write('')
+        col2.markdown('<span style="font-size: larger;">**Nombre:** Damián Nicolás Albariño</span>', unsafe_allow_html=True)
+        col2.markdown('<span style="font-size: larger;">**Rol:** Data science</span>', unsafe_allow_html=True)
+        col2.markdown('<span style="font-size: larger;">**Contacto:** dami_colocar_mail@gmail.com</span>', unsafe_allow_html=True)
+        col2.markdown('<span style="font-size: larger;">**LinkedIn:** [link](https://www.linkedin.com/in/dami%C3%A1n-nicol%C3%A1s-albari%C3%B1o-b03b9a1ab/)</span>', unsafe_allow_html=True)
+        # Lucio
+        col3.write('')
+        col3.image(os.path.join( '..', 'src', 'lucio_after_round.png'),width=250)
+        col3.write('')
+        col3.markdown('<span style="font-size: larger;">**Nombre:** Lucio Paniceres</span>', unsafe_allow_html=True)
+        col3.markdown('<span style="font-size: larger;">**Rol:** Data science</span>', unsafe_allow_html=True)
+        col3.markdown('<span style="font-size: larger;">**Contacto:** paniceres73@gmail.com</span>', unsafe_allow_html=True)
+        col3.markdown('<span style="font-size: larger;">**LinkedIn:** [link](https://www.linkedin.com/in/paniceres-lucio/)</span>', unsafe_allow_html=True)
+ 
+        col1.write('')
+        col2.write('')
+        col3.write('')
+        col1.write('')
+        col2.write('')
+        col3.write('')
+        col1.write('')
+        col2.write('')
+        col3.write('')
+        
+    with st.container():
+        col1,col2,col3,col4,col5,col6=st.columns(6)
+
+        col2.write('')
+        col2.image(os.path.join( '..', 'src', 'jef_after_round.png'),width=250)
+        col2.write('')
+        col2.markdown('<span style="font-size: larger;">**Nombre:** Jeferson Tonetto</span>', unsafe_allow_html=True)
+        col2.markdown('<span style="font-size: larger;">**Rol:** Data analyst</span>', unsafe_allow_html=True)
+        col2.markdown('<span style="font-size: larger;">**Contacto:** jeff_mail@gmail.com</span>', unsafe_allow_html=True)
+        col2.markdown('<span style="font-size: larger;">**LinkedIn:** [link](https://www.linkedin.com/in/jeferson-tonetto-mogollon-09ba311b0/)</span>', unsafe_allow_html=True)
+        
+        col4.write('')
+        col4.image(os.path.join( '..', 'src', 'joni_after_round.png'),width=250)
+        col4.write('')
+        col4.markdown('<span style="font-size: larger;">**Nombre:** Jonathan Castillo</span>', unsafe_allow_html=True)
+        col4.markdown('<span style="font-size: larger;">**Rol:** Data engineer</span>', unsafe_allow_html=True)
+        col4.markdown('<span style="font-size: larger;">**Contacto:** jonathancastillo185@gmail.com</span>', unsafe_allow_html=True)
+        col4.markdown('<span style="font-size: larger;">**LinkedIn:** [link](https://www.linkedin.com/in/jonathan-castillo-7962b7163/)</span>', unsafe_allow_html=True)
+
+
 
     with st.container():
-        col2,col2,col3,col4,col5=st.columns(5)
-
-        col2.write('### Nombre:')
-        col3.write('### Bruno')
-        col2.write('**Rol:**    Data engineer')
+        col1,col2,col3=st.columns(3)
+        col2.write('')
+        col2.write('')
+        col2.write('')
+        col2.write('')
         
-        col2.write('**Contacto:**    brunozenobio4@gmail.com or [linkedin](https://www.linkedin.com/in/brunozenobio/)')
-        
-        
-        col4.image(r'../src/logo.png')
-
-
-
-
-
     st.divider()
     
-    st.title('Data')
-    #st.subheader('All data for this project was publicly sourced from:')
+    
+    with st.container():
+        st.markdown("<h1 style='text-align: center;'>Fuente</h1>", unsafe_allow_html=True)
+        
+    
     col1,col2=st.columns(2)
     col1.subheader('Fuentes')
     col2.subheader('Enlaces')
+    
+    
     with st.container():
         col1,col2=st.columns(2)
         #col1.image('census_graphic.png',width=150)
@@ -253,10 +343,7 @@ if selected=='Sobre nosotros':
     
     with st.container():
         col1,col2=st.columns(2)
-        #col1.image('cdc.png',width=150)
         col1.write(':blue[Yelp]')
     
     with st.container():
         col1,col2=st.columns(2)
-        #col1.image('hud.png',width=150)\
-        col1.write(':blue[U.S. Dept Housing and Urban Development]')
