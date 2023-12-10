@@ -177,8 +177,7 @@ if selected=='Nuestras sugerencias':
         # Filtrar por categorías asociadas al grupo seleccionado
         #categories_options = groups[groups['group'].isin(target_group)]['name'].tolist()
         # categories_options = set(categories['name'].tolist())
-        categories_options = get_groups(categories)
-        categories_options = categories_options[categories_options['group'].apply(lambda x: x in target_group)]['name'].to_list()
+        categories_options = unique_categories[unique_categories['group'].apply(lambda x: x in target_group)]['name'].to_list()
         
         target_category = st.multiselect('Seleccione una categoría:', options=categories_options)
         target_distance = None 
