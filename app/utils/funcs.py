@@ -361,7 +361,7 @@ def get_kpi3_retencion(business, reviews_google, reviews_yelp, states, categorie
     # Creamos df con resultados
     # reviews = reviews.groupby('business_id').value_counts().reset_index(drop=False)
     reviews['count'] = reviews.groupby('business_id')['user_id'].transform('count')
-
+    
     clientes_unicos = reviews[reviews['count'] == 1].shape[0]
     clientes_frecuentes = reviews[(reviews['count'] > 1) & (reviews['count'] < 5)].shape[0]
     clientes_muy_frecuentes = reviews[reviews['count'] > 4].shape[0]
@@ -390,60 +390,57 @@ def get_kpi3_retencion(business, reviews_google, reviews_yelp, states, categorie
 
 
 
-def get_kpi4_influencia(user_yelp, target_group, target_year, target_state, target_objetive):
-    # Filtrar usuarios por el grupo de categorías elegido
-    user_yelp = user_yelp[user_yelp['group'].apply(lambda x: x in target_group)]
 
-    # Filtrar usuarios por el estado elegido
-    id_estado_elegidos = target_state[target_state['state'].apply(lambda x: x in target_state)]['state_id'].to_list()
-    user_yelp = user_yelp[user_yelp['state_id'].apply(lambda x: x in id_estado_elegidos)]
 
-    # Filtrar usuarios por el año elegido
-    user_yelp = user_yelp[user_yelp['year'].apply(lambda x: x in target_year)]
+def get_kpi4_influencia(user_yelp, business, reviews_yelp, states, categories_groups, target_group, target_year, target_state, target_objetive):
+    # Elegimos el id del estado
+    id_estado_elegidos = states[states['state'].apply(lambda x: x in target_state)]['state_id'].to_list()
 
-    # Definir la función de rango de influencia
-    def rango_influyente(cant_fans):
-        if cant_fans < 10:
-            return 0  # Bajo influencia
-        elif cant_fans < 100:
-            return 1  # Moderada influencia
-        else:
-            return 2  # Alta influencia
+    #Filtramos los negocios por el estado elegido
+    business = business[business['state_id'].apply(lambda x: x in id_estado_elegidos)]
 
-    # Aplicar la función de influencia para crear la columna 'influence'
-    user_yelp['influence'] = user_yelp['review_count'].apply(rango_influyente)
+    #Filtramos por grupo de categorias
+    categories_groups = categories_groups[categories_groups['group'].apply(lambda x: x in target_group)]
 
-    # Calcular la cantidad de usuarios en cada rango de influencia antes del objetivo
-    usuarios_por_influencia_before = user_yelp.groupby('influence').size().to_dict()
+    #Filtramos los restaurantes por categoria
+    business = pd.merge(business, categories_groups[['business_id']], on='business_id')
 
-    # Calcular los objetivos de aumento antes del cambio
-    objetivo_aumento_bajo_before = int(usuarios_por_influencia_before.get(0, 0) * target_objetive)
-    objetivo_aumento_medio_before = int(usuarios_por_influencia_before.get(1, 0) * target_objetive)
+    #Filtramos las reviews
+    reviews_yelp = pd.merge(reviews_yelp, business[['business_id']], on='business_id')
 
-    # Aplicar el aumento de objetivo
-    user_yelp['review_count'] += user_yelp['review_count'] * target_objetive
+    #Cambiamos el tipo de dato de las fechas
+    reviews_yelp['date'] = pd.to_datetime(reviews_yelp['date'])
 
-    # Calcular la cantidad de usuarios en cada rango de influencia después del objetivo
-    usuarios_por_influencia_after = user_yelp.groupby('influence').size().to_dict()
+    #Filtramos por año
+    reviews_yelp = reviews_yelp[reviews_yelp['date'].dt.year.apply(lambda x: x <= max(target_year))]
 
-    # Calcular los objetivos de aumento después del cambio
-    objetivo_aumento_bajo_after = int(usuarios_por_influencia_after.get(0, 0) * target_objetive)
-    objetivo_aumento_medio_after = int(usuarios_por_influencia_after.get(1, 0) * target_objetive)
+    reviews_yelp = reviews_yelp[['user_id', 'business_id']]
 
-    # Mostrar los resultados en un diccionario
+    #Filtrar por restuarant
+    reviews_yelp = reviews_yelp.merge(business[['business_id']])
+    
+    # reviews_yelp = reviews_yelp['user_id'].value_counts().reset_index(drop=False)
+    reviews_yelp['count'] = reviews_yelp.groupby('business_id')['user_id'].transform('count')
+    
+    nada_influyente = reviews_yelp[reviews_yelp['count'] < 20].shape[0]
+    poco_influyente = reviews_yelp[(reviews_yelp['count'] >= 20) & (reviews_yelp['count'] < 80)].shape[0]
+    muy_influyente = reviews_yelp[reviews_yelp['count'] >= 80].shape[0]
+
+    nada_influyente_objetivo = (nada_influyente, ceil((nada_influyente * target_objetive) / 100 + nada_influyente))
+    poco_influyente_objetivo = (poco_influyente, ceil((poco_influyente * target_objetive) / 100 + poco_influyente))
+    muy_influyente_objetivo = (muy_influyente, ceil((muy_influyente * target_objetive) / 100 + muy_influyente))
+
+
     kpi4 = {
-        'Usuarios por influencia Before': usuarios_por_influencia_before,
-        'Objetivo usuarios influyentes Before': objetivo_aumento_bajo_before,
-        'Objetivo usuarios muy influyentes Before': objetivo_aumento_medio_before,
-        'Usuarios por influencia After': usuarios_por_influencia_after,
-        'Objetivo usuarios influyentes After': objetivo_aumento_bajo_after,
-        'Objetivo usuarios muy influyentes After': objetivo_aumento_medio_after
+        'Usuarios por influencia': nada_influyente,
+        'Usuarios influyentes': poco_influyente,
+        'Usuarios muy influyentes': muy_influyente,
+        'Objetivo Usuarios por influencia': nada_influyente_objetivo,
+        'Objetivo usuarios influyentes': poco_influyente_objetivo,
+        'Objetivo usuarios muy influyentes': muy_influyente_objetivo
     }
 
     return kpi4
-
-
-
 
 
 
