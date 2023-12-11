@@ -387,7 +387,7 @@ if selected=='Sobre nosotros':
         col2.write('')
         col2.markdown('<span style="font-size: larger;">**Nombre:** Damián Nicolás Albariño</span>', unsafe_allow_html=True)
         col2.markdown('<span style="font-size: larger;">**Rol:** Data science</span>', unsafe_allow_html=True)
-        col2.markdown('<span style="font-size: larger;">**Contacto:** dami_colocar_mail@gmail.com</span>', unsafe_allow_html=True)
+        col2.markdown('<span style="font-size: larger;">**Contacto:** damianalbarino@hotmail.com</span>', unsafe_allow_html=True)
         col2.markdown('<span style="font-size: larger;">**LinkedIn:** [link](https://www.linkedin.com/in/dami%C3%A1n-nicol%C3%A1s-albari%C3%B1o-b03b9a1ab/)</span>', unsafe_allow_html=True)
         
         # Lucio
