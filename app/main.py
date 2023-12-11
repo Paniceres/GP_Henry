@@ -127,6 +127,7 @@ if selected=="Introducción":
             
 # ------------------------------------ Comercial ---------------------------------------
 if selected == "Comercial":
+    st.title('C')
     st.subheader('Seleccione su Criterio:')
     
     target_state = st.multiselect(label='Selecciona estado:', options=unique_states, label_visibility='collapsed')
@@ -140,7 +141,7 @@ if selected == "Comercial":
 
     if loc_select == 'Análisis':
 
-        st.subheader('Analizando la Calidad de las Respuestas')
+        st.subheader('Analizando la Calidad de las Respuestas:')
 
         # ----------------------------------------- KPI 2
 
@@ -195,7 +196,7 @@ if selected == "Comercial":
 
         # ----------------------------------------- KPI 3
 
-        st.subheader('Analizando clientes unicos, frecuentes y muy frecuentes')  ## Modificar
+        st.subheader('Analizando la Retención de Clientes:')  ## Modificar
 
 
         # Obtener métricas para KPI 3
@@ -222,7 +223,7 @@ if selected == "Comercial":
 
         # ----------------------------------------- KPI 4
         
-        
+        st.subheader('')
         
         # Obtener métricas para KPI 4
         kpi4_metrics = get_kpi4_influencia(user_yelp)
