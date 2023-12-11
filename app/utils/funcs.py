@@ -7,7 +7,7 @@ import toml
 
 
 
-from math import radians, sin, cos, sqrt, atan2
+from math import radians, sin, cos, sqrt, atan2, ceil
 from sklearn.neighbors import NearestNeighbors
 from sklearn.feature_extraction.text import TfidfVectorizer
 import pickle
@@ -47,16 +47,16 @@ def read_dataset(db_route=None):
     file_names = [
         '1_states.parquet.gz',
         '2_categories.parquet.gz',
-        # '3_user_yelp.parquet.gz',
+        '3_user_yelp.parquet.gz',
         '4_user_google.parquet.gz',
         '5_business_google.parquet.gz',
         '6_business_yelp.parquet.gz',
         '7_categories_google.parquet.gz',
-        # '8_categories_yelp.parquet.gz',
+        '8_categories_yelp.parquet.gz',
         '9_reviews_google.parquet.gz',
-        # '10_reviews_yelp.parquet.gz',
+        '10_reviews_yelp.parquet.gz',
         '11_grupo_de_categorias_google.parquet.gz',
-        # '12_grupo_de_categorias_yelp.parquet.gz',
+        '12_grupo_de_categorias_yelp.parquet.gz',
         'user_categories.parquet',
         'locales_categories.parquet'
     ]
@@ -328,70 +328,60 @@ def get_kpi2_respuestas(reviews_google, business_google, categories_groups, stat
 
 
 
+def get_kpi3_retencion(business, reviews_google, reviews_yelp, states, categories_groups,  target_group, target_year, target_state, target_objetive):
+    # Elegimos el id del estado
+    id_estado_elegidos = states[states['state'].apply(lambda x: x in target_state)]['state_id'].to_list()
 
+    #Filtramos los negocios por el estado elegido
+    business = business[business['state_id'].apply(lambda x: x in id_estado_elegidos)]
 
+    #Filtramos por grupo de categorias
+    categories_groups = categories_groups[categories_groups['group'].apply(lambda x: x in target_group)]
 
+    #Filtramos los restaurantes por categoria
+    business = pd.merge(business, categories_groups[['business_id']], on='business_id')
 
+    #Cambiamos el tipo de dato de las fechas
+    reviews_google['date'] = pd.to_datetime(reviews_google['date'])
+    reviews_yelp['date'] = pd.to_datetime(reviews_yelp['date'])
 
-
-def get_kpi3_retencion(reviews_google, target_group, target_year, target_state, target_objetive):
-    # Convertir 'date' al formato datetime
-    reviews_google['date'] = pd.to_datetime(reviews_google['date'], format='%Y-%m-%d %H:%M:%S.%f', errors='coerce')
-
-    # Filtrar usuarios por el estado elegido
-    id_estado_elegidos = [state_id for state_id in target_state if state_id in reviews_google['state_id'].unique()]
-    reviews_google = reviews_google[reviews_google['state_id'].isin(id_estado_elegidos)]
-
-    # Filtrar usuarios por el año elegido
+    #Filtramos por año
     reviews_google = reviews_google[reviews_google['date'].dt.year.apply(lambda x: x in target_year)]
+    reviews_yelp = reviews_yelp[reviews_yelp['date'].dt.year.apply(lambda x: x in target_year)]
 
-    # Filtrar usuarios con más de 1 review
-    usuarios_repetidos_before = reviews_google['user_id'][reviews_google.groupby('user_id')['date'].transform('count') > 1].nunique()
+    reviews_google = reviews_google[['user_id','gmap_id']]
+    reviews_google = reviews_google.rename(columns = {'gmap_id':'business_id'})
+    reviews_yelp = reviews_yelp[['user_id', 'business_id']]
 
-    # Número total de usuarios distintos antes del objetivo
-    usuarios_totales_before = reviews_google['user_id'].nunique()
+    reviews = pd.concat([reviews_google,reviews_yelp], ignore_index=True)
+    
+    #Filtrar por restuarant
+    reviews = reviews.merge(business[['business_id']])
 
-    # Calcular la tasa de retención actual antes del objetivo
-    tasa_retencion_actual_before = usuarios_repetidos_before / usuarios_totales_before
+    # Creamos df con resultados
+    reviews = reviews.groupby('business_id').value_counts().reset_index(drop=False)
 
-    # Calcular la tasa de retención objetivo antes del cambio (aumento del target_objetive%)
-    tasa_retencion_objetivo_before = tasa_retencion_actual_before * (1 + target_objetive)
+    clientes_unicos = reviews[reviews['count'] == 1].shape[0]
+    clientes_frecuentes = reviews[(reviews['count'] > 1) & (reviews['count'] < 5)].shape[0]
+    clientes_muy_frecuentes = reviews[reviews['count'] > 4].shape[0]
 
-    # Calcular el número adicional de usuarios repetidos necesarios antes del objetivo
-    usuarios_repetidos_necesarios_before = int(usuarios_totales_before * tasa_retencion_objetivo_before) - usuarios_repetidos_before
+    objetivo_cu = ceil((clientes_unicos * target_objetive)/ 100 + clientes_unicos)
+    objetivo_f = ceil((clientes_frecuentes * target_objetive)/ 100 + clientes_frecuentes)
+    objetivo_mf = ceil((clientes_muy_frecuentes * target_objetive)/ 100 + clientes_muy_frecuentes)
+    
+    if objetivo_f == 0:
+        objetivo_f = 1
+    
+    if objetivo_mf == 0:
+        objetivo_mf = 1
+    
+    clientes_unicos = (clientes_unicos, objetivo_cu)
 
-    # Aplicar el aumento de objetivo
-    reviews_google['user_id'] += reviews_google['user_id'] * target_objetive
+    clientes_frecuentes = (clientes_frecuentes, objetivo_f)
 
-    # Filtrar usuarios con más de 1 review después del cambio
-    usuarios_repetidos_after = reviews_google['user_id'][reviews_google.groupby('user_id')['date'].transform('count') > 1].nunique()
+    clientes_muy_frecuentes = (clientes_muy_frecuentes, objetivo_mf)
 
-    # Número total de usuarios distintos después del cambio
-    usuarios_totales_after = reviews_google['user_id'].nunique()
-
-    # Calcular la tasa de retención actual después del cambio
-    tasa_retencion_actual_after = usuarios_repetidos_after / usuarios_totales_after
-
-    # Calcular la tasa de retención objetivo después del cambio (aumento del target_objetive%)
-    tasa_retencion_objetivo_after = tasa_retencion_actual_after * (1 + target_objetive)
-
-    # Calcular el número adicional de usuarios repetidos necesarios después del cambio
-    usuarios_repetidos_necesarios_after = int(usuarios_totales_after * tasa_retencion_objetivo_after) - usuarios_repetidos_after
-
-    # Crear un diccionario con los resultados
-    kpi3 = {
-        'tasa_retencion_actual_before': tasa_retencion_actual_before,
-        'tasa_retencion_objetivo_before': tasa_retencion_objetivo_before,
-        'usuarios_repetidos_necesarios_before': usuarios_repetidos_necesarios_before,
-        'tasa_retencion_actual_after': tasa_retencion_actual_after,
-        'tasa_retencion_objetivo_after': tasa_retencion_objetivo_after,
-        'usuarios_repetidos_necesarios_after': usuarios_repetidos_necesarios_after
-    }
-
-    return kpi3
-
-
-
+    return  clientes_unicos , clientes_frecuentes, clientes_muy_frecuentes
 
 
 
@@ -745,6 +735,8 @@ def get_recommendation(df_user,states,df_categories,df_rg,df_ry,business_google,
         df = pd.concat([df_rg,df_ry])
         business_cat = business_cat[business_cat['business_id'].isin(df[df['user_id']!=user_id]['business_id'])]
     business_cat.drop_duplicates(subset='business_id',inplace=True)
+    
+    
 
    
 
