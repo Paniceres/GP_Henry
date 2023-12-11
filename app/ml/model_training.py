@@ -85,11 +85,22 @@ lambda text: ' '.join(
 local_categories['processed'] = local_categories['processed'].apply(lambda x:'restaur' if x == '' else x)
 
 local_categories = local_categories[['business_id','name','processed']]
+
+category_weights = {'restaur': 0.001, 'food': 0.001, 'shopping': 0.2}
+
+# Se aplican los pesos
+local_categories['weighted_categories'] = local_categories['processed'].apply(
+        lambda x: ' '.join([str(category_weights.get(word, 1.0)) + ' ' + word for word in x.split()])
+    )
+
+
 local_categories.to_parquet('./datasets/processed/bd/locales_categories.parquet') # Guardo el dataset util
 
 
+
+
 tfidf_vectorizer = TfidfVectorizer()
-tfidf_matrix = tfidf_vectorizer.fit_transform(local_categories['processed'])
+tfidf_matrix = tfidf_vectorizer.fit_transform(local_categories['weighted_categories'])
 
 
 with open('./app/ml/tfidf_matrix.pkl', 'wb') as file:
@@ -109,7 +120,7 @@ with open('./app/ml/modelo_knn.pkl', 'wb') as file:
     
 #### Data frame para buscar al categoria mas recurrente en un usuario
 
-df_rg = pd.read_parquet('./datasets/processed/bd/9_reviews_google.parquet.gz',columns=['user_id','gmap_id','sentiment'])
+"""df_rg = pd.read_parquet('./datasets/processed/bd/9_reviews_google.parquet.gz',columns=['user_id','gmap_id','sentiment'])
 df_rg.rename(columns=({'gmap_id':'business_id'}),inplace=True)
 df_ry = pd.read_parquet('./datasets/processed/bd/10_reviews_yelp.parquet.gz',columns=['user_id','business_id','sentiment'])
 df = pd.concat([df_rg,df_ry])
@@ -124,4 +135,4 @@ df.groupby('user_id').agg({
     'categories_id':'count',
     'name':'first'
     
-}).reset_index().to_parquet('./datasets/processed/bd/user_categories.parquet')
+}).reset_index().to_parquet('./datasets/processed/bd/user_categories.parquet')"""

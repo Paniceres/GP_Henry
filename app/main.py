@@ -274,8 +274,13 @@ if selected=='Nuestras sugerencias':
     st.title("Descubre tus opciones ")
     
     target_state = st.multiselect(label='Seleccione estado:',options=states['state'].values.tolist())  ########, default=states['state'].values.tolist())   
-     
-    
+    if target_state:
+        state_id = states[states['state'].isin(target_state)]['state_id'].tolist()
+        business_google_state = business_google[business_google['state_id'].isin(state_id)]
+        business_yelp_state = business_yelp[business_yelp['state_id'].isin(state_id)]
+    else:
+        business_google_state = business_google
+        business_yelp_state = business_yelp
     selection_type = st.radio('Seleccione tipo de busuqeda:', ['Restaurante', 'Categoría'])
     
     if selection_type == 'Categoría': 
@@ -283,16 +288,15 @@ if selected=='Nuestras sugerencias':
         # Filtrar por categorías asociadas al grupo seleccionado
         #categories_options = groups[groups['group'].isin(target_group)]['name'].tolist()
         # categories_options = set(categories['name'].tolist())
-        
-        categories_options = get_groups(categories)
-        categories_options = categories_options[categories_options['group'].apply(lambda x: x in target_group)]['name'].to_list()
+        categories_options = unique_categories[unique_categories['group'].apply(lambda x: x in target_group)]['name'].to_list()
         
         target_category = st.multiselect('Seleccione una categoría:', options=categories_options)
         target_distance = None 
         target_business = None  
     elif selection_type == 'Restaurante' :
-        options_with_none_1 = business_google['name'].tolist()
-        options_with_none_2 = business_yelp['name'].tolist()
+        
+        options_with_none_1 = business_google_state['name'].tolist()
+        options_with_none_2 = business_yelp_state['name'].tolist()
         options_with_none = options_with_none_1 + options_with_none_2
         target_business_s = st.selectbox('Seleccione un restaurante:', options=options_with_none)
         if target_business_s in options_with_none_1:
