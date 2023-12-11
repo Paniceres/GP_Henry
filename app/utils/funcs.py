@@ -426,10 +426,10 @@ def get_kpi4_influencia(user_yelp, business, reviews_yelp, states, categories_gr
     poco_influyente = reviews_yelp[(reviews_yelp['count'] >= 20) & (reviews_yelp['count'] < 80)].shape[0]
     muy_influyente = reviews_yelp[reviews_yelp['count'] >= 80].shape[0]
 
-    nada_influyente_objetivo = (nada_influyente, ceil((nada_influyente * target_objetive) / 100 + nada_influyente))
-    poco_influyente_objetivo = (poco_influyente, ceil((poco_influyente * target_objetive) / 100 + poco_influyente))
-    muy_influyente_objetivo = (muy_influyente, ceil((muy_influyente * target_objetive) / 100 + muy_influyente))
-
+    nada_influyente_objetivo = ceil((nada_influyente * target_objetive) / 100 + nada_influyente)
+    poco_influyente_objetivo = ceil((poco_influyente * target_objetive) / 100 + poco_influyente)
+    muy_influyente_objetivo = ceil((muy_influyente * target_objetive) / 100 + muy_influyente)
+    
 
     kpi4 = {
         'Usuarios por influencia': nada_influyente,
