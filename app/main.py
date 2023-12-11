@@ -58,7 +58,7 @@ unique_years = reviews_google['date'].dt.year.unique() # años únicos
 unique_categories = get_groups(categories) # categoría únicos
 
 # Concatenacion 
-business_both = pd.concat((business_google[['gmap_id','name', 'latitude','longitude' ,'avg_stars','state_id']].rename(columns={'gmap_id':'business_id'}), business_yelp[['business_id','name', 'latitude','longitude' ,'avg_stars','state_id']]), ignore_index=True)
+business_both = pd.concat((business_google[['gmap_id','name', 'latitude','longitude' ,'avg_stars','state_id',]].rename(columns={'gmap_id':'business_id'}), business_yelp[['business_id','name', 'latitude','longitude' ,'avg_stars','state_id']]), ignore_index=True)
 groups_both = pd.concat((groups_google.rename(columns={'gmap_id':'business_id'}),groups_yelp), ignore_index=True)
 
 
@@ -132,7 +132,6 @@ if selected == "Comercial":
     target_state = st.multiselect(label='Selecciona estado:', options=unique_states, label_visibility='collapsed')
     target_group = st.multiselect('Selecciona un grupo:', options=unique_groups)
     target_year = st.multiselect('Selecciona un año:', options=unique_years)
-    target_objetive = st.slider('Seleccione el objetivo de aumento:', min_value=0, max_value=20, value=5, step=1)
 
     loc_select = st.radio('Type', ['Análisis', 'Mapa'], horizontal=True, label_visibility="collapsed")
 
@@ -194,27 +193,26 @@ if selected == "Comercial":
 
         # ----------------------------------------- KPI 3
 
+        st.subheader('Analizando clientes unicos, frecuentes y muy frecuentes')  ## Modificar
+
+        target_objetive = st.slider('Seleccione el objetivo de aumento:', min_value=0, max_value=20, value=5, step=1)
+
         # Obtener métricas para KPI 3
-        tasa_retencion_actual_before, tasa_retencion_objetivo_before, usuarios_repetidos_necesarios_before, \
-        tasa_retencion_actual_after, tasa_retencion_objetivo_after, usuarios_repetidos_necesarios_after = get_kpi3_retencion(
-            reviews_google, target_group, target_year, target_state, target_objetive)
+        cu, cf, cmy = get_kpi3_retencion(business = business_both, reviews_google = reviews_google, reviews_yelp = reviews_yelp, states = states, categories_groups = groups_both, target_group = target_group, target_year = target_year, target_state = target_state, target_objetive = target_objetive)
 
         # Crear un contenedor colapsable con estilo para KPI 3
-        with st.expander("Tasa de Retención (KPI 3):", expanded=True):
+        with st.expander(f"Tasa de Retención (KPI 3) {target_year}:", expanded=True):
             # Establecer el estilo del texto dentro de la tarjeta
-            text_style_kpi3 = f"font-size: 20px; color: black; text-align: left;"
+            text_style_kpi3 = f"font-size: 20px; color: white; text-align: left;"
 
             # Crear la tarjeta con el estilo para KPI 3
             st.markdown(
                 f"""
                 <div style="padding: 15px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
                     <p style="{text_style_kpi3}">
-                        Tasa de retención actual antes del cambio: {tasa_retencion_actual_before:.2%}<br>
-                        Tasa de retención objetivo antes del cambio: {tasa_retencion_objetivo_before:.2%}<br>
-                        Usuarios repetidos necesarios antes del cambio: {usuarios_repetidos_necesarios_before}<br>
-                        Tasa de retención actual después del cambio: {tasa_retencion_actual_after:.2%}<br>
-                        Tasa de retención objetivo después del cambio: {tasa_retencion_objetivo_after:.2%}<br>
-                        Usuarios repetidos necesarios después del cambio: {usuarios_repetidos_necesarios_after}
+                        <br>Clientes unicos: {cu[0]} ----> Objetivo para el proximo año: {cu[1]}
+                        <br>Clientes frecuentes: {cf[0]} ----> Objetivo para el proximo año: {cf[1]}
+                        <br>Clientes muy frecuentes: {cmy[0]} ----> Objetivo para el proximo año: {cmy[1]}
                     </p>
                 </div>
                 """,
