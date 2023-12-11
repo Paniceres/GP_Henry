@@ -132,7 +132,8 @@ if selected == "Comercial":
     target_state = st.multiselect(label='Selecciona estado:', options=unique_states, label_visibility='collapsed')
     target_group = st.multiselect('Selecciona un grupo:', options=unique_groups)
     target_year = st.multiselect('Selecciona un año:', options=unique_years)
-
+    target_objetive = st.slider('Seleccione el objetivo de aumento:', min_value=0, max_value=20, value=5, step=1)
+    
     loc_select = st.radio('Type', ['Análisis', 'Mapa'], horizontal=True, label_visibility="collapsed")
 
     st.caption('Nota: Solo disponibilizados los estados criterio.')
@@ -143,12 +144,13 @@ if selected == "Comercial":
 
         # ----------------------------------------- KPI 2
 
-        # kpi2_result = get_kpi2_respuestas(reviews_google, business_google, groups_google, states, target_state, target_group, target_year, target_objetive)
-        kpi2_result = {'kpi2_valor': 1.6}  
+        kpi2_result = get_kpi2_respuestas(reviews_google, business_google, groups_google, states, target_state, target_group, target_year, target_objetive)
+        # kpi2_result = {'kpi2_valor': 1.6}  
 
         # Obtener el valor del KPI 2
         kpi2_valor = kpi2_result.get('kpi2_valor', 0)
-
+        objetivo_kpi2_valor = kpi2_result.get('objetivo_kpi2_valor')
+        
         # Definir los cuartiles
         quartiles = [0.49, 0.99, 1.49, float('inf')]
 
@@ -179,7 +181,7 @@ if selected == "Comercial":
             card_style = f"background: {color_value}; padding: 15px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);"
 
             # Establecer el estilo del texto dentro de la tarjeta
-            text_style = f"font-size: 32px; color: white; text-align: center;"
+            text_style = f"font-size: 32px; color: black; text-align: center;"
 
             # Crear la tarjeta con el estilo
             st.markdown(
@@ -195,7 +197,6 @@ if selected == "Comercial":
 
         st.subheader('Analizando clientes unicos, frecuentes y muy frecuentes')  ## Modificar
 
-        target_objetive = st.slider('Seleccione el objetivo de aumento:', min_value=0, max_value=20, value=5, step=1)
 
         # Obtener métricas para KPI 3
         cu, cf, cmy = get_kpi3_retencion(business = business_both, reviews_google = reviews_google, reviews_yelp = reviews_yelp, states = states, categories_groups = groups_both, target_group = target_group, target_year = target_year, target_state = target_state, target_objetive = target_objetive)
@@ -255,7 +256,6 @@ if selected == "Comercial":
         df_rating = get_kpi1_rating(business_both, groups_both, states, target_group, target_state)
         
         px.set_mapbox_access_token(mapbox_token)
-        map_style = "mapbox://styles/mapbox/light-v10" 
         fig = px.density_mapbox(df_rating, lat='latitude', lon='longitude', z='avg_stars',
                                 radius=10, center=dict(lat=37.0902, lon=-95.7129),
                                 zoom=3, mapbox_style="open-street-map",
