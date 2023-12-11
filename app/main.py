@@ -317,6 +317,10 @@ if selected=='Nuestras sugerencias':
         df_recommendation = get_recommendation(business_google=business_google,states=states,business_yelp=business_yelp,
                                                 df_user=df_user,df_categories=df_categories,target_state=target_state,distance=target_distance,
                                                 df_rg=reviews_google,df_ry=reviews_yelp,category=target_category,business_ids=target_business)
+        if df_recommendation.shape[0] == 0:
+            df_recommendation = get_recommendation(business_google=business_google,states=states,business_yelp=business_yelp,
+                                                df_user=df_user,df_categories=df_categories,target_state=target_state,distance=3000,
+                                                df_rg=reviews_google,df_ry=reviews_yelp,category=target_category,business_ids=target_business)
 
         # Crear el mapa de calor con Plotly Express
        

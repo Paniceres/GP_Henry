@@ -745,6 +745,8 @@ def get_recommendation(df_user,states,df_categories,df_rg,df_ry,business_google,
         df = pd.concat([df_rg,df_ry])
         business_cat = business_cat[business_cat['business_id'].isin(df[df['user_id']!=user_id]['business_id'])]
     business_cat.drop_duplicates(subset='business_id',inplace=True)
+    
+    
 
    
 
