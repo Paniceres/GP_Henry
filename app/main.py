@@ -280,6 +280,9 @@ if selected=='Nuestras sugerencias':
         state_id = states[states['state'].isin(target_state)]['state_id'].tolist()
         business_google_state = business_google[business_google['state_id'].isin(state_id)]
         business_yelp_state = business_yelp[business_yelp['state_id'].isin(state_id)]
+    else:
+        business_google_state = business_google
+        business_yelp_state = business_yelp
     selection_type = st.radio('Seleccione tipo de busuqeda:', ['Restaurante', 'Categoría'])
     
     if selection_type == 'Categoría': 
@@ -294,8 +297,8 @@ if selected=='Nuestras sugerencias':
         target_business = None  
     elif selection_type == 'Restaurante' :
         
-        options_with_none_1 = business_google['name'].tolist()
-        options_with_none_2 = business_yelp['name'].tolist()
+        options_with_none_1 = business_google_state['name'].tolist()
+        options_with_none_2 = business_yelp_state['name'].tolist()
         options_with_none = options_with_none_1 + options_with_none_2
         target_business_s = st.selectbox('Seleccione un restaurante:', options=options_with_none)
         if target_business_s in options_with_none_1:
