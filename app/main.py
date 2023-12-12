@@ -145,7 +145,6 @@ if selected == "Comercial":
 
     if loc_select == 'Análisis':
 
-        
 
         # ----------------------------------------- KPI 2
 
