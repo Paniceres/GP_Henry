@@ -360,12 +360,18 @@ def get_kpi3_retencion(business, reviews_google, reviews_yelp, states, categorie
     reviews = reviews.merge(business[['business_id']])
 
     # Creamos df con resultados
-    reviews = reviews.groupby('business_id').value_counts().value_counts()
+    # reviews = reviews.groupby('business_id').value_counts().value_counts()
     # reviews['count'] = reviews.groupby('business_id')['user_id'].transform('count')
-    
+    '''
     clientes_unicos = reviews[0:1].sum()
     clientes_frecuentes = reviews[1:5].sum()
-    clientes_muy_frecuentes = reviews[5:].sum()
+    clientes_muy_frecuentes = reviews[5:].sum()'''
+
+    reviews = reviews.groupby('business_id').value_counts().reset_index(drop=False)
+
+    clientes_unicos = reviews[reviews['count'] == 1].shape[0]
+    clientes_frecuentes = reviews[(reviews['count'] > 1) & (reviews['count'] < 5)].shape[0]
+    clientes_muy_frecuentes = reviews[reviews['count'] > 4].shape[0]
 
     objetivo_cu = ceil((clientes_unicos * target_objetive)/ 100 + clientes_unicos)
     objetivo_f = ceil((clientes_frecuentes * target_objetive)/ 100 + clientes_frecuentes)
@@ -420,15 +426,15 @@ def get_kpi4_influencia(business, reviews_yelp, states, categories_groups, targe
     #Filtrar por restuarant
     reviews_yelp = reviews_yelp.merge(business[['business_id']])
     
-    reviews_yelp = reviews_yelp['user_id'].value_counts().value_counts()
+    reviews_yelp = reviews_yelp['user_id'].value_counts().reset_index(drop= False)
 
-    # nada_influyente = reviews_yelp[reviews_yelp['count'] < 20].shape[0]
-    # poco_influyente = reviews_yelp[(reviews_yelp['count'] >= 20) & (reviews_yelp['count'] < 80)].shape[0]
-    # muy_influyente = reviews_yelp[reviews_yelp['count'] >= 80].shape[0]
+    nada_influyente = reviews_yelp[reviews_yelp['count'] < 20].shape[0]
+    poco_influyente = reviews_yelp[(reviews_yelp['count'] >= 20) & (reviews_yelp['count'] < 80)].shape[0]
+    muy_influyente = reviews_yelp[reviews_yelp['count'] >= 80].shape[0]
 
-    nada_influyente = reviews_yelp[0:20].sum()
-    poco_influyente = reviews_yelp[20:80].sum()
-    muy_influyente = reviews_yelp[80:].sum()
+    # nada_influyente = reviews_yelp[0:20].sum()
+    # poco_influyente = reviews_yelp[20:80].sum()
+    # muy_influyente = reviews_yelp[80:].sum()
 
     objetivo_nada_influyente =  ceil((nada_influyente * target_objetive) / 100 + nada_influyente)
     objetivo_poco_influyente = ceil((poco_influyente * target_objetive) / 100 + poco_influyente)

@@ -447,7 +447,7 @@ if selected=='Sobre nosotros':
         col2.write('')
         col2.markdown('<span style="font-size: larger;">**Nombre:** Jeferson Tonetto</span>', unsafe_allow_html=True)
         col2.markdown('<span style="font-size: larger;">**Rol:** Data analyst</span>', unsafe_allow_html=True)
-        col2.markdown('<span style="font-size: larger;">**Contacto:** jeff_mail@gmail.com</span>', unsafe_allow_html=True)
+        col2.markdown('<span style="font-size: larger;">**Contacto:** jeffersson2210@gmail.com</span>', unsafe_allow_html=True)
         col2.markdown('<span style="font-size: larger;">**LinkedIn:** [link](https://www.linkedin.com/in/jeferson-tonetto-mogollon-09ba311b0/)</span>', unsafe_allow_html=True)
         
         col4.write('')
