@@ -360,8 +360,9 @@ def get_kpi3_retencion(business, reviews_google, reviews_yelp, states, categorie
     reviews = reviews.merge(business[['business_id']])
 
     # Creamos df con resultados
-    reviews = reviews.groupby('business_id').value_counts().reset_index(drop=False)
-
+    reviews['count'] = reviews.groupby('business_id').value_counts().to_list()
+    # reviews['count'] = reviews.groupby('business_id')['user_id'].transform('count')
+    
     clientes_unicos = reviews[reviews['count'] == 1].shape[0]
     clientes_frecuentes = reviews[(reviews['count'] > 1) & (reviews['count'] < 5)].shape[0]
     clientes_muy_frecuentes = reviews[reviews['count'] > 4].shape[0]
