@@ -244,7 +244,7 @@ if selected == "Comercial":
         
         # Obtener métricas para KPI 4
         try:
-            kpi4_metrics = get_kpi4_influencia(user_yelp = user_yelp, business = business_both, reviews_yelp = reviews_yelp,
+            kpi4_metrics = get_kpi4_influencia(business = business_both, reviews_yelp = reviews_yelp,
                                            states = states, categories_groups = groups_both, target_group = target_group, 
                                            target_year = target_year, target_state = target_state,
                                            target_objetive = target_objetive)
@@ -260,8 +260,8 @@ if selected == "Comercial":
                     <div style="padding: 15px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
                         <p style="{text_style_kpi4}">
                             Usuarios por influencia: {kpi4_metrics['Usuarios por influencia']}, Objetivo: {kpi4_metrics['Objetivo Usuarios por influencia']}<br>
-                            Objetivo usuarios influyentes: {kpi4_metrics['Objetivo usuarios influyentes']}, Objetivo: {kpi4_metrics['Objetivo usuarios influyentes']}<br>
-                            Objetivo usuarios muy influyentes: {kpi4_metrics['Objetivo usuarios muy influyentes']}, Objetivo: {kpi4_metrics['Objetivo usuarios muy influyentes']}
+                            Objetivo usuarios influyentes: {kpi4_metrics['Usuarios influyentes']}, Objetivo: {kpi4_metrics['Objetivo usuarios influyentes']}<br>
+                            Objetivo usuarios muy influyentes: {kpi4_metrics['Usuarios muy influyentes']}, Objetivo: {kpi4_metrics['Objetivo usuarios muy influyentes']}
                         </p>
                     </div>
                     """,
