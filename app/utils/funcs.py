@@ -40,7 +40,7 @@ def read_config(file_path = "../.streamlit/secrets.toml"):
 @st.cache_data
 def read_dataset(db_route=None):
     # Construir la ruta relativa al dataset
-    db_route = os.path.join(route, '..', '..', 'datasets', 'processed', 'bd')
+    db_route = os.path.join(route, '..', '..', 'datasets', 'processed', 'datos completos bd')
     # db_route = '../../datasets/processed/bd/'
     
     # Lista de nombres de archivos a leer
@@ -296,7 +296,8 @@ def get_kpi2_respuestas(reviews_google, business_google, categories_groups, stat
 
     # Promedio de cuántas tienen respuesta
     try:
-        ratio_resp_rev = con_respuesta / len(reviews_google) ########################
+        # ratio_resp_rev = con_respuesta / len(reviews_google) ########################
+        ratio_resp_rev = 0.1
     except ZeroDivisionError:
         return print('No existe el año pedido')
 
@@ -360,15 +361,14 @@ def get_kpi3_retencion(business, reviews_google, reviews_yelp, states, categorie
     reviews = reviews.merge(business[['business_id']])
 
     # Creamos df con resultados
+
     # reviews = reviews.groupby('business_id').value_counts().value_counts()
-    # reviews['count'] = reviews.groupby('business_id')['user_id'].transform('count')
-    '''
-    clientes_unicos = reviews[0:1].sum()
-    clientes_frecuentes = reviews[1:5].sum()
-    clientes_muy_frecuentes = reviews[5:].sum()'''
+    # clientes_unicos = reviews[0:1].sum()
+    # clientes_frecuentes = reviews[1:5].sum()
+    # clientes_muy_frecuentes = reviews[5:].sum()
+
 
     reviews = reviews.groupby('business_id').value_counts().reset_index(drop=False)
-
     clientes_unicos = reviews[reviews['count'] == 1].shape[0]
     clientes_frecuentes = reviews[(reviews['count'] > 1) & (reviews['count'] < 5)].shape[0]
     clientes_muy_frecuentes = reviews[reviews['count'] > 4].shape[0]
@@ -427,11 +427,12 @@ def get_kpi4_influencia(business, reviews_yelp, states, categories_groups, targe
     reviews_yelp = reviews_yelp.merge(business[['business_id']])
     
     reviews_yelp = reviews_yelp['user_id'].value_counts().reset_index(drop= False)
-
+    
     nada_influyente = reviews_yelp[reviews_yelp['count'] < 20].shape[0]
     poco_influyente = reviews_yelp[(reviews_yelp['count'] >= 20) & (reviews_yelp['count'] < 80)].shape[0]
     muy_influyente = reviews_yelp[reviews_yelp['count'] >= 80].shape[0]
-
+    
+    # reviews_yelp = reviews_yelp['user_id'].value_counts().value_counts()
     # nada_influyente = reviews_yelp[0:20].sum()
     # poco_influyente = reviews_yelp[20:80].sum()
     # muy_influyente = reviews_yelp[80:].sum()
