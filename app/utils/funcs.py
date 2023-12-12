@@ -293,10 +293,20 @@ def get_kpi2_respuestas(reviews_google, business_google, categories_groups, stat
         con_respuesta = reviews_google['resp_sentiment'].value_counts().drop('0.0').sum()
     except KeyError:
         con_respuesta = len(reviews_google)
-
+    
+    if con_respuesta == 0:
+        kpi2 = {
+        'kpi2_valor': 0,
+        'ratio_resp_rev': 0,
+        'rango_de_tiempo': 0,
+        'promedio_resp_sent': 0,
+        'objetivo_kpi2_valor': 1
+        }
+        return kpi2
+        
     # Promedio de cuántas tienen respuesta
     try:
-        ratio_resp_rev = con_respuesta / len(reviews_google) ########################
+        ratio_resp_rev = 0.1 ########################
     except ZeroDivisionError:
         return print('No existe el año pedido')
 

@@ -156,6 +156,7 @@ if selected == "Comercial":
             
         kpi2_valor = kpi2_result.get('kpi2_valor')
         objetivo_kpi2_valor = kpi2_result.get('objetivo_kpi2_valor')
+
     
         st.subheader('Analizando la Calidad de las Respuestas:')
 
@@ -172,7 +173,7 @@ if selected == "Comercial":
         color_value = colors[current_quartile]
 
         # Crear un contenedor colapsable con estilo
-        with st.expander("Calidad de respuestas:", expanded=True):
+        with st.expander("Calidad de respuestas: ", expanded=True):
             # Establecer el fondo del contenedor según el color elegido
             st.markdown(
                 f"""
@@ -201,6 +202,7 @@ if selected == "Comercial":
                 """,
                 unsafe_allow_html=True,
             )
+            
 
         # ----------------------------------------- KPI 3
 
