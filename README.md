@@ -145,11 +145,11 @@ Este es un ejemplo de cómo enumerar las cosas que necesita para usar el softwar
 La metodología empleada en este proyecto implicó los siguientes pasos clave:
 **Contexto y criterio de los datos; Extraer, transformar y cargar; Análisis de datos; Desplegar**
 
-Se analizaron más de 30 conjuntos de datos disponibles y se impuso un conjunto de criterios para optimizar los esfuerzos. Los 12 conjuntos de datos seleccionados se procesaron a través de procesos ETL, lo que dio como resultado la creación de tablas que contienen ratios y tasas de crecimiento.
+Se analizaron conjuntos de datos disponibles y se impuso un conjunto de criterios para optimizar los esfuerzos. Los conjuntos de datos seleccionados se procesaron a través de procesos ETL, lo que dio como resultado la creación de tablas que contienen informacion especifica de restaurantes y sus respectivas reviews hechas por los clientes.
 
 Análisis de datos
 
-A partir de los datos procesados se generó un conjunto de datos completo, **df_kpi**, que sirvió de base para todas las visualizaciones y análisis. Se exploró el panorama económico de la Argentina moderna mediante la comprensión de diversas correlaciones entre tecnologías, tasas de crecimiento, totales de penetración (tasas de acceso, disponibilidad del servicio) y velocidad (calidad del servicio).
+A partir de los datos procesados se generó un conjunto de datos completo, que sirvió de base para todas las visualizaciones y análisis. Se exploró el panorama económico de loa distintos estados, sacando concluciones importantes , para la seleccion de estados de nuestro interes
 
 Desafíos de implementación
 
@@ -235,12 +235,6 @@ Algunos beneficios de utilizar nuestro pipeline de datos son:
 <!-- CONCLUSION -->
 
 # Conclusión
-
-Al analizar la evolución de la utilidad neta en dólares, con su relativa **estabilidad en torno a los $500,000 USD**, decidimos interpretar patrones de correlación con otras variables no económicas. Observamos cómo **la Fibra Óptica se destaca como el foco central de la propuesta**, siendo la más costo-efectiva de instalar, aumentando la velocidad promedio y mejorando las tasas de conectividad para cada provincia donde se implementa.
-
-Es crucial entender que la Fibra Óptica tiene una correlación inversa con el ADSL, una tecnología que necesita ser reducida. El ADSL no solo carece de características técnicas que favorezcan la accesibilidad o la calidad del servicio, sino que también es susceptible de robo debido a su alto contenido en cobre.
-
-La tecnología inalámbrica emerge como la que sugiere la mayor conectividad, sobresaliendo tanto en áreas rurales como densamente pobladas, debido a su naturaleza inalámbrica.
 
 <p align="right">(<a href="#readme-top">Volver al principio</a>)</p>
 
