@@ -83,7 +83,7 @@ with st.sidebar:
     )
 
     # Mostrar la imagen GIF en el sidebar
-    if 'location-maps.gif' in files_content:
+    if 'location-maps.png' in files_content:
         st.image(files_content['location-maps.png'])
 
     
