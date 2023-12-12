@@ -473,12 +473,12 @@ if selected=='Sobre nosotros':
     with st.container():
         col1,col2=st.columns(2)
         #col1.image('census_graphic.png',width=150)
-        col1.write('[Google maps](https://www.linkedin.com/in/jonathan-castillo-7962b7163/)')
+        col1.write('[Google maps](https://drive.google.com/drive/folders/1Wf7YkxA0aHI3GpoHc9Nh8_scf5BbD4DA)')
         col2.write('https://github.com/Paniceres/GP_Henry')
     
     with st.container():
         col1,col2=st.columns(2)
-        col1.write('[Yelp](https://www.linkedin.com/in/jonathan-castillo-7962b7163/)')
+        col1.write('[Yelp](https://drive.google.com/drive/folders/1TI-SsMnZsNP6t930olEEWbBQdo_yuIZF)')
     
     with st.container():
         col1,col2=st.columns(2)
