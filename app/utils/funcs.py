@@ -310,11 +310,12 @@ def get_kpi2_respuestas(reviews_google, business_google, categories_groups, stat
     promedio_resp_sent = reviews_google[reviews_google['resp_sentiment'] != 0.0]['resp_sentiment'].mean() #######################
 
     # Calcular el objetivo aplicado solo a kpi2_valor
-    objetivo_kpi2_valor = round((ratio_resp_rev * rango_de_tiempo.mean() / 100) + promedio_resp_sent, 2) * (1 + target_objetive)
-
+    kpi2_valor = (ratio_resp_rev * rango_de_tiempo.mean() / 100) + promedio_resp_sent
+    objetivo_kpi2_valor = round((kpi2_valor * (1 + target_objetive / 100)), 2)
+    
     # Crear el diccionario con los resultados
     kpi2 = {
-        'kpi2_valor': round((ratio_resp_rev * rango_de_tiempo.mean() / 100) + promedio_resp_sent, 2),
+        'kpi2_valor': round(kpi2_valor, 2),
         'ratio_resp_rev': round(ratio_resp_rev, 2),
         'rango_de_tiempo': round(rango_de_tiempo.mean(), 2),
         'promedio_resp_sent': round(promedio_resp_sent, 2),

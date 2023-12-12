@@ -197,7 +197,8 @@ if selected == "Comercial":
                 st.markdown(
                     f"""
                     <div style="{card_style}">
-                        <p style="{text_style}">El resultado del KPI 2 es: {kpi2_valor}</p>
+                        <p style="{text_style}">Calidad actual: {kpi2_valor}</p>
+                        <p style="{text_style}">Calidad objetivo: {objetivo_kpi2_valor}</p>
                     </div>
                     """,
                     unsafe_allow_html=True,
@@ -239,7 +240,7 @@ if selected == "Comercial":
             st.subheader('Seleccione su criterio.')
         # ----------------------------------------- KPI 4
         
-        st.subheader('')
+        st.subheader('Analizando el alcance de los clientes:')
         
         # Obtener métricas para KPI 4
         try:
