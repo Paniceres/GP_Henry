@@ -310,11 +310,12 @@ def get_kpi2_respuestas(reviews_google, business_google, categories_groups, stat
     promedio_resp_sent = reviews_google[reviews_google['resp_sentiment'] != 0.0]['resp_sentiment'].mean() #######################
 
     # Calcular el objetivo aplicado solo a kpi2_valor
-    objetivo_kpi2_valor = round((ratio_resp_rev * rango_de_tiempo.mean() / 100) + promedio_resp_sent, 2) * (1 + target_objetive)
-
+    kpi2_valor = (ratio_resp_rev * rango_de_tiempo.mean() / 100) + promedio_resp_sent
+    objetivo_kpi2_valor = round((kpi2_valor * (1 + target_objetive / 100)), 2)
+    
     # Crear el diccionario con los resultados
     kpi2 = {
-        'kpi2_valor': round((ratio_resp_rev * rango_de_tiempo.mean() / 100) + promedio_resp_sent, 2),
+        'kpi2_valor': round(kpi2_valor, 2),
         'ratio_resp_rev': round(ratio_resp_rev, 2),
         'rango_de_tiempo': round(rango_de_tiempo.mean(), 2),
         'promedio_resp_sent': round(promedio_resp_sent, 2),
@@ -359,9 +360,15 @@ def get_kpi3_retencion(business, reviews_google, reviews_yelp, states, categorie
     reviews = reviews.merge(business[['business_id']])
 
     # Creamos df con resultados
-    # reviews = reviews.groupby('business_id').value_counts().reset_index(drop=False)
-    reviews['count'] = reviews.groupby('business_id')['user_id'].transform('count')
-    
+    # reviews = reviews.groupby('business_id').value_counts().value_counts()
+    # reviews['count'] = reviews.groupby('business_id')['user_id'].transform('count')
+    '''
+    clientes_unicos = reviews[0:1].sum()
+    clientes_frecuentes = reviews[1:5].sum()
+    clientes_muy_frecuentes = reviews[5:].sum()'''
+
+    reviews = reviews.groupby('business_id').value_counts().reset_index(drop=False)
+
     clientes_unicos = reviews[reviews['count'] == 1].shape[0]
     clientes_frecuentes = reviews[(reviews['count'] > 1) & (reviews['count'] < 5)].shape[0]
     clientes_muy_frecuentes = reviews[reviews['count'] > 4].shape[0]
@@ -392,7 +399,7 @@ def get_kpi3_retencion(business, reviews_google, reviews_yelp, states, categorie
 
 
 
-def get_kpi4_influencia(user_yelp, business, reviews_yelp, states, categories_groups, target_group, target_year, target_state, target_objetive):
+def get_kpi4_influencia(business, reviews_yelp, states, categories_groups, target_group, target_year, target_state, target_objetive):
     # Elegimos el id del estado
     id_estado_elegidos = states[states['state'].apply(lambda x: x in target_state)]['state_id'].to_list()
 
@@ -419,25 +426,39 @@ def get_kpi4_influencia(user_yelp, business, reviews_yelp, states, categories_gr
     #Filtrar por restuarant
     reviews_yelp = reviews_yelp.merge(business[['business_id']])
     
-    # reviews_yelp = reviews_yelp['user_id'].value_counts().reset_index(drop=False)
-    reviews_yelp['count'] = reviews_yelp.groupby('business_id')['user_id'].transform('count')
-    
+    reviews_yelp = reviews_yelp['user_id'].value_counts().reset_index(drop= False)
+
     nada_influyente = reviews_yelp[reviews_yelp['count'] < 20].shape[0]
     poco_influyente = reviews_yelp[(reviews_yelp['count'] >= 20) & (reviews_yelp['count'] < 80)].shape[0]
     muy_influyente = reviews_yelp[reviews_yelp['count'] >= 80].shape[0]
 
-    nada_influyente_objetivo = (nada_influyente, ceil((nada_influyente * target_objetive) / 100 + nada_influyente))
-    poco_influyente_objetivo = (poco_influyente, ceil((poco_influyente * target_objetive) / 100 + poco_influyente))
-    muy_influyente_objetivo = (muy_influyente, ceil((muy_influyente * target_objetive) / 100 + muy_influyente))
+    # nada_influyente = reviews_yelp[0:20].sum()
+    # poco_influyente = reviews_yelp[20:80].sum()
+    # muy_influyente = reviews_yelp[80:].sum()
+
+    objetivo_nada_influyente =  ceil((nada_influyente * target_objetive) / 100 + nada_influyente)
+    objetivo_poco_influyente = ceil((poco_influyente * target_objetive) / 100 + poco_influyente)
+    objetivo_muy_influyente = ceil((muy_influyente * target_objetive) / 100 + muy_influyente)
+    
+    if objetivo_poco_influyente == 0:
+        objetivo_poco_influyente = 1
+    
+    if objetivo_muy_influyente == 0:
+        objetivo_muy_influyente = 1
+    
+    nada_influyente =   (nada_influyente, objetivo_nada_influyente)
+    poco_influyente =   (poco_influyente, objetivo_poco_influyente)
+    muy_influyente =    (muy_influyente, objetivo_muy_influyente)
+    
 
 
     kpi4 = {
-        'Usuarios por influencia': nada_influyente,
-        'Usuarios influyentes': poco_influyente,
-        'Usuarios muy influyentes': muy_influyente,
-        'Objetivo Usuarios por influencia': nada_influyente_objetivo,
-        'Objetivo usuarios influyentes': poco_influyente_objetivo,
-        'Objetivo usuarios muy influyentes': muy_influyente_objetivo
+        'Usuarios por influencia': nada_influyente[0],
+        'Usuarios influyentes': poco_influyente[0],
+        'Usuarios muy influyentes': muy_influyente[0],
+        'Objetivo Usuarios por influencia': nada_influyente[1],
+        'Objetivo usuarios influyentes': poco_influyente[1],
+        'Objetivo usuarios muy influyentes': muy_influyente[1]
     }
 
     return kpi4
