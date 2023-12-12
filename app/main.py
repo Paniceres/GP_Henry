@@ -134,9 +134,9 @@ if selected == "Comercial":
     
     st.subheader('Seleccione su Criterio:')
     
-    target_state = st.multiselect(label='Selecciona estado:', options=unique_states, label_visibility='collapsed')
-    target_group = st.multiselect('Selecciona un grupo:', options=unique_groups)
-    target_year = st.multiselect('Selecciona un año:', options=unique_years)
+    target_state = st.multiselect(label='Selecciona estado:', options=unique_states, label_visibility='collapsed', default='Florida')
+    target_group = st.multiselect('Selecciona un grupo:', options=unique_groups, default='general')
+    target_year = st.multiselect('Selecciona un año:', options=unique_years, default=2015)
     target_objetive = st.slider('Seleccione el objetivo de aumento:', min_value=0, max_value=20, value=5, step=1)
     
     loc_select = st.radio('Type', ['Análisis', 'Mapa'], horizontal=True, label_visibility="collapsed")
@@ -153,123 +153,113 @@ if selected == "Comercial":
         # kpi2_result = {'kpi2_valor': 1.6}  
 
         # Obtener el valor del KPI 2
-        try:
             
+        kpi2_valor = kpi2_result.get('kpi2_valor')
+        objetivo_kpi2_valor = kpi2_result.get('objetivo_kpi2_valor')
+    
+        st.subheader('Analizando la Calidad de las Respuestas:')
 
-            kpi2_valor = kpi2_result.get('kpi2_valor')
-            objetivo_kpi2_valor = kpi2_result.get('objetivo_kpi2_valor')
-        
-            st.subheader('Analizando la Calidad de las Respuestas:')
+        # Definir los cuartiles
+        quartiles = [0.49, 0.99, 1.49, float('inf')]
 
-            # Definir los cuartiles
-            quartiles = [0.49, 0.99, 1.49, float('inf')]
+        # Obtener el cuartil del valor actual
+        current_quartile = sum(kpi2_valor > q for q in quartiles)
 
-            # Obtener el cuartil del valor actual
-            current_quartile = sum(kpi2_valor > q for q in quartiles)
+        # Definir colores para cada cuartil
+        colors = ["red", "yellow", "green", "darkgreen"]
 
-            # Definir colores para cada cuartil
-            colors = ["red", "yellow", "green", "darkgreen"]
+        # Obtener el color según el cuartil
+        color_value = colors[current_quartile]
 
-            # Obtener el color según el cuartil
-            color_value = colors[current_quartile]
+        # Crear un contenedor colapsable con estilo
+        with st.expander("Calidad de respuestas:", expanded=True):
+            # Establecer el fondo del contenedor según el color elegido
+            st.markdown(
+                f"""
+                <style>
+                    div.st-expander > div.st-expander-content {{
+                        background: {color_value};
+                        padding: 10px;
+                        border-radius: 5px;
+                    }}
+                </style>
+                """,
+                unsafe_allow_html=True,
+            )
+            card_style = f"background: {color_value}; padding: 15px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);"
 
-            # Crear un contenedor colapsable con estilo
-            with st.expander("Calidad de respuestas:", expanded=True):
-                # Establecer el fondo del contenedor según el color elegido
-                st.markdown(
-                    f"""
-                    <style>
-                        div.st-expander > div.st-expander-content {{
-                            background: {color_value};
-                            padding: 10px;
-                            border-radius: 5px;
-                        }}
-                    </style>
-                    """,
-                    unsafe_allow_html=True,
-                )
-                card_style = f"background: {color_value}; padding: 15px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);"
+            # Establecer el estilo del texto dentro de la tarjeta
+            text_style = f"font-size: 32px; color: black; text-align: center;"
 
-                # Establecer el estilo del texto dentro de la tarjeta
-                text_style = f"font-size: 32px; color: black; text-align: center;"
+            # Crear la tarjeta con el estilo
+            st.markdown(
+                f"""
+                <div style="{card_style}">
+                    <p style="{text_style}">Calidad actual: {kpi2_valor}</p>
+                    <p style="{text_style}">Calidad objetivo: {objetivo_kpi2_valor}</p>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
 
-                # Crear la tarjeta con el estilo
-                st.markdown(
-                    f"""
-                    <div style="{card_style}">
-                        <p style="{text_style}">Calidad actual: {kpi2_valor}</p>
-                        <p style="{text_style}">Calidad objetivo: {objetivo_kpi2_valor}</p>
-                    </div>
-                    """,
-                    unsafe_allow_html=True,
-                )
+        # ----------------------------------------- KPI 3
 
-            # ----------------------------------------- KPI 3
-
-            st.subheader('Analizando la Retención de Clientes:')  ## Modificar
+        st.subheader('Analizando la Retención de Clientes:')  ## Modificar
 
 
-            # Obtener métricas para KPI 3
-            cu, cf, cmy = get_kpi3_retencion(business = business_both, reviews_google = reviews_google, 
-                                            reviews_yelp = reviews_yelp, states = states, categories_groups = groups_both,
-                                            target_group = target_group, target_year = target_year, target_state = target_state, 
-                                            target_objetive = target_objetive)
+        # Obtener métricas para KPI 3
+        cu, cf, cmy = get_kpi3_retencion(business = business_both, reviews_google = reviews_google, 
+                                        reviews_yelp = reviews_yelp, states = states, categories_groups = groups_both,
+                                        target_group = target_group, target_year = target_year, target_state = target_state, 
+                                        target_objetive = target_objetive)
 
-            # Crear un contenedor colapsable con estilo para KPI 3
-            with st.expander(f"Tasa de Retención:", expanded=True):
-                # Establecer el estilo del texto dentro de la tarjeta
-                text_style_kpi3 = f"font-size: 20px; color: white; text-align: left;"
+        # Crear un contenedor colapsable con estilo para KPI 3
+        with st.expander(f"Tasa de Retención:", expanded=True):
+            # Establecer el estilo del texto dentro de la tarjeta
+            text_style_kpi3 = f"font-size: 20px; color: white; text-align: left;"
 
-                # Crear la tarjeta con el estilo para KPI 3
-                st.markdown(
-                    f"""
-                    <div style="padding: 15px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
-                        <p style="{text_style_kpi3}">
-                            <br>Clientes unicos: {cu[0]} ----> Objetivo para el proximo año: {cu[1]}
-                            <br>Clientes frecuentes: {cf[0]} ----> Objetivo para el proximo año: {cf[1]}
-                            <br>Clientes muy frecuentes: {cmy[0]} ----> Objetivo para el proximo año: {cmy[1]}
-                        </p>
-                    </div>
-                    """,
-                    unsafe_allow_html=True,
-                )
-
-        except AttributeError:
-            kpi2_valor = 0
-            objetivo_kpi2_valor = 0
-            st.subheader('Seleccione su criterio.')
+            # Crear la tarjeta con el estilo para KPI 3
+            st.markdown(
+                f"""
+                <div style="padding: 15px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+                    <p style="{text_style_kpi3}">
+                        <br>Clientes unicos: {cu[0]} ----> Objetivo para el proximo año: {cu[1]}
+                        <br>Clientes frecuentes: {cf[0]} ----> Objetivo para el proximo año: {cf[1]}
+                        <br>Clientes muy frecuentes: {cmy[0]} ----> Objetivo para el proximo año: {cmy[1]}
+                    </p>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
         # ----------------------------------------- KPI 4
         
         st.subheader('Analizando el alcance de los clientes:')
         
         # Obtener métricas para KPI 4
-        try:
-            kpi4_metrics = get_kpi4_influencia(business = business_both, reviews_yelp = reviews_yelp,
-                                           states = states, categories_groups = groups_both, target_group = target_group, 
-                                           target_year = target_year, target_state = target_state,
-                                           target_objetive = target_objetive)
-        
-            # Crear un contenedor colapsable con estilo para KPI 4
-            with st.expander("Influencia de Usuarios:", expanded=True):
-                # Establecer el estilo del texto dentro de la tarjeta
-                text_style_kpi4 = f"font-size: 20px; color: white; text-align: left;"
+        kpi4_metrics = get_kpi4_influencia(business = business_both, reviews_yelp = reviews_yelp,
+                                        states = states, categories_groups = groups_both, target_group = target_group, 
+                                        target_year = target_year, target_state = target_state,
+                                        target_objetive = target_objetive)
+    
+        # Crear un contenedor colapsable con estilo para KPI 4
+        with st.expander("Influencia de Usuarios:", expanded=True):
+            # Establecer el estilo del texto dentro de la tarjeta
+            text_style_kpi4 = f"font-size: 20px; color: white; text-align: left;"
 
-                # Crear la tarjeta con el estilo para KPI 4
-                st.markdown(
-                    f"""
-                    <div style="padding: 15px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
-                        <p style="{text_style_kpi4}">
-                            Usuarios por influencia: {kpi4_metrics['Usuarios por influencia']}, Objetivo: {kpi4_metrics['Objetivo Usuarios por influencia']}<br>
-                            Objetivo usuarios influyentes: {kpi4_metrics['Usuarios influyentes']}, Objetivo: {kpi4_metrics['Objetivo usuarios influyentes']}<br>
-                            Objetivo usuarios muy influyentes: {kpi4_metrics['Usuarios muy influyentes']}, Objetivo: {kpi4_metrics['Objetivo usuarios muy influyentes']}
-                        </p>
-                    </div>
-                    """,
-                    unsafe_allow_html=True,
-                )        
+            # Crear la tarjeta con el estilo para KPI 4
+            st.markdown(
+                f"""
+                <div style="padding: 15px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+                    <p style="{text_style_kpi4}">
+                        Usuarios por influencia: {kpi4_metrics['Usuarios por influencia']}, Objetivo: {kpi4_metrics['Objetivo Usuarios por influencia']}<br>
+                        Objetivo usuarios influyentes: {kpi4_metrics['Usuarios influyentes']}, Objetivo: {kpi4_metrics['Objetivo usuarios influyentes']}<br>
+                        Objetivo usuarios muy influyentes: {kpi4_metrics['Usuarios muy influyentes']}, Objetivo: {kpi4_metrics['Objetivo usuarios muy influyentes']}
+                    </p>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )        
 
-        except KeyError:
-            kpi4_metrics = 0
             
             
             
@@ -483,12 +473,12 @@ if selected=='Sobre nosotros':
     with st.container():
         col1,col2=st.columns(2)
         #col1.image('census_graphic.png',width=150)
-        col1.write(':blue[Google maps]')
+        col1.write('[Google maps](https://www.linkedin.com/in/jonathan-castillo-7962b7163/)')
         col2.write('https://github.com/Paniceres/GP_Henry')
     
     with st.container():
         col1,col2=st.columns(2)
-        col1.write(':blue[Yelp]')
+        col1.write('[Yelp](https://www.linkedin.com/in/jonathan-castillo-7962b7163/)')
     
     with st.container():
         col1,col2=st.columns(2)
