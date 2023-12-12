@@ -134,9 +134,9 @@ if selected == "Comercial":
     
     st.subheader('Seleccione su Criterio:')
     
-    target_state = st.multiselect(label='Selecciona estado:', options=unique_states, label_visibility='collapsed', default='Florida')
-    target_group = st.multiselect('Selecciona un grupo:', options=unique_groups, default='general')
-    target_year = st.multiselect('Selecciona un año:', options=unique_years, default=2015)
+    target_state = st.selectbox(label='Selecciona estado:', options=unique_states, label_visibility='collapsed')
+    target_group = st.selectbox('Selecciona un grupo:', options=unique_groups)
+    target_year = st.selectbox('Selecciona un año:', options=unique_years)
     target_objetive = st.slider('Seleccione el objetivo de aumento:', min_value=0, max_value=20, value=5, step=1)
     
     loc_select = st.radio('Type', ['Análisis', 'Mapa'], horizontal=True, label_visibility="collapsed")
@@ -149,7 +149,7 @@ if selected == "Comercial":
 
         # ----------------------------------------- KPI 2
 
-        kpi2_result = get_kpi2_respuestas(reviews_google, business_google, groups_google, states, target_state, target_group, target_year, target_objetive)
+        kpi2_result = get_kpi2_respuestas(reviews_google, business_google, groups_google, states, [target_state], [target_group], [target_year], target_objetive)
         # kpi2_result = {'kpi2_valor': 1.6}  
 
         # Obtener el valor del KPI 2
@@ -210,7 +210,7 @@ if selected == "Comercial":
         # Obtener métricas para KPI 3
         cu, cf, cmy = get_kpi3_retencion(business = business_both, reviews_google = reviews_google, 
                                         reviews_yelp = reviews_yelp, states = states, categories_groups = groups_both,
-                                        target_group = target_group, target_year = target_year, target_state = target_state, 
+                                        target_group = [target_group], target_year = [target_year], target_state = [target_state], 
                                         target_objetive = target_objetive)
 
         # Crear un contenedor colapsable con estilo para KPI 3
@@ -237,8 +237,8 @@ if selected == "Comercial":
         
         # Obtener métricas para KPI 4
         kpi4_metrics = get_kpi4_influencia(business = business_both, reviews_yelp = reviews_yelp,
-                                        states = states, categories_groups = groups_both, target_group = target_group, 
-                                        target_year = target_year, target_state = target_state,
+                                        states = states, categories_groups = groups_both, target_group = [target_group], 
+                                        target_year = [target_year], target_state = [target_state],
                                         target_objetive = target_objetive)
     
         # Crear un contenedor colapsable con estilo para KPI 4
