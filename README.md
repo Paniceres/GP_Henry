@@ -232,11 +232,17 @@ Algunos beneficios de utilizar nuestro pipeline de datos son:
 
 <img src="/src/PIPELINE.png" width="1000" height="520">
 
-<!-- CONCLUSION -->
+<!-- CONCLUSION 
 
 # Conclusión
 
-<p align="right">(<a href="#readme-top">Volver al principio</a>)</p>
+<p align="right">(<a href="#readme-top">Volver al principio</a>)</p> -->
+
+<!-- Video -->
+
+# Video presentacion
+
+Project Link: [https://github.com/Paniceres/GP_Henry](https://github.com/Paniceres/GP_Henry)
 
 <!-- CONTRIBUTING -->
 
@@ -265,7 +271,7 @@ Si tienes alguna sugerencia que mejore esto, bifurca el repositorio y crea una s
 - Jonathan Castillo - jonathancastillo185@gmail.com
 - Jefferson Tonetto - jeffersson2210@gmail.com
 
-Project Link: [https://github.com/Paniceres/GP_Henry](https://github.com/Paniceres/GP_Henry)
+Video: [https://github.com/Paniceres/GP_Henry](https://github.com/Paniceres/GP_Henry)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
